@@ -1,0 +1,56 @@
+{
+  "lang": "Russian",
+  "text": [
+    { "tag": "DYNAMIC_CONFIG_ERROR_COMMAND_NOT_ADMIN", "value": "Для выполнения данной команды необходимы права администратора." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_NOT_OWNER", "value": "Вы не являетесь автором этого сообщения. Пожалуйста, дождитесь, когда другой администратор завершит изменение настроек сервера." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_FAIL_TIMEOUT", "value": "Превышено время ожидания. Настройка не была изменена." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER", "value": "Введите целочисленное значение от [MIN_VALUE] до [MAX_VALUE]." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_STRING", "value": "Настройка не была изменена." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_BOOLEAN_GAME_SETTING", "value": "Голосование должно иметь хотя бы 2 доступные опции. Если вы хотите отключить это голосование, воспользуйтесь соответствующей настройкой." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Настройка не была изменена. Список содержит ошибки.\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что вы вводите пары цивилизации корректно:\n  – каждая пара цивилизаций записана с новой строки;\n  – цивилизации разделены запятой;\n  – ни одна пара не содержит двух одинаковых лидеров;\n  – текст не содержит специальных символов, кроме запятой и дефиса." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_SAME_IN_PAIR", "value": "Настройка не была изменена. Список содержит пару, в которой записана одна и та же цивилизация.\n\n[CIVILIZATION_ERROR]\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что вы вводите пары цивилизации корректно:\n  – каждая пара цивилизаций записана с новой строки;\n  – цивилизации разделены запятой;\n  – ни одна пара не содержит двух одинаковых лидеров;\n  – текст не содержит специальных символов, кроме запятой и дефиса." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_TRIANGLE", "value": "Настройка не была изменена. В списке присутствуют цивилизации, которые не могут быть разделены между двумя командами.\n\n[CIVILIZATIONS_ERRORS]\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что перечисленные цивилизации не образуют всевозможные пары, и повторите попытку." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] целых чисел в диапазоне от от [MIN_VALUE] до [MAX_VALUE]." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_ROLE_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] ролей или ID ролей." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_CHANNEL_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] каналов или ID каналов." },
+
+    { "tag": "DYNAMIC_CONFIG_BUTTON_BACK", "value": "Назад" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_FIRST", "value": "На первую страницу" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_PREVIOUS", "value": "Пред. страница" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_NEXT", "value": "След. страница" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_LAST", "value": "На последнюю страницу" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_RESET", "value": "Сбросить настройки" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_DELETE", "value": "Удалить сообщение" },
+
+    { "tag": "DYNAMIC_CONFIG_RESET_TITLE", "value": "\uD83D\uDD04 Сброс настроек" },
+    { "tag": "DYNAMIC_CONFIG_RESET_DESCRIPTION", "value": "Эта опция сбросит все настройки текущей категории и всех её подкатегорий до настроек по умолчанию.\n\n❗ **Это действие нельзя отменить!** Вы уверены?" },
+    { "tag": "DYNAMIC_CONFIG_RESET_BUTTON_CONFIRM", "value": "Сбросить настройки" },
+    { "tag": "DYNAMIC_CONFIG_RESET_BUTTON_CANCEL", "value": "Отмена" },
+
+    { "tag": "DYNAMIC_CONFIG_MODAL_LABEL", "value": "Введите новое значение выбранной настройки" },
+
+    { "tag": "DYNAMIC_CONFIG_NOTIFY_CHANGE_SUCCESS", "value": "Настройка была успешно изменена." },
+    { "tag": "DYNAMIC_CONFIG_NOTIFY_RESET_SUCCESS", "value": "Настройки были успешно сброшены." },
+
+    { "tag": "DYNAMIC_CONFIG_TITLE", "value": "Конфигурация сервера" },
+    { "tag": "DYNAMIC_CONFIG_TITLE_EMOJI", "value": "\uD83D\uDD27" },
+    { "tag": "DYNAMIC_CONFIG_TITLE_PAGE", "value": "страница" },
+    { "tag": "DYNAMIC_CONFIG_CHOOSE_GROUP_DESCRIPTION", "value": "Выберите категорию настроек из списка в меню." },
+    { "tag": "DYNAMIC_CONFIG_CHOOSE_CONFIG_DESCRIPTION", "value": "Выберите настройку, которую вы хотите изменить, из списка в меню." },
+
+    { "tag": "DYNAMIC_CONFIG_MENU_PLACEHOLDER_CATEGORY", "value": "Выберите категорию" },
+    { "tag": "DYNAMIC_CONFIG_MENU_PLACEHOLDER_CONFIG", "value": "Выберите настройку" },
+    { "tag": "DYNAMIC_CONFIG_DESCRIPTION_NO_VALUE", "value": "  – нет" },
+
+
+    { "tag": "DYNAMIC_CONFIG_LANGUAGE", "value": "Выбор языка" },
+    { "tag": "DYNAMIC_CONFIG_LANGUAGE_EMOJI", "value": "\uD83C\uDF0D" },
+
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION", "value": "Модерация" },
+    { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Роли модераторов (ID)" },
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" }
+  ]
+}

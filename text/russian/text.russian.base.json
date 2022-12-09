@@ -1,0 +1,8 @@
+{
+  "lang": "Russian",
+  "text": [
+    { "tag": "BASE_ERROR_TITLE", "value": "❗ Ошибка!" },
+    { "tag": "BASE_UNKNOWN_ERROR_TITLE", "value": "‼️ Неизвестная ошибка!" },
+    { "tag": "BASE_NOTIFY_TITLE", "value": "✅ Уведомление" }
+  ]
+}

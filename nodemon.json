@@ -1,0 +1,5 @@
+{
+  "watch": ["config", "src", "text"],
+  "ext": "js, ts, json",
+  "delay": 2000
+}

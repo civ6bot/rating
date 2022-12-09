@@ -1,0 +1,8 @@
+{
+  "lang": "English",
+  "text": [
+    { "tag": "BASE_ERROR_TITLE", "value": "❗ Error!" },
+    { "tag": "BASE_UNKNOWN_ERROR_TITLE", "value": "‼️ Unknown error!" },
+    { "tag": "BASE_NOTIFY_TITLE", "value": "✅ Notification" }
+  ]
+}

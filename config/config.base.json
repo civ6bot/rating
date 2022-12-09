@@ -1,0 +1,5 @@
+[
+  { "setting": "BASE_LANGUAGE", "value": "English" },
+  { "setting": "BASE_EMOJI_YES", "value": "<:Yes:808418109710794843>" },
+  { "setting": "BASE_EMOJI_NO", "value": "<:No:808418109319938099>" }
+]

@@ -1,0 +1,28 @@
+{
+  "name": "civ6bot-miscellaneous",
+  "version": "1.0.2",
+  "description": "Discord bot for Civilization VI game - Miscellaneous",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "all": "tsc && node build/index.js",
+    "nodemon": "nodemon --exec \"npm run all\"",
+    "git": "git pull && tsc && node build/index.js"
+  },
+  "dependencies": {
+    "@discordx/importer": "^1.1.10",
+    "@types/glob": "^8.0.0",
+    "discord.js": "^14.6.0",
+    "discordx": "^11.4.0",
+    "dotenv": "^16.0.3",
+    "glob": "^8.0.3",
+    "mysql": "^2.18.1",
+    "sqlite3": "^5.1.2",
+    "typeorm": "^0.3.10",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

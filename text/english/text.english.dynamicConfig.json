@@ -1,0 +1,56 @@
+{
+  "lang": "English",
+  "text": [
+    { "tag": "DYNAMIC_CONFIG_ERROR_COMMAND_NOT_ADMIN", "value": "You don't have permission to use this command." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_NOT_OWNER", "value": "You are not author of this menu. Please wait when other administrator finish settings change." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_FAIL_TIMEOUT", "value": "Timeout exceeded. Setting hasn't been changed." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER", "value": "Input integer from [MIN_VALUE] to [MAX_VALUE]." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_STRING", "value": "Setting hasn't been changed." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_BOOLEAN_GAME_SETTING", "value": "Game vote should have at least 2 available options." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Setting hasn't been changed. Your list has errors.\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – pair of civilizations on newline;\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma and dash." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_SAME_IN_PAIR", "value": "Setting hasn't been changed. List has pair with same civilization.\n\n[CIVILIZATION_ERROR]\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma and dash." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_TRIANGLE", "value": "Setting hasn't been changed. List has civilizations that cannot be separated between 2 teams.\n\n[CIVILIZATIONS_ERRORS]\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nBe sure that pairs don't form \"triangles\" of civilizations." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] integers in the range from [MIN_VALUE] to [MAX_VALUE]." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_ROLE_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] roles (or roles ID)." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_CHANNEL_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] channels (or channels ID)." },
+
+    { "tag": "DYNAMIC_CONFIG_BUTTON_BACK", "value": "Back" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_FIRST", "value": "First page" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_PREVIOUS", "value": "Prev. page" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_NEXT", "value": "Next Page" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_LAST", "value": "Last page" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_RESET", "value": "Reset settings" },
+    { "tag": "DYNAMIC_CONFIG_BUTTON_DELETE", "value": "Delete message" },
+
+    { "tag": "DYNAMIC_CONFIG_RESET_TITLE", "value": "\uD83D\uDD04 Reset settings" },
+    { "tag": "DYNAMIC_CONFIG_RESET_DESCRIPTION", "value": "It will reset all options of current category to default values.\n\n❗ **This action cannot be undone!**" },
+    { "tag": "DYNAMIC_CONFIG_RESET_BUTTON_CONFIRM", "value": "Reset settings" },
+    { "tag": "DYNAMIC_CONFIG_RESET_BUTTON_CANCEL", "value": "Cancel" },
+
+    { "tag": "DYNAMIC_CONFIG_MODAL_LABEL", "value": "Enter a new value" },
+
+    { "tag": "DYNAMIC_CONFIG_NOTIFY_CHANGE_SUCCESS", "value": "The setting has been successfully changed." },
+    { "tag": "DYNAMIC_CONFIG_NOTIFY_RESET_SUCCESS", "value": "Setting have been successfully reset." },
+
+    { "tag": "DYNAMIC_CONFIG_TITLE", "value": "Change configuration" },
+    { "tag": "DYNAMIC_CONFIG_TITLE_EMOJI", "value": "\uD83D\uDD27" },
+    { "tag": "DYNAMIC_CONFIG_TITLE_PAGE", "value": "page" },
+    { "tag": "DYNAMIC_CONFIG_CHOOSE_GROUP_DESCRIPTION", "value": "Choose category from menu." },
+    { "tag": "DYNAMIC_CONFIG_CHOOSE_CONFIG_DESCRIPTION", "value": "Choose setting from menu." },
+
+    { "tag": "DYNAMIC_CONFIG_MENU_PLACEHOLDER_CATEGORY", "value": "Choose category" },
+    { "tag": "DYNAMIC_CONFIG_MENU_PLACEHOLDER_CONFIG", "value": "Choose setting" },
+    { "tag": "DYNAMIC_CONFIG_DESCRIPTION_NO_VALUE", "value": "  – no value" },
+
+
+    { "tag": "DYNAMIC_CONFIG_LANGUAGE", "value": "Language" },
+    { "tag": "DYNAMIC_CONFIG_LANGUAGE_EMOJI", "value": "\uD83C\uDF0D" },
+
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION", "value": "Moderation" },
+    { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Moderator roles (ID)" },
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" }
+  ]
+}
