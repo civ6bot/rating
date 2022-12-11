@@ -20,11 +20,21 @@ export class DatabaseServiceUserRating {
         return await this.database.save(notes);
     }
 
-    public async getUserAll(guildID: string, userID: string): Promise<EntityRatingNote[]> {
+    public async getAllByUserID(guildID: string, userID: string): Promise<EntityRatingNote[]> {
         return await this.database.find(EntityRatingNote, {
             where: {
                 guildID: guildID,
                 userID: userID
+            },
+            order: {gameID: "DESC"}     // сначала последние игры
+        });
+    }
+
+    public async getAllByGameID(guildID: string, gameID: number): Promise<EntityRatingNote[]> {
+        return await this.database.find(EntityRatingNote, {
+            where: {
+                guildID: guildID,
+                gameID: gameID
             },
             order: {gameID: "DESC"}     // сначала последние игры
         });

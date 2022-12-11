@@ -9,7 +9,7 @@ export class EntityRatingNote {
     @PrimaryColumn()
     userID!: string;
 
-    @Column({type: "timestamp", default: new Date()})
+    @Column({type: "timestamp"})
     date!: Date;
     @Column({default: true})
     isActive!: boolean;
@@ -20,8 +20,8 @@ export class EntityRatingNote {
     civilizationID!: number;  // FFA, Teamers
     @Column()
     place!: number;     // при ничье указывать высшее место
-    @Column({nullable: true, default: null})    // указывать только для победителя
-    victoryType!: string;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic
+    @Column({type: "tinytext", nullable: true, default: null})    // указывать только для победителя
+    victoryType!: string | null;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic
     @Column()
     rating!: number;
     @Column()

@@ -1,5 +1,5 @@
 import {ModuleBaseUI} from "../base/base.ui";
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, SelectMenuBuilder, TextInputStyle} from "discord.js";
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, StringSelectMenuBuilder, TextInputStyle} from "discord.js";
 import {DynamicConfig, DynamicConfigEntityTeamersForbiddenPairs} from "./dynamicConfig.models";
 import {UtilsGeneratorEmbed} from "../../utils/generators/utils.generator.embed";
 import {UtilsGeneratorMenu} from "../../utils/generators/utils.generator.menu";
@@ -48,7 +48,7 @@ export class DynamicConfigUI extends ModuleBaseUI {
         labels: string[],
         emojis: string[],
         descriptions: string[] = []
-    ): ActionRowBuilder<SelectMenuBuilder>[] {
+    ): ActionRowBuilder<StringSelectMenuBuilder>[] {
         return UtilsGeneratorMenu.build(
             "dynamicConfig-menu",
             placeholder,

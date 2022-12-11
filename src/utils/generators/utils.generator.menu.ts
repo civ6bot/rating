@@ -1,4 +1,4 @@
-import {ActionRowBuilder, SelectMenuBuilder, SelectMenuComponentOptionData} from "discord.js";
+import {ActionRowBuilder, StringSelectMenuBuilder, SelectMenuComponentOptionData} from "discord.js";
 
 export class UtilsGeneratorMenu {
     public static build (
@@ -8,10 +8,10 @@ export class UtilsGeneratorMenu {
         emojis: string[],
         values: string[],
         descriptions: string[] = []
-    ): ActionRowBuilder<SelectMenuBuilder>[] {
-        return [new ActionRowBuilder<SelectMenuBuilder>()
+    ): ActionRowBuilder<StringSelectMenuBuilder>[] {
+        return [new ActionRowBuilder<StringSelectMenuBuilder>()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId(customID)
                     .setPlaceholder(placeholder)
                     .setMinValues(1)

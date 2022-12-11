@@ -1,7 +1,7 @@
 {
-  "name": "civ6bot-miscellaneous",
+  "name": "civ6bot-rating",
   "version": "1.0.2",
-  "description": "Discord bot for Civilization VI game - Miscellaneous",
+  "description": "Discord bot for Civilization VI game - Rating",
   "main": "build/index.js",
   "scripts": {
     "build": "tsc",

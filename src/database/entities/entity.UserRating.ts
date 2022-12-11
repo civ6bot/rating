@@ -18,7 +18,7 @@ export class EntityUserRating {
     @Column({default: 0})
     leave!: number;
     @Column({type: "timestamp", nullable: true, default: null})
-    lastGame!: Date;
+    lastGame!: Date | null;
 
     @Column()
     ffaRating!: number;
