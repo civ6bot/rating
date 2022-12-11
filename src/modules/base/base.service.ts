@@ -1,6 +1,6 @@
 import {DatabaseServiceConfig} from "../../database/services/service.Config";
 import {DatabaseServiceText} from "../../database/services/service.Text";
-import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, SelectMenuInteraction} from "discord.js";
+import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
 import {EntityConfig} from "../../database/entities/entity.Config";
 
 export class ModuleBaseService {
@@ -8,7 +8,7 @@ export class ModuleBaseService {
     protected databaseServiceText: DatabaseServiceText = new DatabaseServiceText();
 
     protected async getOneSettingString(
-        interaction: CommandInteraction | ButtonInteraction | SelectMenuInteraction | ModalSubmitInteraction | string,
+        interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction | ModalSubmitInteraction | string,
         setting: string
     ): Promise<string> {
         return (typeof interaction === "string")
@@ -61,7 +61,7 @@ export class ModuleBaseService {
     }
 
     protected async getOneText(
-        interaction_lang: CommandInteraction | ButtonInteraction | SelectMenuInteraction | ModalSubmitInteraction | string,
+        interaction_lang: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction | ModalSubmitInteraction | string,
         tag: string,
         ...args: (string|number)[]
     ): Promise<string> {
@@ -74,7 +74,7 @@ export class ModuleBaseService {
     }
 
     protected async getManyText(
-        interaction: CommandInteraction | ButtonInteraction | SelectMenuInteraction | ModalSubmitInteraction | string,
+        interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction | ModalSubmitInteraction | string,
         tags: string[],
         args: (((string|number)[])|null)[] = []
     ): Promise<string[]> {

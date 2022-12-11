@@ -9,7 +9,7 @@ import * as dotenv from "dotenv";
 dotenv.config({path: 'rating.env'});
 
 importx(
-    __dirname + "/modules/*/*.{events,interactions}.{js,ts}",
+    __dirname + "/modules/*/*.interactions.{js,ts}",
 ).then(() => {
     discordClient.login(((process.env.TEST_MODE === '1') ? process.env.TEST_BOT_TOKEN : process.env.BOT_TOKEN) as string).then(() => {
         console.log((process.env.TEST_MODE === '1') ? "Civilization VI – Test started" : "Civilization VI – Rating started");

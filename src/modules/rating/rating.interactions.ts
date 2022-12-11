@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ButtonInteraction, CommandInteraction, GuildMember } from "discord.js";
-import {Discord, Slash, SelectMenuComponent, ModalComponent, ButtonComponent, SlashGroup, SlashOption, SlashChoice} from "discordx";
+import {Discord, Slash, ButtonComponent, SlashGroup, SlashOption, SlashChoice} from "discordx";
 import { RatingService } from "./rating.service";
 
 @Discord()

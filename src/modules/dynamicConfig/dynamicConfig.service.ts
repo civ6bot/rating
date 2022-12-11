@@ -1,5 +1,5 @@
 import {ModuleBaseService} from "../base/base.service";
-import {ButtonInteraction, CommandInteraction, GuildMember, ModalSubmitInteraction, SelectMenuInteraction, TextInputStyle} from "discord.js";
+import {ButtonInteraction, CommandInteraction, GuildMember, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
 import {DynamicConfigUI} from "./dynamicConfig.ui";
 import {
     DynamicConfig,
@@ -37,7 +37,7 @@ export class DynamicConfigService extends ModuleBaseService {
     public static dynamicConfigs: Map<string, DynamicConfig> = new Map<string, DynamicConfig>();    // guildID
 
     // нельзя использовать ModalSubmitInteraction
-    private async checkDynamicConfigComponent(interaction: SelectMenuInteraction | ButtonInteraction, deferUpdate: boolean = true): Promise<DynamicConfig | undefined> {
+    private async checkDynamicConfigComponent(interaction: StringSelectMenuInteraction | ButtonInteraction, deferUpdate: boolean = true): Promise<DynamicConfig | undefined> {
         let dynamicConfig: DynamicConfig | undefined = DynamicConfigService.dynamicConfigs.get(interaction.guild?.id as string);
         if(!dynamicConfig) {
             await interaction.message.delete();
@@ -125,7 +125,7 @@ export class DynamicConfigService extends ModuleBaseService {
         });
     }
 
-    private async isModerator(interaction: CommandInteraction | ButtonInteraction | SelectMenuInteraction): Promise<boolean> {
+    private async isModerator(interaction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction): Promise<boolean> {
         let member: GuildMember = interaction.member as GuildMember;
         if(UtilsServiceUsers.isAdmin(member))
             return true;
@@ -393,7 +393,7 @@ export class DynamicConfigService extends ModuleBaseService {
     // UtilsGeneratorModal
     // Может вызвать другое меню (изменение сообщения)
     // или модальное окно
-    public async menu(interaction: SelectMenuInteraction) {
+    public async menu(interaction: StringSelectMenuInteraction) {
         let dynamicConfig: DynamicConfig | undefined = await this.checkDynamicConfigComponent(interaction, false);
         if(!dynamicConfig)
             return;

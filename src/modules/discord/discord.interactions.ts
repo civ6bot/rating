@@ -1,9 +1,15 @@
-import {ArgsOf, Client, Discord, On, Once} from "discordx";
+import { CommandInteraction } from "discord.js";
+import {ArgsOf, Client, Discord, On, Once, Slash} from "discordx";
 import {DiscordService} from "./discord.service";
 
 @Discord()
 export abstract class DiscordEvents {
     private discordService: DiscordService = new DiscordService();
+
+    @Slash({ name: "about", description: "Bot information" })
+    public async about(
+        interaction: CommandInteraction
+    ) { await this.discordService.about(interaction); }
 
     // Особое событие
     // не передавать управление в DiscordService

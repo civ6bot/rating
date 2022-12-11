@@ -1,5 +1,5 @@
 import {Discord, Slash, SelectMenuComponent, ModalComponent, ButtonComponent} from "discordx";
-import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, SelectMenuInteraction} from "discord.js";
+import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
 import {DynamicConfigService} from "./dynamicConfig.service";
 
 @Discord()
@@ -13,7 +13,7 @@ export abstract class DynamicConfigInteractions {
 
     @SelectMenuComponent({id: "dynamicConfig-menu"})
     public async menu(
-        interaction: SelectMenuInteraction
+        interaction: StringSelectMenuInteraction
     ) { await this.dynamicConfigService.menu(interaction); }
 
     @ModalComponent({id: "dynamicConfig-modal"})

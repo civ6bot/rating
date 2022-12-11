@@ -1,5 +1,3 @@
-import {DynamicConfigEntityNumberTimeSeconds} from "../modules/dynamicConfig/dynamicConfig.models";
-
 export interface JSONDynamicConfigEntity {
     configTag: string,
     textTag: string,

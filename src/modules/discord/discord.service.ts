@@ -1,4 +1,4 @@
-import { ActivityType, ChannelType, Guild, TextChannel } from "discord.js";
+import { ActivityType, ChannelType, CommandInteraction, Guild, TextChannel } from "discord.js";
 import { Client } from "discordx";
 import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 import { ModuleBaseService } from "../base/base.service";
@@ -54,5 +54,12 @@ export class DiscordService extends ModuleBaseService {
                 }
             } catch {}
         }
+    }
+
+    public async about(interaction: CommandInteraction) {
+        let textStrings: string[] = await this.getManyText(interaction.guild?.id as string, [
+            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_ON_GUILD_CREATE_DESCRIPTION"
+        ]);
+        await interaction.reply({embeds: this.discordUI.onGuildCreate(textStrings[0], textStrings[1])});
     }
 }
