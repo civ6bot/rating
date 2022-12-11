@@ -3,14 +3,12 @@ import { Client } from "discordx";
 import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 import { ModuleBaseService } from "../base/base.service";
 import { DiscordUI } from "./discord.ui";
-import * as dotenv from "dotenv";
-dotenv.config({path: 'rating.env'});
 
 export class DiscordService extends ModuleBaseService {
     private discordUI: DiscordUI = new DiscordUI();
 
     public async onceReady(client: Client) {
-        await client.initApplicationCommands({ global: { log: (process.env.TEST_MODE == '1') } });
+        await client.initApplicationCommands();
 
         setTimeout(() => setInterval(() => {
             let guildsAmount: number = client.guilds.cache.size;
