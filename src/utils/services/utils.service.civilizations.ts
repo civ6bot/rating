@@ -14,7 +14,9 @@ export class UtilsServiceCivilizations {
         "DRAFT_SUMERIA", "DRAFT_JAPAN", "DRAFT_MAYA", "DRAFT_COLOMBIA",
         "DRAFT_ETHIOPIA", "DRAFT_AMERICA_ROUGH_RIDER", "DRAFT_FRANCE_MAGNIFICENCE", "DRAFT_BYZANTIUM",
         "DRAFT_GAUL", "DRAFT_BABYLON", "DRAFT_CHINA_KUBLAI", "DRAFT_MONGOLIA_KUBLAI",
-        "DRAFT_VIETNAM", "DRAFT_PORTUGAL"
+        "DRAFT_VIETNAM", "DRAFT_PORTUGAL", "DRAFT_ROME_CAESAR", "DRAFT_ARABIA_SALADIN_SULTAN",
+        "DRAFT_KONGO_ANNA_NZINGA", "DRAFT_AMERICA_LINCOLN", "DRAFT_PERSIA_NADER_SHAH", "DRAFT_JAPAN_TOKUGAWA",
+        "DRAFT_OTTOMAN_SULEIMAN_MAGNIFICENT"
     ];
 
     private static searchTexts(substr: string, civilizationsTexts: string[]): number[] {
@@ -26,31 +28,59 @@ export class UtilsServiceCivilizations {
         return searchedIndexes;
     }
 
+    private static searchExactlyEntryTexts(substr: string, civilizationsTexts: string[], searchedIndexes: number[]): number[] {
+        return searchedIndexes
+            .filter(valueIndex => civilizationsTexts[valueIndex]
+                .replaceAll("\n", " ")
+                .replaceAll("><", "> <")
+                .toLowerCase()
+                .split(" ")
+                .filter(str => str.length > 0)
+                .indexOf(substr.toLowerCase()) !== -1
+            );
+    }
+
     // возвращает сложный объект
     // rawBans - просматриваемая строка, civilizationsTexts = const
     // возвращает индексы по const
     public static parseBans(rawBans: string, civilizationTexts: string[]) {
-        let rawBansArray: string[] = rawBans.replaceAll("\n", " ").split(" ").filter(str => str.length > 0);
+        let rawBansArray: string[] = rawBans
+            .replaceAll("\n", " ")
+            .replaceAll("><", "> <")
+            .split(" ")
+            .filter(str => str.length > 0);
         let bans: number[] = [], errors: string[] = [];
 
         for(let i: number = 0; i < rawBansArray.length; i++) {
             let currentBannedArray: number[] = this.searchTexts(rawBansArray[i], civilizationTexts);
-            if((currentBannedArray.length === 0))
+            if((currentBannedArray.length === 0)) {
                 errors.push(rawBansArray[i]);
-            else if(currentBannedArray.length === 1)
+                continue;
+            }
+            else if(currentBannedArray.length === 1) {
                 bans.push(currentBannedArray[0]);
-            else if(i+1 === rawBansArray.length)
-                errors.push(rawBansArray[i]);   // элемент последний, поэтому поиска для следующего не существует
-            else {                              // заглядываем в следующий
-                currentBannedArray = currentBannedArray
-                    .concat(this.searchTexts(rawBansArray[i+1], civilizationTexts))
-                    .filter((value, index, array) => array.indexOf(value) !== index);   // НЕ уникальные
-                if(currentBannedArray.length !== 1)
-                    errors.push(rawBansArray[i]);
-                else {
-                    bans.push(currentBannedArray[0])
-                    i++;    // уже проверили следующий, значит можно пропустить
-                }
+                continue;
+            }
+
+            let currentExactlyBannedArray: number[] = this.searchExactlyEntryTexts(rawBansArray[i], civilizationTexts, currentBannedArray);
+            if(currentExactlyBannedArray.length === 1) {    // Проверка на точное вхождение
+                bans.push(currentExactlyBannedArray[0]);    // если было найдено несколько.
+                continue;                                   // Пример: Кри - Кристина
+            }
+
+            if(i+1 === rawBansArray.length) {   // Тут пробуем посмотреть на следующий.
+                errors.push(rawBansArray[i]);   // Этот элемент последний, поэтому поиска для следующего не существует
+                continue; 
+            }
+   
+            currentBannedArray = currentBannedArray
+                .concat(this.searchTexts(rawBansArray[i+1], civilizationTexts))
+                .filter((value, index, array) => array.indexOf(value) !== index);   // Пересечение множеств, т.е. НЕуникальные
+            if(currentBannedArray.length !== 1)
+                errors.push(rawBansArray[i]);
+            else {
+                bans.push(currentBannedArray[0])
+                i++;    // уже проверили следующий, значит можно пропустить
             }
         }
 

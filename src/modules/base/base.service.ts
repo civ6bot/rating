@@ -26,14 +26,14 @@ export class ModuleBaseService {
     }
 
     protected async updateManySetting(
-        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction,
+        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | string,
         configTags: string[],
         configValues: string[]
     ): Promise<boolean> {
         return await this.databaseServiceConfig.insertAll(
             configTags.map((tag: string, index: number): EntityConfig => {
                 return {
-                    guildID: interaction.guild?.id as string,
+                    guildID: (typeof interaction === "string") ? interaction : interaction.guild?.id as string,
                     setting: configTags[index],
                     value: String(configValues[index])
                 };

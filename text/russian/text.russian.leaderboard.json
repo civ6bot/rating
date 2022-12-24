@@ -1,5 +1,23 @@
 {
-  "lang": "English",
+  "lang": "Russian",
   "text": [
+    { "tag": "LEADERBOARD_FFA_TITLE", "value": "🗿 Лучшие игроки FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "LEADERBOARD_TEAMERS_TITLE", "value": "🐲 Лучшие игроки Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "LEADERBOARD_DESCRIPTION_EMPTY", "value": "Игроки не найдены." },
+
+    { "tag": "LEADERBOARD_DELETE", "value": "Удалить" },
+
+    { "tag": "LEADERBOARD_STATIC_TITLE", "value": "Сообщения с таблицами лидеров" },
+    { "tag": "LEADERBOARD_STATIC_INFO_FFA_HEADER", "value": "🗿 Лучшие игроки FFA" },
+    { "tag": "LEADERBOARD_STATIC_INFO_TEAMERS_HEADER", "value": "🐲 Лучшие игроки Teamers" },
+    { "tag": "LEADERBOARD_STATIC_INFO_LINK_VALUE", "value": "ссылка" },
+    { "tag": "LEADERBOARD_STATIC_INFO_HELP_DESCRIPTION", "value": "Используйте команду `/leaderboard static` для создания таблицы лучших игроков." },
+
+    { "tag": "LEADERBOARD_STATIC_FFA_TITLE", "value": "🗿 Лучшие игроки FFA" },
+    { "tag": "LEADERBOARD_STATIC_TEAMERS_TITLE", "value": "🐲 Лучшие игроки Teamers" },
+
+    { "tag": "LEADERBOARD_SUCCESS_NOTIFY", "value": "Сообщение с таблицой лучших игроков успешно сгенерировано." },
+    { "tag": "LEADERBOARD_ERROR_SEND", "value": "Бот не может отправить таблицу в этот канал." }
   ]
 }

@@ -1,3 +1,4 @@
 [
-  { "setting": "RATING_DEFAULT_POINTS", "value": 1000 }
+  { "setting": "RATING_DEFAULT_POINTS", "value": 1000 },
+  { "setting": "RATING_CHANNEL_ID", "value": "" }
 ]

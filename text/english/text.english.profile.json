@@ -1,0 +1,57 @@
+{
+  "lang": "English",
+  "text": [
+    { "tag": "PROFILE_TITLE", "value": "Profile [USER_NAME]" },
+
+    { "tag": "PROFILE_FFA_FIELD_TITLE", "value": "🗿 FFA stats" },
+    { "tag": "PROFILE_FFA_VICTORIES_FIELD_TITLE", "value": "FFA 1st places" },
+    { "tag": "PROFILE_TEAMERS_FIELD_TITLE", "value": "🐲 Teamers stats" },
+    { "tag": "PROFILE_TEAMERS_VICTORIES_FIELD_TITLE", "value": "Teamers victories" },
+
+    { "tag": "PROFILE_GENERAL_RATING", "value": "Summary rating" },
+    { "tag": "PROFILE_GENERAL_HOST", "value": "Hosted" },
+    { "tag": "PROFILE_GENERAL_SUB", "value": "Sub in / sub out" },
+    { "tag": "PROFILE_GENERAL_LEAVE", "value": "Left games" },
+    { "tag": "PROFILE_GENERAL_LAST_GAME", "value": "Date of last game" },
+
+    { "tag": "PROFILE_FFA_RATING", "value": "Rating" },
+    { "tag": "PROFILE_FFA_GAMES", "value": "Games" },
+    { "tag": "PROFILE_FFA_WIN_LOSS", "value": "Victories/defeats" },
+    { "tag": "PROFILE_FFA_FIRST", "value": "1st places" },
+
+    { "tag": "PROFILE_TEAMERS_RATING", "value": "Rating" },
+    { "tag": "PROFILE_TEAMERS_GAMES", "value": "Games" },
+    { "tag": "PROFILE_TEAMERS_WIN_LOSS", "value": "Victories/defeats" },
+
+    { "tag": "PROFILE_SHOW_HISTORY_BUTTON", "value": "Game history" },
+    { "tag": "PROFILE_DELETE_BUTTON", "value": "Delete" },
+
+
+
+    { "tag": "HISTORY_TITLE", "value": "📜 History [USER_NAME], page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "HISTORY_DESCRIPTION_EMPTY", "value": "No games found." },
+    { "tag": "HISTORY_RESULT_TEAMERS_DEFEAT", "value": "Defear" },
+    { "tag": "HISTORY_RESULT_TEAMERS_VICTORY", "value": "Victory" },
+
+    { "tag": "HISTORY_DATE_AND_TYPE_FIELD_TITLE", "value": "Date & game type" },
+    { "tag": "HISTORY_RESULT_FIELD_TITLE", "value": "Result" },
+    { "tag": "HISTORY_CIV_FIELD_TITLE", "value": "Leader" },
+
+    { "tag": "HISTORY_SHOW_PROFILE_BUTTON", "value": "Profile" },
+    { "tag": "HISTORY_DELETE_BUTTON", "value": "Delete" },
+
+
+
+    { "tag": "BEST_CIVS_TOTAL_TITLE", "value": "🏆 Best civs [USER_NAME], page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_FFA_TITLE", "value": "🏆 Best civs [USER_NAME] - FFA, page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_TEAMERS_TITLE", "value": "🏆 Best civs [USER_NAME] - Teamers, page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "BEST_CIVS_DESCRIPTION_EMPTY", "value": "No games found." },
+
+    { "tag": "BEST_CIVS_LEADER_FIELD_TITLE", "value": "Leader" },
+    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "Victories & defeats" },
+    { "tag": "BEST_CIVS_WINRATE_FIELD_TITLE", "value": "Winrate" },
+
+    { "tag": "BEST_CIVS_DELETE_BUTTON", "value": "Delete" }
+  ]
+}

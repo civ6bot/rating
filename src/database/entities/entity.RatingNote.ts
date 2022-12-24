@@ -16,10 +16,12 @@ export class EntityRatingNote {
 
     @Column()
     gameType!: string;  // FFA, Teamers
-    @Column()
-    civilizationID!: number;  // FFA, Teamers
+    @Column({type: "integer", nullable: true, default: null})
+    civilizationID!: number | null;  // FFA, Teamers
     @Column()
     place!: number;     // при ничье указывать высшее место
+    @Column()
+    placeTotal!: number;     // сколько всего игроков или команд в игре
     @Column({type: "tinytext", nullable: true, default: null})    // указывать только для победителя
     victoryType!: string | null;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic
     @Column()

@@ -23,7 +23,7 @@ export class DiscordService extends ModuleBaseService {
 
         setTimeout(() => setInterval(() => {
             client.user?.setActivity({
-                name: "⭐ Support us!"
+                name: "❤️ Donate for host!"
             });
         }, UtilsServiceTime.getMs(60, "s")), UtilsServiceTime.getMs(15, "s"));
 

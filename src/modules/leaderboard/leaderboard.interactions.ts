@@ -9,14 +9,14 @@ export abstract class LeaderboardInteractions {
     private leaderboardService: LeaderboardService = new LeaderboardService();
 
     @Slash({name: "ffa", description: "Show FFA best players"})
-    public async smallFFA(
+    public async leaderboardFFA(
         interaction: CommandInteraction
-    ) { await this.leaderboardService.smallFFA(interaction); }
+    ) { await this.leaderboardService.leaderboard(interaction, "FFA"); }
 
     @Slash({name: "teamers", description: "Show Teamers best players"})
-    public async smallTeamers(
+    public async leaderboardTeamers(
         interaction: CommandInteraction
-    ) { await this.leaderboardService.smallTeamers(interaction); }
+    ) { await this.leaderboardService.leaderboard(interaction, "Teamers"); }
 
     @ButtonComponent({id: /leaderboard-\w+-\d+-\d+/})  // leaderboard-type-authorID-page
     public async leaderboardPageButton(
@@ -40,17 +40,17 @@ export abstract class LeaderboardStaticInteractions {
     private leaderboardService: LeaderboardService = new LeaderboardService();
 
     @Slash({name: "info", description: "Show static messages"})
-    public async staticInfo(
+    public async leaderboardStaticInfo(
         interaction: CommandInteraction
-    ) { await this.leaderboardService.staticInfo(interaction); }
+    ) { await this.leaderboardService.leaderboardStaticInfo(interaction); }
 
     @Slash({name: "ffa", description: "Generate updating message with FFA leaderboard"})
-    public async staticFFA(
+    public async leaderboardStaticFFA(
         interaction: CommandInteraction
-    ) { await this.leaderboardService.staticFFA(interaction); }
+    ) { await this.leaderboardService.leaderboardStatic(interaction, "FFA"); }
 
     @Slash({name: "teamers", description: "Generate updating message with Teamers leaderboard"})
-    public async staticTeamers(
+    public async leaderboardStaticTeamers(
         interaction: CommandInteraction
-    ) { await this.leaderboardService.staticTeamers(interaction); }
+    ) { await this.leaderboardService.leaderboardStatic(interaction, "Teamers"); }
 }

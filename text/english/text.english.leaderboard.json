@@ -1,5 +1,23 @@
 {
   "lang": "English",
   "text": [
+    { "tag": "LEADERBOARD_FFA_TITLE", "value": "🗿 FFA leaderboard, page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "LEADERBOARD_TEAMERS_TITLE", "value": "🐲 Teamers leaderboard, page [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "LEADERBOARD_DESCRIPTION_EMPTY", "value": "Users not found." },
+
+    { "tag": "LEADERBOARD_DELETE", "value": "Delete" },
+
+    { "tag": "LEADERBOARD_STATIC_TITLE", "value": "Leaderboard static messages info" },
+    { "tag": "LEADERBOARD_STATIC_INFO_FFA_HEADER", "value": "🗿 FFA best players" },
+    { "tag": "LEADERBOARD_STATIC_INFO_TEAMERS_HEADER", "value": "🐲 Teamers best players" },
+    { "tag": "LEADERBOARD_STATIC_INFO_LINK_VALUE", "value": "link" },
+    { "tag": "LEADERBOARD_STATIC_INFO_HELP_DESCRIPTION", "value": "Use `/leaderboard static` command to generate leaderboard message." },
+
+    { "tag": "LEADERBOARD_STATIC_FFA_TITLE", "value": "🗿 FFA best players" },
+    { "tag": "LEADERBOARD_STATIC_TEAMERS_TITLE", "value": "🐲 Teamers best players" },
+
+    { "tag": "LEADERBOARD_SUCCESS_NOTIFY", "value": "Leaderboard message was generated." },
+    { "tag": "LEADERBOARD_ERROR_SEND", "value": "Bot hasn't permission to write to this channel." }
   ]
 }

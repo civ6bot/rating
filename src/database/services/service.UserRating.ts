@@ -1,4 +1,4 @@
-import { EntityManager } from "typeorm";
+import { EntityManager, IsNull, MoreThan, Not } from "typeorm";
 import { outerDataSource } from "../database.datasources";
 import { EntityUserRating } from "../entities/entity.UserRating";
 import { DatabaseServiceConfig } from "./service.Config";
@@ -16,6 +16,7 @@ export class DatabaseServiceUserRating {
         let defaultRating: number = await this.getDefaultRatingPoints(guildID);
         userRating.guildID = guildID;
         userRating.userID = userID;
+        userRating.rating = defaultRating;
         userRating.ffaRating = defaultRating;
         userRating.teamersRating = defaultRating;
         return await this.database.save(userRating);
@@ -55,6 +56,7 @@ export class DatabaseServiceUserRating {
         newUserRating.guildID = userRating.guildID;
         newUserRating.userID = userRating.userID;
         newUserRating.lastGame =  userRating.lastGame;
+        newUserRating.rating = defaultRating;
         newUserRating.ffaRating = defaultRating;
         newUserRating.teamersRating = defaultRating;
         return await this.database.save(EntityUserRating, newUserRating);
@@ -64,6 +66,7 @@ export class DatabaseServiceUserRating {
         let usersRating: EntityUserRating[] = await this.getAll(guildID);
         let defaultRating: number = await this.getDefaultRatingPoints(guildID);
         usersRating.forEach(userRating => {
+            userRating.rating = defaultRating;
             userRating.ffaRating = defaultRating;
             userRating.teamersRating = defaultRating;
         });
@@ -81,16 +84,32 @@ export class DatabaseServiceUserRating {
         });
     }
 
+    public async getBestRatingGeneral(guildID: string, amount: number): Promise<EntityUserRating[]> {
+        return (await this.database.find(EntityUserRating, {
+            where: {
+                guildID: guildID,
+                lastGame: Not(IsNull())
+            },
+            order: {rating: "DESC"},
+        })).slice(amount);
+    }
+
     public async getBestRatingFFA(guildID: string, amount: number): Promise<EntityUserRating[]> {
         return (await this.database.find(EntityUserRating, {
-            where: {guildID: guildID},
+            where: {
+                guildID: guildID,
+                ffaTotal: MoreThan(0)
+            },
             order: {ffaRating: "DESC"},
         })).slice(amount);
     }
 
     public async getBestRatingTeamers(guildID: string, amount: number): Promise<EntityUserRating[]> {
         return (await this.database.find(EntityUserRating, {
-            where: {guildID: guildID},
+            where: {
+                guildID: guildID,
+                teamersTotal: MoreThan(0)
+            },
             order: {teamersRating: "DESC"},
         })).slice(amount);
     }

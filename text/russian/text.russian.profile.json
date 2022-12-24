@@ -1,0 +1,57 @@
+{
+  "lang": "Russian",
+  "text": [
+    { "tag": "PROFILE_TITLE", "value": "Профиль [USER_NAME]" },
+
+    { "tag": "PROFILE_FFA_FIELD_TITLE", "value": "🗿 Статистика FFA" },
+    { "tag": "PROFILE_FFA_VICTORIES_FIELD_TITLE", "value": "Статистика первых мест FFA" },
+    { "tag": "PROFILE_TEAMERS_FIELD_TITLE", "value": "🐲 Статистика Teamers" },
+    { "tag": "PROFILE_TEAMERS_VICTORIES_FIELD_TITLE", "value": "Победы Teamers" },
+
+    { "tag": "PROFILE_GENERAL_RATING", "value": "Общий рейтинг" },
+    { "tag": "PROFILE_GENERAL_HOST", "value": "Игр проведено" },
+    { "tag": "PROFILE_GENERAL_SUB", "value": "Заменил / был заменен" },
+    { "tag": "PROFILE_GENERAL_LEAVE", "value": "Покинул игр" },
+    { "tag": "PROFILE_GENERAL_LAST_GAME", "value": "Дата последней игры" },
+
+    { "tag": "PROFILE_FFA_RATING", "value": "Рейтинг" },
+    { "tag": "PROFILE_FFA_GAMES", "value": "Сыграно партий" },
+    { "tag": "PROFILE_FFA_WIN_LOSS", "value": "Побед/поражений" },
+    { "tag": "PROFILE_FFA_FIRST", "value": "Первых мест" },
+
+    { "tag": "PROFILE_TEAMERS_RATING", "value": "Рейтинг" },
+    { "tag": "PROFILE_TEAMERS_GAMES", "value": "Сыграно партий" },
+    { "tag": "PROFILE_TEAMERS_WIN_LOSS", "value": "Побед/поражений" },
+
+    { "tag": "PROFILE_SHOW_HISTORY_BUTTON", "value": "История игр" },
+    { "tag": "PROFILE_DELETE_BUTTON", "value": "Удалить" },
+
+
+
+    { "tag": "HISTORY_TITLE", "value": "📜 История игр [USER_NAME], страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "HISTORY_DESCRIPTION_EMPTY", "value": "У этого игрока нет записей в истории игр." },
+    { "tag": "HISTORY_RESULT_TEAMERS_DEFEAT", "value": "Поражение" },
+    { "tag": "HISTORY_RESULT_TEAMERS_VICTORY", "value": "Победа" },
+
+    { "tag": "HISTORY_DATE_AND_TYPE_FIELD_TITLE", "value": "Дата и тип игры" },
+    { "tag": "HISTORY_RESULT_FIELD_TITLE", "value": "Результат" },
+    { "tag": "HISTORY_CIV_FIELD_TITLE", "value": "Лидер" },
+
+    { "tag": "HISTORY_SHOW_PROFILE_BUTTON", "value": "Профиль" },
+    { "tag": "HISTORY_DELETE_BUTTON", "value": "Удалить" },
+
+
+    
+    { "tag": "BEST_CIVS_TOTAL_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME], страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_FFA_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME] - FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_TEAMERS_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME] - Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "BEST_CIVS_DESCRIPTION_EMPTY", "value": "У этого игрока нет записей игр." },
+
+    { "tag": "BEST_CIVS_LEADER_FIELD_TITLE", "value": "Лидер" },
+    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "Побед-поражений" },
+    { "tag": "BEST_CIVS_WINRATE_FIELD_TITLE", "value": "Доля побед" },
+
+    { "tag": "BEST_CIVS_DELETE_BUTTON", "value": "Удалить" }
+  ]
+}

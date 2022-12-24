@@ -1,8 +1,8 @@
-import { EntityManager } from "typeorm";
+import { EntityManager, IsNull, Not } from "typeorm";
 import { outerDataSource } from "../database.datasources";
 import { EntityRatingNote } from "../entities/entity.RatingNote";
 
-export class DatabaseServiceUserRating {
+export class DatabaseServiceRatingNote {
     protected database: EntityManager = outerDataSource.manager;
 
     public async getNextGameID(guildID: string): Promise<number> {
@@ -24,9 +24,10 @@ export class DatabaseServiceUserRating {
         return await this.database.find(EntityRatingNote, {
             where: {
                 guildID: guildID,
-                userID: userID
+                userID: userID,
+                isActive: true
             },
-            order: {gameID: "DESC"}     // сначала последние игры
+            order: {date: "DESC"}     // сначала последние игры
         });
     }
 
@@ -38,5 +39,35 @@ export class DatabaseServiceUserRating {
             },
             order: {gameID: "DESC"}     // сначала последние игры
         });
+    }
+
+    public async getAllByUserIDBestCivs(guildID: string, userID: string, gameType: string): Promise<EntityRatingNote[]> {
+        if(gameType === "Total")
+            return await this.database.find(EntityRatingNote, {
+                where: {
+                    guildID: guildID,
+                    userID: userID,
+                    isActive: true,
+                    civilizationID: Not(IsNull()),
+                },
+                order: {
+                    civilizationID: "ASC",
+                    typedRating: "DESC"
+                }
+            });
+        else 
+            return await this.database.find(EntityRatingNote, {
+                where: {
+                    guildID: guildID,
+                    userID: userID,
+                    isActive: true,
+                    civilizationID: Not(IsNull()),
+                    gameType: gameType
+                },
+                order: {
+                    civilizationID: "ASC",
+                    typedRating: "DESC"
+                }
+            });
     }
 }
