@@ -118,7 +118,7 @@ export class ProfileService extends ModuleBaseService {
         );
         let otherLines: string[] = await this.getManyText(interaction, [
             "HISTORY_DESCRIPTION_EMPTY", "HISTORY_RESULT_TEAMERS_DEFEAT",
-            "HISTORY_RESULT_TEAMERS_VICTORY"
+            "HISTORY_RESULT_TEAMERS_VICTORY", "HISTORY_RESULT_SUB_OUT"
         ]);
         let fieldTitles: string[] = await this.getManyText(interaction, [
             "HISTORY_DATE_AND_TYPE_FIELD_TITLE", "HISTORY_RESULT_FIELD_TITLE",

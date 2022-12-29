@@ -1,7 +1,8 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildTextBasedChannel, InteractionType, Message } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildMember, GuildTextBasedChannel, InteractionType, Message } from "discord.js";
 import { discordClient } from "../../client/client";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
+import { UtilsServiceUsers } from "../../utils/services/utils.service.users";
 import { ModuleBaseService } from "../base/base.service";
 import { LeaderboardUI } from "./leaderboard.ui";
 
@@ -14,6 +15,16 @@ export class LeaderboardService extends ModuleBaseService {
 
     private isOwner(interaction: ButtonInteraction): boolean {
         return interaction.customId.split("-")[2] === interaction.user.id;
+    }
+
+    private async isModerator(interaction: CommandInteraction | ButtonInteraction): Promise<boolean> {
+        let member: GuildMember = interaction.member as GuildMember;
+        if(UtilsServiceUsers.isAdmin(member))
+            return true;
+        let moderationRolesID: string[] = (await this.getOneSettingString(
+            interaction, "MODERATION_ROLE_MODERATORS_ID"
+        )).split(" ");
+        return member.roles.cache.some((value, key) => (moderationRolesID.indexOf(key) !== -1));
     }
 
     private async updateLeaderboardConfigByMessage(type: string, message: Message): Promise<void> {
@@ -151,6 +162,12 @@ export class LeaderboardService extends ModuleBaseService {
     }
 
     public async leaderboardStatic(interaction: CommandInteraction, type: string){
+        if(!(await this.isModerator(interaction))) {
+            let textLines: string[] = await this.getManyText(interaction, [
+                "BASE_ERROR_TITLE", "LEADERBOARD_ERROR_NO_PERMISSION"
+            ]);
+            return await interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});
+        }
         let previousMessage: Message|null = await this.getLeaderboardMessage(interaction.guild?.id as string, type);
         if(previousMessage !== null) {
             this.updateLeaderboardConfig(interaction.guild?.id as string, type);

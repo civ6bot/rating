@@ -8,49 +8,46 @@ import { RatingService } from "./rating.service";
 export abstract class RatingInteractions {
     private ratingService: RatingService = new RatingService();
 
-    @Slash({name: "ffa", description: "FFA game report"})
-    public async reportFFA(
+    @Slash({name: "report", description: "Create game report"})
+    public async report(
+        @SlashChoice({name: "FFA", value: "FFA"})
+        @SlashChoice({name: "Teamers", value: "Teamers"})
+        @SlashOption({
+            name: "game-type",
+            description: "type of game",
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }) gameType: string,
         @SlashOption({
             name: "report",
-            description: "text with users and keywords",
+            description: "text with users, civilizations, etc.",
             type: ApplicationCommandOptionType.String,
             required: true,
         }) msg: string,
         interaction: CommandInteraction
-    ) { await this.ratingService.reportFFA(interaction, msg); }
+    ) { await this.ratingService.report(interaction, gameType, msg); }
 
-    @Slash({name: "teamers", description: "Teamers game report"})
-    public async reportTeamers(
-        @SlashOption({
-            name: "report",
-            description: "text with users and keywords",
-            type: ApplicationCommandOptionType.String,
-            required: true,
-        }) msg: string,
-        interaction: CommandInteraction
-    ) { await this.ratingService.reportTeamers(interaction, msg); }
-
-    @ButtonComponent({id: /rating-report-user-edit-\d+-\d+/})  // rating-report-user-edit-authorID-newGameID
+    @ButtonComponent({id: /rating-report-user-edit-\d+-\d+/})  // rating-report-user-edit-newGameID-authorID
     public async reportUserEditButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportUserEditButton(interaction); }
 
-    @ButtonComponent({id: /rating-report-user-delete-\d+-\d+/})  // rating-report-user-delete-authorID-newGameID
+    @ButtonComponent({id: /rating-report-user-delete-\d+-\d+/})  // rating-report-user-delete-newGameID-authorID
     public async reportUserDeleteButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportUserDeleteButton(interaction); }
 
-    @ButtonComponent({id: /rating-user-confirm-\d+-\d+/})  // rating-user-confirm-authorID-newGameID
+    @ButtonComponent({id: /rating-report-user-confirm-\d+-\d+/})  // rating-report-user-confirm-newGameID-authorID
     public async reportUserConfirmButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportUserConfirmButton(interaction); }
 
-    @ButtonComponent({id: /rating-moderator-cancel-\d+/})  // rating-moderator-cancel-newGameID
+    @ButtonComponent({id: /rating-report-moderator-cancel-\d+/})  // rating-report-moderator-cancel-newGameID    Любой модератор может нажать
     public async reportModeratorCancelButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportModeratorCancelButton(interaction); }
 
-    @ButtonComponent({id: /rating-moderator-apply-\d+/})  // rating-moderator-apply-newGameID
+    @ButtonComponent({id: /rating-report-moderator-apply-\d+/})  // rating-report-moderator-apply-newGameID    Любой модератор может нажать
     public async reportModeratorApplyButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportModeratorApplyButton(interaction); }
@@ -85,7 +82,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        @SlashChoice({name: "General", value: "General"})
+        //@SlashChoice({name: "General", value: "General"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({
@@ -112,7 +109,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        @SlashChoice({name: "General", value: "General"})
+        //@SlashChoice({name: "General", value: "General"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({
@@ -152,10 +149,32 @@ export abstract class RatingResetInteractions {
         interaction: CommandInteraction
     ) { await this.ratingService.resetUser(interaction, user); }
 
+    @ButtonComponent({id: /rating-reset-user-cancel-\d+/})  // rating-reset-user-cancel-authorID
+    public async resetUserCancelButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.resetUserCancelButton(interaction); }
+
+    @ButtonComponent({id: /rating-reset-user-confirm-\d+-\d+/})  // rating-reset-user-confirm-userID-authorID
+    public async resetUserConfirmButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.resetUserConfirmButton(interaction); }
+
+
+
     @Slash({name: "all", description: "Reset rating of all users"})
     public async resetAll(
         interaction: CommandInteraction
     ) { await this.ratingService.resetAll(interaction); }
+
+    @ButtonComponent({id: /rating-reset-all-cancel-\d+/})  // rating-reset-all-cancel-authorID
+    public async resetAllCancelButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.resetAllCancelButton(interaction); }
+
+    @ButtonComponent({id: /rating-reset-all-confirm-\d+/})  // rating-reset-all-confirm-authorID
+    public async resetAllConfirmButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.resetAllConfirmButton(interaction); }
 }
 
 @Discord()
@@ -179,8 +198,30 @@ export abstract class RatingWipeInteractions {
         interaction: CommandInteraction
     ) { await this.ratingService.wipeUser(interaction, user); }
 
+    @ButtonComponent({id: /rating-wipe-user-cancel-\d+/})  // rating-wipe-user-cancel-authorID
+    public async wipeUserCancelButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.wipeUserCancelButton(interaction); }
+
+    @ButtonComponent({id: /rating-wipe-user-confirm-\d+-\d+/})  // rating-wipe-user-confirm-userID-authorID
+    public async wipeUserConfirmButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.wipeUserConfirmButton(interaction); }
+
+
+
     @Slash({name: "all", description: "Delete all rating information of all users"})
     public async wipeAll(
         interaction: CommandInteraction
     ) { await this.ratingService.wipeAll(interaction); }
+
+    @ButtonComponent({id: /rating-wipe-all-cancel-\d+/})  // rating-wipe-all-cancel-authorID
+    public async wipeAllCancelButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.wipeAllCancelButton(interaction); }
+
+    @ButtonComponent({id: /rating-wipe-all-confirm-\d+/})  // rating-wipe-all-confirm-authorID
+    public async wipeAllConfirmButton(
+        interaction: ButtonInteraction
+    ) { await this.ratingService.wipeAllConfirmButton(interaction); }
 }

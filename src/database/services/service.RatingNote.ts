@@ -27,7 +27,7 @@ export class DatabaseServiceRatingNote {
                 userID: userID,
                 isActive: true
             },
-            order: {date: "DESC"}     // сначала последние игры
+            order: {date: "DESC"}     // сначала последние игры, в конце самые ранние
         });
     }
 
@@ -37,7 +37,7 @@ export class DatabaseServiceRatingNote {
                 guildID: guildID,
                 gameID: gameID
             },
-            order: {gameID: "DESC"}     // сначала последние игры
+            order: {place: "ASC"}     // в порядке мест
         });
     }
 

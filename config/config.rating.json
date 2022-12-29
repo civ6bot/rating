@@ -1,4 +1,11 @@
 [
   { "setting": "RATING_DEFAULT_POINTS", "value": 1000 },
-  { "setting": "RATING_CHANNEL_ID", "value": "" }
+  { "setting": "RATING_ELO_D", "value": 400 },
+  { "setting": "RATING_ELO_K", "value": 30 },
+
+  { "setting": "RATING_POINTS_TO_ROLE", "value": "" },
+  { "setting": "RATING_ROLES_ID", "value": "" },
+
+  { "setting": "RATING_BOT_REPORTS_CHANNEL_ID", "value": "" },
+  { "setting": "RATING_USER_REPORTS_CHANNEL_ID", "value": "" }
 ]

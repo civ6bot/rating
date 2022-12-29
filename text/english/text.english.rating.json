@@ -1,5 +1,6 @@
 {
   "lang": "English",
   "text": [
+    { "tag": "RATING_ERROR_NO_PERMISSION", "value": "You don't have permission to use this command." }
   ]
 }

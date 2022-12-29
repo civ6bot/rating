@@ -32,6 +32,7 @@
     { "tag": "HISTORY_DESCRIPTION_EMPTY", "value": "No games found." },
     { "tag": "HISTORY_RESULT_TEAMERS_DEFEAT", "value": "Defear" },
     { "tag": "HISTORY_RESULT_TEAMERS_VICTORY", "value": "Victory" },
+    { "tag": "HISTORY_RESULT_SUB_OUT", "value": "Sub out" },
 
     { "tag": "HISTORY_DATE_AND_TYPE_FIELD_TITLE", "value": "Date & game type" },
     { "tag": "HISTORY_RESULT_FIELD_TITLE", "value": "Result" },

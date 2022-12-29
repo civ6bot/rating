@@ -82,6 +82,8 @@ export class ProfileUI extends ModuleBaseUI {
         let values: string[] = [
             ratingNotes.map((ratingNote: EntityRatingNote): string => `<t:${Math.round(ratingNote.date.getTime()/1000)}:d>, ${ratingNote.gameType}`).join("\n"),
             ratingNotes.map((ratingNote: EntityRatingNote): string => {
+                if(ratingNote.isSubOut)
+                    return otherLines[3];
                 let result: string = "";
                 if(ratingNote.place === 1) {
                     switch(ratingNote.victoryType) {

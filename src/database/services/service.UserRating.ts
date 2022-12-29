@@ -32,6 +32,13 @@ export class DatabaseServiceUserRating {
             : await this.createOne(guildID, userID);
     }
 
+    public async getMany(guildID: string, usersID: string[]): Promise<EntityUserRating[]> {
+        let entities: EntityUserRating[] = [];
+        for(let i in usersID)
+            entities.push(await this.getOne(guildID, usersID[i]));
+        return entities;
+    }
+
     public async getAll(guildID: string): Promise<EntityUserRating[]> {
         return await this.database.findBy(EntityUserRating, {
             guildID: guildID,
@@ -74,14 +81,17 @@ export class DatabaseServiceUserRating {
         return usersRating.length;
     }
 
-    public async deleteOne(userRating: EntityUserRating): Promise<void> {
-        await this.database.remove(EntityUserRating, userRating);
+    public async deleteOne(guildID: string, userID: string): Promise<void> {
+        await this.database.delete(EntityUserRating, {
+            guildID: guildID,
+            userID: userID
+        });
     }
 
-    public async deleteAll(guildID: string): Promise<void> {
-        await this.database.delete(EntityUserRating, {
+    public async deleteAll(guildID: string): Promise<number> {
+        return (await this.database.delete(EntityUserRating, {
             guildID: guildID
-        });
+        })).affected as number;
     }
 
     public async getBestRatingGeneral(guildID: string, amount: number): Promise<EntityUserRating[]> {

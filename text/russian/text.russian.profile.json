@@ -32,6 +32,7 @@
     { "tag": "HISTORY_DESCRIPTION_EMPTY", "value": "У этого игрока нет записей в истории игр." },
     { "tag": "HISTORY_RESULT_TEAMERS_DEFEAT", "value": "Поражение" },
     { "tag": "HISTORY_RESULT_TEAMERS_VICTORY", "value": "Победа" },
+    { "tag": "HISTORY_RESULT_SUB_OUT", "value": "Заменён" },
 
     { "tag": "HISTORY_DATE_AND_TYPE_FIELD_TITLE", "value": "Дата и тип игры" },
     { "tag": "HISTORY_RESULT_FIELD_TITLE", "value": "Результат" },

@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ButtonInteraction, CommandInteraction, GuildMember } from "discord.js";
-import { ButtonComponent, Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import { ButtonComponent, Discord, Slash, SlashChoice, SlashGroup, SlashOption } from "discordx";
 import { ProfileService } from "./profile.service";
 
 @Discord()
@@ -52,16 +52,18 @@ export abstract class ProfileInteractions {
     public async historyDeleteButton(
         interaction: ButtonInteraction
     ) { await this.profileService.historyDeleteButton(interaction); }
-}
 
-@Discord()
-@SlashGroup({name: "best-civs", description: "Show best civilizations of player"})
-@SlashGroup("best-civs")
-export abstract class ProfileBestCivsInteractions {
-    private profileService: ProfileService = new ProfileService();
-
-    @Slash({name: "total", description: "Show best civilizations of player"})
-    public async bestTotal(
+    @Slash({name: "best-civs", description: "Show best civilizations of player"})
+    public async bestCivs(
+        @SlashChoice({name: "FFA", value: "FFA"})
+        @SlashChoice({name: "Teamers", value: "Teamers"})
+        @SlashChoice({name: "Total", value: "Total"})
+        @SlashOption({
+            name: "type",
+            description: "type of games",
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }) gameType: string,
         @SlashOption({
             name: "user",
             description: "player (you as default)",
@@ -69,30 +71,8 @@ export abstract class ProfileBestCivsInteractions {
             required: false,
         }) user: GuildMember | null = null,
         interaction: CommandInteraction
-    ) { await this.profileService.bestCivs(interaction, user, "Total"); }
-
-    @Slash({name: "ffa", description: "Show best FFA civilizations of player"})
-    public async bestFFA(
-        @SlashOption({
-            name: "user",
-            description: "player (you as default)",
-            type: ApplicationCommandOptionType.User,
-            required: false,
-        }) user: GuildMember | null = null,
-        interaction: CommandInteraction
-    ) { await this.profileService.bestCivs(interaction, user, "FFA"); }
-
-    @Slash({name: "teamers", description: "Show best Teamers civilizations of player"})
-    public async bestTeamers(
-        @SlashOption({
-            name: "user",
-            description: "player (you as default)",
-            type: ApplicationCommandOptionType.User,
-            required: false,
-        }) user: GuildMember | null = null,
-        interaction: CommandInteraction
-    ) { await this.profileService.bestCivs(interaction, user, "Teamers"); }
-
+    ) { await this.profileService.bestCivs(interaction, user, gameType); }
+    
     @ButtonComponent({id: /bestcivs-\w+-\d+-\d+-\d+/})  // bestcivs-typeID-authorID-playerID-page
     public async bestCivsPageButton(
         interaction: ButtonInteraction

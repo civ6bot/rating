@@ -18,6 +18,7 @@
     { "tag": "LEADERBOARD_STATIC_TEAMERS_TITLE", "value": "🐲 Teamers best players" },
 
     { "tag": "LEADERBOARD_SUCCESS_NOTIFY", "value": "Leaderboard message was generated." },
-    { "tag": "LEADERBOARD_ERROR_SEND", "value": "Bot hasn't permission to write to this channel." }
+    { "tag": "LEADERBOARD_ERROR_SEND", "value": "Bot hasn't permission to write to this channel." },
+    { "tag": "LEADERBOARD_ERROR_NO_PERMISSION", "value": "You don't have permission to use this command." }
   ]
 }
