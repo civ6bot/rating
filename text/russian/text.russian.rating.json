@@ -12,9 +12,42 @@
 
     { "tag": "RATING_MODERATOR_PREFIX_BOTTOM", "value": "Модератор" },
 
+
+
     { "tag": "RATING_REPORT_TITLE", "value": "📈 Рейтинговая игра" },
     { "tag": "RATING_CANCEL_TITLE", "value": "📉 Отмена рейтинговой игры" },
     { "tag": "RATING_REVERT_TITLE", "value": "📈 Восстановление рейтинговой игры" },
+
+    { "tag": "RATING_REPORT_SYNONYMS_HOST", "value": "хост, захостил, хостанул" },
+    { "tag": "RATING_REPORT_SYNONYMS_SUB", "value": "замена, заменил, свапнул, подменил" },
+    { "tag": "RATING_REPORT_SYNONYMS_TIE", "value": "ничья, тай" },
+    { "tag": "RATING_REPORT_SYNONYMS_LEAVE", "value": "вышел, покинул, ливнул, офф" },
+    { "tag": "RATING_REPORT_SYNONYMS_GAME_TYPE_FFA", "value": "ффа" },
+    { "tag": "RATING_REPORT_SYNONYMS_GAME_TYPE_TEAMERS", "value": "тимерсы, тимс, командная, командные, командный" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_SCIENCE", "value": "научная, научно, наука" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_CULTURE", "value": "культурная, культурно, культура" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_DOMINATION", "value": "военная, военка, военно, доминация, доминирование" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_RELIGIOUS", "value": "религиозная, религия, религиозно" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_DIPLOMATIC", "value": "дипломатическая, дипломатией, дипкой, дипка" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_CC", "value": "цц, сс" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_GG", "value": "гг, джиджи" },
+
+    { "tag": "RATING_REPORT_OK_TITLE", "value": "<:Yes:808418109710794843> Ваш отчет успешно прошёл проверку и готов к отправке." },
+    { "tag": "RATING_REPORT_ERRORS_TITLE", "value": "Ваш отчет содержит ошибки, перечисленные ниже. Исправьте их и воспользуйтесь командой ещё раз." },
+    { "tag": "RATING_REPORT_ERRORS_TIMER_TITLE", "value": "Ваш отчет содержит ошибки, перечисленные ниже. Чтобы исправить их, редактируйте своё сообщение.\nЭто сообщение с отчётом будет удалено [TIMER]." },
+    { "tag": "RATING_REPORT_ERROR_GAME_TYPE", "value": "Не указан тип игры." },
+    { "tag": "RATING_REPORT_ERROR_NOT_ENOUGH_USERS", "value": "Указано недостаточное количество игроков." },
+    { "tag": "RATING_REPORT_ERROR_TOO_MUCH_USERS", "value": "Указано слишком много игроков." },
+    { "tag": "RATING_REPORT_ERROR_SAME_USERS", "value": "Один из игроков записан как минимум дважды." },
+    { "tag": "RATING_REPORT_ERROR_TEAMERS_DIVIDE", "value": "Не удаётся разделить игроков на равные команды." },
+    { "tag": "RATING_REPORT_ERROR_HOST", "value": "Не указан хост." },
+    { "tag": "RATING_REPORT_ERROR_CIVILIZATIONS", "value": "Не указаны цивилизации игроков." },
+    { "tag": "RATING_REPORT_WARNINGS_TITLE", "value": "Дополнительные возможные действия" },
+    { "tag": "RATING_REPORT_WARNING_HOST", "value": "Добавьте хоста." },
+    { "tag": "RATING_REPORT_WARNING_CIVILIZATIONS", "value": "Добавьте цивилизации игроков." },
+
+    { "tag": "RATING_MODAL_REJECT_TITLE", "value": "Отклонение отчёта" },
+    { "tag": "RATING_MODAL_REJECT_DESCRIPTION", "value": "Причина" },
 
     { "tag": "RATING_DESCRIPTION_ID_HEADER", "value": "ID игры" },
     { "tag": "RATING_DESCRIPTION_GAME_TYPE_HEADER", "value": "Тип игры" },

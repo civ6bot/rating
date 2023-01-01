@@ -19,18 +19,18 @@ export class UtilsServiceCivilizations {
         "DRAFT_OTTOMAN_SULEIMAN_MAGNIFICENT"
     ];
 
-    private static searchTexts(substr: string, civilizationsTexts: string[]): number[] {
+    public static searchTexts(substr: string, texts: string[]): number[] {
         let searchedIndexes: number[] = [];
-        civilizationsTexts.forEach((text: string, index: number) => {
+        texts.forEach((text: string, index: number) => {
             if(text.toLowerCase().includes(substr.toLowerCase()))
                 searchedIndexes.push(index);
         });
         return searchedIndexes;
     }
 
-    private static searchExactlyEntryTexts(substr: string, civilizationsTexts: string[], searchedIndexes: number[]): number[] {
+    private static searchExactlyEntryTexts(substr: string, texts: string[], searchedIndexes: number[]): number[] {
         return searchedIndexes
-            .filter(valueIndex => civilizationsTexts[valueIndex]
+            .filter(valueIndex => texts[valueIndex]
                 .replaceAll("\n", " ")
                 .replaceAll("><", "> <")
                 .toLowerCase()

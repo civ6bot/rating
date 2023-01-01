@@ -11,6 +11,7 @@ export const outerDataSource: DataSource = new DataSource({
     database: process.env.DATABASE_NAME,
     entities: [
         __dirname + "/entities/entity.Config.{js,ts}",
+        __dirname + "/entities/entity.PendingRatingNote.{js,ts}",
         __dirname + "/entities/entity.RatingNote.{js,ts}",
         __dirname + "/entities/entity.UserRating.{js,ts}",
     ],

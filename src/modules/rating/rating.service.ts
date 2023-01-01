@@ -1,6 +1,8 @@
-import { ButtonInteraction, CommandInteraction, EmbedBuilder, GuildMember, TextChannel } from "discord.js";
+import { ButtonInteraction, CommandInteraction, EmbedBuilder, GuildMember, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { EntityPendingRatingNote } from "../../database/entities/entity.PendingRatingNote";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
+import { DatabaseServicePendingRatingNote } from "../../database/services/service.PendingRatingNote";
 import { DatabaseServiceRatingNote } from "../../database/services/service.RatingNote";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
 import { UtilsServiceCivilizations } from "../../utils/services/utils.service.civilizations";
@@ -9,16 +11,19 @@ import { ModuleBaseService } from "../base/base.service";
 import { RatingUI } from "./rating.ui";
 
 export class RatingService extends ModuleBaseService {
+    //public static myInteger: number = 5;
+
     private ratingUI: RatingUI = new RatingUI();
 
     private databaseServiceUserRating: DatabaseServiceUserRating = new DatabaseServiceUserRating();
     private databaseServiceRatingNote: DatabaseServiceRatingNote = new DatabaseServiceRatingNote();
+    private databaseServicePendingRatingNote: DatabaseServicePendingRatingNote = new DatabaseServicePendingRatingNote();
 
     private isOwner(interaction: ButtonInteraction): boolean {
         return interaction.customId.split("-").pop() === interaction.user.id;
     }
 
-    private async isModerator(interaction: CommandInteraction | ButtonInteraction): Promise<boolean> {
+    private async isModerator(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction): Promise<boolean> {
         let member: GuildMember = interaction.member as GuildMember;
         if(UtilsServiceUsers.isAdmin(member))
             return true;
@@ -31,30 +36,341 @@ export class RatingService extends ModuleBaseService {
     private getEloRatingChange(
         ratingA: number, ratingB: number,
         eloK: number, eloD: number, isTie: boolean = false
-    ): number { return Math.round(eloK * ((isTie ? 0.5 : 1) - 1/(1+Math.pow(10, (ratingB-ratingA)/eloD)))); }
+    ): number { 
+        return Math.round(eloK * ((isTie ? 0.5 : 1) - 1/(1+Math.pow(10, (ratingB-ratingA)/eloD)))); 
+    }
 
-    private generateRatingNotes(
-        usersRating: EntityUserRating[], 
-        gameID: number,
-        gameType: string,
-        victoryType: string,
+    public async generatePendingRatingNotes(
+        interaction: CommandInteraction | ButtonInteraction | string, 
+        msg: string, gameType: string|null = null
+    ): Promise<EntityPendingRatingNote[]> {
+        let guildID: string = (typeof interaction === "string") ? interaction : interaction.guild?.id as string;
+        let pendingGameID: number = await this.databaseServicePendingRatingNote.getNextGameID(guildID);
+        let pendingRatingNotes: EntityPendingRatingNote[] = [];
 
-        eloD: number,
-        eloK: number,
+        // ======================== ПАРСИНГ КЛЮЧЕВЫХ СЛОВ 
+        // ======================== В процессе создаются объекты EntityPendingRatingNotes и заполняются
+        // ======================== уникальными для каждого игрока полученными данными (кроме рейтинга)
 
-        hostIndex: number,
-        tieIndexes: number[][],
-        leaveIndexes: number[],
-        subIndexes: number[]
-    ): EntityRatingNote[] {
+        let victoryType: string|null = null;
+        let isBaseLanguage: boolean = (await this.getOneSettingString(guildID, "BASE_LANGUAGE")) === (await this.getOneSettingString("DEFAULT", "BASE_LANGUAGE"));
+        let textKeywords: string[] = [
+            "RATING_REPORT_SYNONYMS_HOST", "RATING_REPORT_SYNONYMS_SUB",    // 0, 1
+            "RATING_REPORT_SYNONYMS_TIE", "RATING_REPORT_SYNONYMS_LEAVE",
+            "RATING_REPORT_SYNONYMS_GAME_TYPE_FFA", "RATING_REPORT_SYNONYMS_GAME_TYPE_TEAMERS",
+            "RATING_REPORT_SYNONYMS_VICTORY_SCIENCE", "RATING_REPORT_SYNONYMS_VICTORY_CULTURE",
+            "RATING_REPORT_SYNONYMS_VICTORY_DOMINATION", "RATING_REPORT_SYNONYMS_VICTORY_RELIGIOUS",
+            "RATING_REPORT_SYNONYMS_VICTORY_DIPLOMATIC", "RATING_REPORT_SYNONYMS_VICTORY_CC",
+            "RATING_REPORT_SYNONYMS_VICTORY_GG"                             // 12
+        ];
+
+        let words: string[] = msg
+            .concat("\n")
+            .slice(0, msg.indexOf("\n\n\n"))            // Все данные за 3 переносами строки игнорируются
+            .replaceAll(/[.,;-\n]/g, " ")
+            .toLowerCase()
+            .split(" ")
+            .filter(str => str.length > 0);
+        let synonyms: string[][] = (await this.getManyText(guildID, textKeywords)).map(synonym => synonym.split(", "));
+        let civLines: string[] = await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags);
+        let baseLanguageCivLines: string[] = [];
+        if(!isBaseLanguage) {
+            let englishSynonyms: string[][] = (await this.getManyText("DEFAULT", textKeywords)).map(synonym => synonym.split(", "));
+            synonyms = synonyms.map((synonym: string[], index: number): string[] => synonym.concat(englishSynonyms[index]));
+            baseLanguageCivLines = await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags);
+        }
+
+        let regexUserID: RegExp = new RegExp(/<@\d+>/);
+        let tempIsSubOutFlag: boolean = false, 
+            tempIsHostFlag: boolean = false, 
+            tempIsTieFlag: boolean = false,
+            tempHostUserID: string = "";
+        words.forEach((word: string, index: number) => {
+            let parseResult: boolean[] = synonyms.map(synonym => UtilsServiceCivilizations.searchTexts(word, synonym).length > 0);
+            let synonymIndex: number = parseResult.indexOf(true);
+            if(synonymIndex !== -1) 
+                switch(synonymIndex) {
+                    case 0:
+                        if(pendingRatingNotes.length > 0)
+                            pendingRatingNotes[pendingRatingNotes.length-1].isHost = true;
+                        else
+                            tempIsHostFlag = true;
+                        return;
+                    case 1:
+                        if(pendingRatingNotes.length > 0) {
+                            pendingRatingNotes[pendingRatingNotes.length-1].isSubIn = true;
+                            tempIsSubOutFlag = true;
+                        }
+                        return;
+                    case 2:
+                        tempIsTieFlag = true; return;
+                    case 3:
+                        if(pendingRatingNotes.length > 0)
+                            pendingRatingNotes[pendingRatingNotes.length-1].isLeave = true;
+                        return;
+                    case 4:
+                        gameType = "FFA"; return;
+                    case 5:
+                        gameType = "Teamers"; return;
+                    case 6:
+                        victoryType = "Science"; return;
+                    case 7:
+                        victoryType = "Culture"; return;
+                    case 8:
+                        victoryType = "Domination"; return;
+                    case 9:
+                        victoryType = "Religious"; return;
+                    case 10:
+                        victoryType = "Diplomatic"; return;
+                    case 11:
+                        victoryType = "CC"; return;
+                    case 12:
+                        victoryType = "GG"; return;
+                    default:
+                        return;
+                }
+
+            if(regexUserID.test(word)) {
+                let userID: string = word.slice(2, -1);
+                if(tempIsHostFlag) {
+                    tempIsHostFlag = false;
+                    tempHostUserID = userID;
+                    return;
+                }
+                let newPendingRatingNote: EntityPendingRatingNote = new EntityPendingRatingNote();
+                newPendingRatingNote.userID = userID;
+                newPendingRatingNote.place = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length+1;
+                if(tempIsSubOutFlag) {
+                    tempIsSubOutFlag = false;
+                    newPendingRatingNote.isSubOut = true;
+                    newPendingRatingNote.place = (pendingRatingNotes[pendingRatingNotes.length-1]?.place || 1);
+                }
+                if(tempIsTieFlag) {
+                    tempIsTieFlag = false;
+                    newPendingRatingNote.place = (pendingRatingNotes[pendingRatingNotes.length-1]?.place || 1);
+                }
+                if(userID === tempHostUserID) {
+                    tempHostUserID = "";
+                    newPendingRatingNote.isHost = true;
+                }
+                pendingRatingNotes.push(newPendingRatingNote);
+                return;
+            }
+
+            let bans: number[] = UtilsServiceCivilizations.parseBans(words.slice(index, index+2).join(" "), civLines).bans
+                .concat(UtilsServiceCivilizations.parseBans(words.slice(index, index+2).join(" "), baseLanguageCivLines).bans);
+            if((bans.length > 0) && (pendingRatingNotes.length > 0)) 
+                pendingRatingNotes[pendingRatingNotes.length-1].civilizationID = bans[0];
+        });
+    
+        // ======================== ПЕРЕСЧЁТ МЕСТ ИГРОКОВ
+        // ======================== Важно для режима Teamers (возможна будущая реализация для режима 2x2x2x2)
+        // ======================== Если тип игры не указан, то данная операция не имеет смысла
+
+        pendingRatingNotes.sort((a, b): number => Number(a.isSubOut)-Number(b.isSubOut) || a.place-b.place || -1);  // для всех заменённых игроков: место = 0
+        pendingRatingNotes.forEach(pendingRatingNote => {
+            if(pendingRatingNote.isSubOut)
+                pendingRatingNote.place = 0;
+        });
+        let playersTotal: number = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length;
+        let teamsTotal: number, playersPerTeam: number;
+        if(gameType === "Teamers") {
+            teamsTotal = 2;
+            playersPerTeam = playersTotal/teamsTotal;
+        } else {
+            teamsTotal = playersTotal;
+            playersPerTeam = 1;
+        }
+        if(playersPerTeam % 1 === 0)                                                    // если дробное => не делятся команды => пропускаем
+            for(let i: number = 0; i < teamsTotal; i++) {
+                let currentPlace: number = i+1;
+                if(pendingRatingNotes[i*playersPerTeam].place < currentPlace)           // Если первый игрок в команде имеет место меньше, чем положенное
+                    currentPlace = pendingRatingNotes[i*playersPerTeam-1].place;        // (например, для 2x2x2x2: 1, 2, 2 (не 3?), 4, 5, 6, 7, 8)
+                for(let j: number = 0; j < playersPerTeam; j++)                         // тогда для всех игроков в данной команде нужно поставить места как в предыдущей команде,
+                    pendingRatingNotes[i*playersPerTeam+j].place = currentPlace;        // иначе поставить номер команды
+            }
+        
+        // ======================== ЗАПОЛНЕНИЕ ОБЩИМИ ДАННЫМИ
+        // ======================== Для первого места (не заменённого игрока) дополнительно тип победы
+        // ======================== Умножение рейтинга для других типов побед
+
+        let victoryMultiplier: number = await this.getOneSettingNumber(guildID, "RATING_VICTORY_MULTIPLIER");
+        pendingRatingNotes.forEach(pendingRatingNote => {
+            if((pendingRatingNote.place === 1) && (!pendingRatingNote.isSubOut))
+                pendingRatingNote.victoryType = victoryType;
+            if((victoryType !== null) && (victoryType !== "CC") && (victoryType !== "GG")) {
+                pendingRatingNote.rating = Math.round(pendingRatingNote.rating*victoryMultiplier);
+                pendingRatingNote.typedRating = Math.round(pendingRatingNote.typedRating*victoryMultiplier);
+            }
+            pendingRatingNote.guildID = guildID;
+            pendingRatingNote.gameID = pendingGameID;
+            pendingRatingNote.gameType = gameType;
+            pendingRatingNote.date = new Date();
+            pendingRatingNote.placeTotal = teamsTotal;
+            pendingRatingNote.rating = 0;
+            pendingRatingNote.typedRating = 0;
+        });
+
+        // ======================== ВОЗВРАТ РЕЗУЛЬТАТА
+
+        return pendingRatingNotes;
+    }
+
+    public async calculateRatingNotes(
+        pendingRatingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        interaction: CommandInteraction | ButtonInteraction | string,
+    ): Promise<void> {
+        let guildID: string = (typeof interaction === "string") ? interaction : interaction.guild?.id as string;
+        let [eloK, eloD] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D");
+        let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(guildID, pendingRatingNotes.map(pendingRatingNote => pendingRatingNote.userID));
+        let gameType: string|null = pendingRatingNotes[0]?.gameType || null;
+        let playersTotal: number = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length;
+        let victoryType: string|null = pendingRatingNotes[0]?.victoryType || null;
+        let teamsTotal: number, playersPerTeam: number;
+
+        pendingRatingNotes.forEach(pendingRatingNote => {
+            pendingRatingNote.rating = 0;
+            pendingRatingNote.typedRating = 0;
+        });
+        if(gameType === "Teamers") {
+            teamsTotal = 2;
+            playersPerTeam = playersTotal/teamsTotal;
+        } else {
+            teamsTotal = playersTotal;
+            playersPerTeam = 1;
+        }
+        if((gameType === null) || (playersPerTeam % 1))
+            return; 
+        if(gameType === "FFA")
+            victoryType = "CC";
+        else if(gameType === "Teamers")
+            victoryType = "GG";
+        
+        for(let i: number = 0; i < teamsTotal-1; i++)           // Основные игроки
+            for(let j: number = 0; j < playersPerTeam; j++) 
+                for(let k: number = (i+1)*playersPerTeam; k < playersTotal; k++) {
+                    let winnerIndex: number = i*playersPerTeam+j;
+                    let eloIsTie: boolean = (pendingRatingNotes[winnerIndex].place === pendingRatingNotes[k].place);
+                    
+                    let eloDelta: number = this.getEloRatingChange(
+                        usersRating[winnerIndex].rating, usersRating[k].rating,
+                        eloK, eloD, eloIsTie
+                    );
+                    pendingRatingNotes[winnerIndex].rating += eloDelta;
+                    pendingRatingNotes[k].rating -= eloDelta;
+
+                    let eloDeltaTyped: number = this.getEloRatingChange(
+                        (gameType === "FFA") ? usersRating[winnerIndex].ffaRating : usersRating[winnerIndex].teamersRating,
+                        (gameType === "FFA") ? usersRating[k].ffaRating : usersRating[k].teamersRating,
+                        eloK, eloD, eloIsTie
+                    );
+                    pendingRatingNotes[winnerIndex].typedRating += eloDeltaTyped;
+                    pendingRatingNotes[k].typedRating -= eloDeltaTyped;
+                }
+        let subInIndex: number = 0, subOutIndex: number = 0;
+        while(subInIndex < playersTotal) {
+            if(!pendingRatingNotes[subInIndex].isSubIn)
+                continue;
+            while((subOutIndex < pendingRatingNotes.length) && !pendingRatingNotes[subOutIndex].isSubOut)
+                subOutIndex++;
+            if((subOutIndex < pendingRatingNotes.length) && pendingRatingNotes[subInIndex].isSubIn && pendingRatingNotes[subOutIndex].isSubOut) {
+                let eloDelta: number = this.getEloRatingChange(
+                    usersRating[subInIndex].rating, usersRating[subOutIndex].rating,
+                    eloK, eloD
+                );
+                pendingRatingNotes[subInIndex].rating += eloDelta;
+                pendingRatingNotes[subOutIndex].rating -= eloDelta;    
+                if(pendingRatingNotes[subOutIndex].isLeave && pendingRatingNotes[subInIndex].rating < 0){
+                    pendingRatingNotes[subOutIndex].rating += pendingRatingNotes[subInIndex].rating;
+                    pendingRatingNotes[subInIndex].rating = 0;
+                }
+
+                let eloDeltaTyped: number = this.getEloRatingChange(
+                    (gameType === "FFA") ? usersRating[subInIndex].ffaRating : usersRating[subInIndex].teamersRating,
+                    (gameType === "FFA") ? usersRating[subOutIndex].ffaRating : usersRating[subOutIndex].teamersRating,
+                    eloK, eloD
+                );
+                pendingRatingNotes[subInIndex].typedRating += eloDeltaTyped;
+                pendingRatingNotes[subOutIndex].typedRating -= eloDeltaTyped; 
+                if(pendingRatingNotes[subOutIndex].isLeave && pendingRatingNotes[subInIndex].typedRating < 0){
+                    pendingRatingNotes[subOutIndex].typedRating += pendingRatingNotes[subInIndex].typedRating;
+                    pendingRatingNotes[subInIndex].typedRating = 0;
+                }
+
+                subOutIndex++;
+            }
+            subInIndex++;
+        }
         
     }
 
-    private syntaxAnalyzer() {
+    public async checkPendingRatingNotes(
+        pendingRatingNotes: EntityPendingRatingNote[],
+        interaction: CommandInteraction | ButtonInteraction | string,
+    ) {
+        let errorTags: string[] = [],  warningTags: string[] = [];
+        let guildID: string = (typeof interaction === "string") ? interaction : interaction.guild?.id as string;
+        let [isReportHost, isReportCivs]: boolean[] = (await this.getManySettingNumber(
+            guildID, 
+            "RATING_REPORTS_HOST", "RATING_REPORTS_CIVS"
+        )).map(value => Boolean(value));
+        let playersTotal: number = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length;
+        let teamsTotal: number = pendingRatingNotes[0]?.placeTotal || 0;
 
+        if(pendingRatingNotes[0]?.gameType === null)
+            errorTags.push("RATING_ERROR_GAME_TYPE");
+        if(!pendingRatingNotes.map(pendingRatingNote => pendingRatingNote.userID).every((userID: string, index: number, array: string[]) => array.indexOf(userID) === index))
+            errorTags.push("RATING_ERROR_SAME_USERS");
+        else {
+            if(playersTotal < (pendingRatingNotes[0]?.gameType === "FFA" ? 2 : 4))
+                errorTags.push("RATING_ERROR_NOT_ENOUGH_USERS");
+            else if(playersTotal > 16)
+                errorTags.push("RATING_ERROR_TOO_MUCH_USERS");
+            if((pendingRatingNotes[0]?.gameType === "Teamers") && (teamsTotal > 0) && (playersTotal % teamsTotal))
+                errorTags.push("RATING_ERROR_TEAMERS_DIVIDE");
+        }
+        if(pendingRatingNotes.every(pendingRatingNote => !pendingRatingNote.isHost))
+            (isReportHost) 
+                ? errorTags.push("RATING_ERROR_HOST")
+                : warningTags.push("RATING_WARNING_HOST");
+        if(pendingRatingNotes.some(pendingRatingNote => pendingRatingNote.civilizationID === null))
+            (isReportCivs) 
+                ? errorTags.push("RATING_ERROR_CIVILIZATIONS")
+                : warningTags.push("RATING_WARNING_CIVILIZATIONS");
+
+        return {errors: errorTags, warnings: warningTags};        
     }
 
-    private applyRating(
+    public convertToRatingNotes(
+        pendingRatingNotes: EntityPendingRatingNote[],
+        gameID: number
+    ): EntityRatingNote[] {
+        return pendingRatingNotes.map((pendingRatingNote: EntityPendingRatingNote): EntityRatingNote => {
+            let ratingNote: EntityRatingNote = new EntityRatingNote();
+            ratingNote.guildID = pendingRatingNote.guildID;
+            ratingNote.gameID = gameID;
+            ratingNote.userID = pendingRatingNote.userID;
+
+            ratingNote.date = pendingRatingNote.date;
+            ratingNote.isActive = true;
+
+            ratingNote.gameType = pendingRatingNote.gameType as string;
+            ratingNote.civilizationID = pendingRatingNote.civilizationID;
+            ratingNote.place = pendingRatingNote.place;
+            ratingNote.placeTotal = pendingRatingNote.placeTotal;
+            ratingNote.victoryType = pendingRatingNote.victoryType;
+            ratingNote.rating = pendingRatingNote.rating;
+            ratingNote.typedRating = pendingRatingNote.typedRating;
+
+            ratingNote.isHost = pendingRatingNote.isHost;
+            ratingNote.isSubIn = pendingRatingNote.isSubIn;
+            ratingNote.isSubOut = ratingNote.isSubOut;
+            ratingNote.isLeave = ratingNote.isLeave;
+            return ratingNote;
+        });
+    }
+
+    public applyRating(
         usersRating: EntityUserRating[],
         ratingNotes: EntityRatingNote[],
         isCancel: boolean = false
@@ -120,37 +436,60 @@ export class RatingService extends ModuleBaseService {
     }
 
     public async report(interaction: CommandInteraction, type: string, msg: string) {
-        
-    }
+        let pendingRatingNotes: EntityPendingRatingNote[] = await this.generatePendingRatingNotes(interaction, msg, type);
+        let {errors, warnings} = await this.checkPendingRatingNotes(pendingRatingNotes, interaction);
 
-    public async reportUserEditButton(interaction: ButtonInteraction) {
-        
+
+        if(!(await this.isModerator(interaction))) {
+
+        }
     }
 
     public async reportUserDeleteButton(interaction: ButtonInteraction) {
-        
+        await interaction.deferUpdate();
+        if(!this.isOwner(interaction))
+            return;
+        let pendingGameID: number = Number(interaction.customId.split("-")[4]);
+        interaction.message.delete();
+        this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
     }
 
     public async reportUserConfirmButton(interaction: ButtonInteraction) {
         
     }
 
-    public async reportModeratorCancelButton(interaction: ButtonInteraction) {
+    public async reportModeratorRejectButton(interaction: ButtonInteraction) {
         if(!(await this.isModerator(interaction))) {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_NO_PERMISSION"
             ]);
             return await interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
+        let pendingGameID: number = Number(interaction.customId.split("-")[4]);
+        let textLines: string[] = await this.getManyText(interaction, [
+            "RATING_MODAL_REJECT_TITLE", "RATING_MODAL_REJECT_DESCRIPTION"
+        ]);
+        await interaction.showModal(this.ratingUI.rejectModal(pendingGameID, textLines[0], textLines[1]));
     }
 
-    public async reportModeratorApplyButton(interaction: ButtonInteraction) {
+    public async reportModeratorRejectModal(interaction: ModalSubmitInteraction) {
         if(!(await this.isModerator(interaction))) {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_NO_PERMISSION"
             ]);
             return await interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
+        // ???
+    }
+
+    public async reportModeratorAcceptButton(interaction: ButtonInteraction) {
+        if(!(await this.isModerator(interaction))) {
+            let textLines: string[] = await this.getManyText(interaction, [
+                "BASE_ERROR_TITLE", "RATING_ERROR_NO_PERMISSION"
+            ]);
+            return await interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
+        }
+        // ???
     }
 
 

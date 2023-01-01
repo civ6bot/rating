@@ -37,7 +37,10 @@ export class DatabaseServiceRatingNote {
                 guildID: guildID,
                 gameID: gameID
             },
-            order: {place: "ASC"}     // в порядке мест
+            order: {
+                isSubOut: "ASC",    // сначала обычные игроки, потом заменённые
+                place: "ASC"        // в порядке мест
+            }
         });
     }
 

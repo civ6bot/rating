@@ -1,8 +1,9 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, GuildMember, Message, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, TextInputStyle, User } from "discord.js";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { UtilsGeneratorButton } from "../../utils/generators/utils.generator.button";
 import { UtilsGeneratorEmbed } from "../../utils/generators/utils.generator.embed";
+import { UtilsGeneratorModal } from "../../utils/generators/utils.generator.modal";
 import { ModuleBaseUI } from "../base/base.ui";
 
 export class RatingUI extends ModuleBaseUI {
@@ -105,6 +106,21 @@ export class RatingUI extends ModuleBaseUI {
             `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
             author.avatarURL(),
             thumbnailImageURL
+        );
+    }
+
+    public rejectModal(
+        pendingGameID: number,
+        title: string,
+        label: string
+    ): ModalBuilder {
+        return UtilsGeneratorModal.build(
+            `rating-report-moderator-reject-modal-${pendingGameID}`,
+            title,
+            ["rating-report-moderator-reject-modal-description"],
+            [label],
+            [],
+            [TextInputStyle.Short]
         );
     }
 

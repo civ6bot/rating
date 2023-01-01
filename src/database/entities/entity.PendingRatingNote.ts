@@ -1,7 +1,7 @@
 import {Column, Entity, PrimaryColumn} from "typeorm";
 
 @Entity()
-export class EntityRatingNote {
+export class EntityPendingRatingNote {
     @PrimaryColumn()
     guildID!: string;
     @PrimaryColumn()
@@ -11,11 +11,9 @@ export class EntityRatingNote {
 
     @Column({type: "timestamp"})
     date!: Date;
-    @Column({default: true})
-    isActive!: boolean;
 
-    @Column()
-    gameType!: string;  // FFA, Teamers
+    @Column({type: "tinytext", nullable: true, default: null})
+    gameType!: string | null;
     @Column({type: "integer", nullable: true, default: null})
     civilizationID!: number | null;  // FFA, Teamers
     @Column()
@@ -23,7 +21,7 @@ export class EntityRatingNote {
     @Column()
     placeTotal!: number;     // сколько всего игроков или команд в игре
     @Column({type: "tinytext", nullable: true, default: null})    // указывать только для победителя
-    victoryType!: string | null;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic
+    victoryType!: string | null;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic, по умолчанию - зависит от типа игры
     @Column()
     rating!: number;
     @Column()
