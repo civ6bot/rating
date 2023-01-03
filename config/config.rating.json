@@ -13,7 +13,12 @@
   { "setting": "RATING_BOT_REPORTS_CHANNEL_ID", "value": "" },
   { "setting": "RATING_USER_REPORTS_CHANNEL_ID", "value": "" },
 
-  { "setting": "RATING_ACCEPT_PM_NOTIFY", "value": 1 },
-  { "setting": "RATING_REJECT_PM_NOTIFY", "value": 1 },
-  { "setting": "RATING_REPORTED_GAME_PM_NOTIFY", "value": 1 }
+  { "setting": "RATING_REPORT_ALL_PM_NOTIFY", "value": 1 },
+  { "setting": "RATING_REPORT_MODERATION_EMOJIS", "value": 1 },
+
+  { "setting": "RATING_ACCEPT_AUTHOR_PM_NOTIFY", "value": 1 },
+  { "setting": "RATING_ACCEPT_ALL_PM_NOTIFY", "value": 1 },
+  { "setting": "RATING_REJECT_AUTHOR_PM_NOTIFY", "value": 1 }
+
+
 ]

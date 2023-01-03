@@ -37,17 +37,17 @@ export abstract class RatingInteractions {
         interaction: ButtonInteraction
     ) { await this.ratingService.reportUserConfirmButton(interaction); }
 
-    @ButtonComponent({id: /rating-report-moderator-reject-\d+/})  // rating-report-moderator-reject-newGameID    Любой модератор может нажать
+    @ButtonComponent({id: /rating-report-moderator-reject-\d+-\d+/})  // rating-report-moderator-reject-newGameID-authorID    Автор и любой модератор могут нажать
     public async reportModeratorRejectButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportModeratorRejectButton(interaction); }
 
-    @ModalComponent({id: /rating-report-moderator-reject-modal-\d+/}) // rating-report-moderator-reject-modal-newGameID     Ответ модератора
+    @ModalComponent({id: /rating-report-moderator-reject-modal-\d+-\d+/}) // rating-report-moderator-reject-modal-newGameID-authorID     Ответ модератора
     public async modalSetting(
         interaction: ModalSubmitInteraction
     ) { await this.ratingService.reportModeratorRejectModal(interaction); }
 
-    @ButtonComponent({id: /rating-report-moderator-accept-\d+/})  // rating-report-moderator-accept-newGameID    Любой модератор может нажать
+    @ButtonComponent({id: /rating-report-moderator-accept-\d+/})  // rating-report-moderator-accept-newGameID-authorID    Любой модератор может нажать, authorID для обратной связи
     public async reportModeratorAcceptButton(
         interaction: ButtonInteraction
     ) { await this.ratingService.reportModeratorAcceptButton(interaction); }
