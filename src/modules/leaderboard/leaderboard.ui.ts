@@ -25,9 +25,9 @@ export class LeaderboardUI extends ModuleBaseUI {
                 : String(userRatings[0].teamersRating).length;
             let spaceString: string = "    ";    // 4 spaces 
             description = userRatings.map((userRating: EntityUserRating, index: number): string => `\`${
-                spaceString.concat(String(index+(pageCurrent-1)*playersPerPage)).slice(0, -placeLength)
+                spaceString.concat(String(index+1+(pageCurrent-1)*playersPerPage)).slice(-placeLength)
             }\`  \`${
-                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(0, -ratingLength)
+                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(-ratingLength)
             }\`  <@${userRating.userID}>`)
                 .join("\n");
         }
@@ -122,9 +122,9 @@ export class LeaderboardUI extends ModuleBaseUI {
                 : String(userRatings[0].teamersRating).length;
             let spaceString: string = "    ";    // 4 spaces 
             content += userRatings.map((userRating: EntityUserRating, index: number): string => ((index % playersPerPage) === 0) ? "\n" : "" + `\`${
-                spaceString.concat(String(index+1)).slice(0, -placeLength)
+                spaceString.concat(String(index+1)).slice(-placeLength)
             }\`  \`${
-                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(0, -ratingLength)
+                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(-ratingLength)
             }\`  <@${userRating.userID}>`)
                 .join("\n");
         }

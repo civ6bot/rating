@@ -15,7 +15,7 @@ export abstract class ProfileInteractions {
             required: false,
         }) user: GuildMember | null = null,
         interaction: CommandInteraction
-    ) { await this.profileService.profile(interaction, user); }
+    ) { this.profileService.profile(interaction, user); }
 
     @Slash({name: "history", description: "Show game history"})
     public async history(
@@ -26,32 +26,32 @@ export abstract class ProfileInteractions {
             required: false,
         }) user: GuildMember | null = null,
         interaction: CommandInteraction
-    ) { await this.profileService.history(interaction, user); }
+    ) { this.profileService.history(interaction, user); }
 
     @ButtonComponent({id: /profile-showHistory-\d+-\d+/})   // profile-showHistory-authorID-playerID
     public async profileShowHistoryButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.profileShowHistoryButton(interaction); }
+    ) { this.profileService.profileShowHistoryButton(interaction); }
 
     @ButtonComponent({id: /profile-delete-\d+/})   // profile-delete-authorID
     public async profileDeleteButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.profileDeleteButton(interaction); }
+    ) { this.profileService.profileDeleteButton(interaction); }
 
     @ButtonComponent({id: /history-\d+-\d+-\d+/})  // history-playerID-authorID-pageID
     public async historyPageButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.historyPageButton(interaction); }
+    ) { this.profileService.historyPageButton(interaction); }
 
     @ButtonComponent({id: /history-showProfile-\d+-\d+/})   // history-showProfile-authorID-playerID
     public async historyShowProfileButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.historyShowProfileButton(interaction); }
+    ) { this.profileService.historyShowProfileButton(interaction); }
 
     @ButtonComponent({id: /history-delete-\d+/})   // history-delete-authorID
     public async historyDeleteButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.historyDeleteButton(interaction); }
+    ) { this.profileService.historyDeleteButton(interaction); }
 
     @Slash({name: "best-civs", description: "Show best civilizations of player"})
     public async bestCivs(
@@ -71,15 +71,15 @@ export abstract class ProfileInteractions {
             required: false,
         }) user: GuildMember | null = null,
         interaction: CommandInteraction
-    ) { await this.profileService.bestCivs(interaction, user, gameType); }
+    ) { this.profileService.bestCivs(interaction, user, gameType); }
     
     @ButtonComponent({id: /bestcivs-\w+-\d+-\d+-\d+/})  // bestcivs-typeID-authorID-playerID-page
     public async bestCivsPageButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.bestCivsPageButton(interaction); }
+    ) { this.profileService.bestCivsPageButton(interaction); }
 
     @ButtonComponent({id: /bestcivs-delete-\d+/})   // bestcivs-delete-authorID
     public async bestCivsDeleteButton(
         interaction: ButtonInteraction
-    ) { await this.profileService.bestCivsDeleteButton(interaction); }
+    ) { this.profileService.bestCivsDeleteButton(interaction); }
 }

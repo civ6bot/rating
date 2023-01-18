@@ -57,19 +57,17 @@ export class DatabaseServiceUserRating {
         }))[1];
     }
 
-    public async resetOne(userRating: EntityUserRating): Promise<EntityUserRating> {
-        let newUserRating: EntityUserRating = new EntityUserRating();
-        let defaultRating: number = await this.getDefaultRatingPoints(userRating.guildID);
-        newUserRating.guildID = userRating.guildID;
-        newUserRating.userID = userRating.userID;
-        newUserRating.lastGame =  userRating.lastGame;
-        newUserRating.rating = defaultRating;
-        newUserRating.ffaRating = defaultRating;
-        newUserRating.teamersRating = defaultRating;
-        return await this.database.save(EntityUserRating, newUserRating);
+    public async resetOne(guildID: string, userID: string): Promise<EntityUserRating> {        // не изменяем объект на входе
+        let userRating: EntityUserRating = await this.getOne(guildID, userID);
+        let defaultRating: number = await this.getDefaultRatingPoints(guildID);
+        userRating.rating = defaultRating;
+        userRating.ffaRating = defaultRating;
+        userRating.teamersRating = defaultRating;
+        this.database.save(userRating);
+        return userRating;
     }
 
-    public async resetAll(guildID: string): Promise<number> {
+    public async resetAll(guildID: string): Promise<EntityUserRating[]> {
         let usersRating: EntityUserRating[] = await this.getAll(guildID);
         let defaultRating: number = await this.getDefaultRatingPoints(guildID);
         usersRating.forEach(userRating => {
@@ -77,21 +75,25 @@ export class DatabaseServiceUserRating {
             userRating.ffaRating = defaultRating;
             userRating.teamersRating = defaultRating;
         });
-        await this.database.save(usersRating);
-        return usersRating.length;
+        this.database.save(usersRating);
+        return usersRating;
     }
 
-    public async deleteOne(guildID: string, userID: string): Promise<void> {
-        await this.database.delete(EntityUserRating, {
+    public async deleteOne(guildID: string, userID: string): Promise<EntityUserRating> {
+        let deletedEntity: EntityUserRating = await this.getOne(guildID, userID);
+        this.database.delete(EntityUserRating, {
             guildID: guildID,
             userID: userID
         });
+        return deletedEntity;
     }
 
-    public async deleteAll(guildID: string): Promise<number> {
-        return (await this.database.delete(EntityUserRating, {
+    public async deleteAll(guildID: string): Promise<EntityUserRating[]> {
+        let deletedEntities: EntityUserRating[] = await this.getAll(guildID);
+        this.database.delete(EntityUserRating, {
             guildID: guildID
-        })).affected as number;
+        });
+        return deletedEntities;
     }
 
     public async getBestRatingGeneral(guildID: string, amount: number): Promise<EntityUserRating[]> {
@@ -101,7 +103,7 @@ export class DatabaseServiceUserRating {
                 lastGame: Not(IsNull())
             },
             order: {rating: "DESC"},
-        })).slice(amount);
+        })).slice(0, amount);
     }
 
     public async getBestRatingFFA(guildID: string, amount: number): Promise<EntityUserRating[]> {
@@ -111,7 +113,7 @@ export class DatabaseServiceUserRating {
                 ffaTotal: MoreThan(0)
             },
             order: {ffaRating: "DESC"},
-        })).slice(amount);
+        })).slice(0, amount);
     }
 
     public async getBestRatingTeamers(guildID: string, amount: number): Promise<EntityUserRating[]> {
@@ -121,6 +123,6 @@ export class DatabaseServiceUserRating {
                 teamersTotal: MoreThan(0)
             },
             order: {teamersRating: "DESC"},
-        })).slice(amount);
+        })).slice(0, amount);
     }
 }

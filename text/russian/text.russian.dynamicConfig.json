@@ -51,6 +51,50 @@
     { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
 
     { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Роли модераторов (ID)" },
-    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" }
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Рейтинговые очки и роли" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS", "value": "Очков по умолчанию" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS_EMOJI", "value": "🔰" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K", "value": "Эло, K" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Эло, D" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "ID ролей" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "Минимумы очков для получения ролей" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Отчеты и каналы" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST", "value": "Обязательно указывать хоста игры" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST_EMOJI", "value": "🖥️" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS", "value": "Обязательно указывать цивилизации" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS_EMOJI", "value": "👑" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT", "value": "История рейтинга (для бота)" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT_EMOJI", "value": "📨" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR", "value": "Отчеты на проверке (для модераторов)" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR_EMOJI", "value": "📨" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE", "value": "Ставить эмодзи на проверяющиеся отчеты" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE_EMOJI", "value": "📜" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER", "value": "Новые отчеты (для игроков)" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER_EMOJI", "value": "📨" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION", "value": "Оповещения" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_EMOJI", "value": "📲" },
+    
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR", "value": "Отчет отклонен, для автора" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR_EMOJI", "value": "🚫" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL", "value": "Отчет на проверке, для всех игроков" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL_EMOJI", "value": "📜" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR", "value": "Отчет принят, для автора" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL", "value": "Отчет принят, для всех игроков" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" }
   ]
 }

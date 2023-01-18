@@ -31,7 +31,7 @@
     { "tag": "RATING_REPORT_SYNONYMS_VICTORY_CULTURE", "value": "культурная, культурно, культура" },
     { "tag": "RATING_REPORT_SYNONYMS_VICTORY_DOMINATION", "value": "военная, военка, военно, доминация, доминирование" },
     { "tag": "RATING_REPORT_SYNONYMS_VICTORY_RELIGIOUS", "value": "религиозная, религия, религиозно" },
-    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_DIPLOMATIC", "value": "дипломатическая, дипломатией, дипкой, дипка" },
+    { "tag": "RATING_REPORT_SYNONYMS_VICTORY_DIPLOMATIC", "value": "дипломатическая, дипломатией, дипломатия, дипкой, дипка" },
     { "tag": "RATING_REPORT_SYNONYMS_VICTORY_CC", "value": "цц, сс" },
     { "tag": "RATING_REPORT_SYNONYMS_VICTORY_GG", "value": "гг, джиджи" },
 
@@ -66,11 +66,11 @@
     { "tag": "RATING_DESCRIPTION_HOST_HEADER", "value": "Хост" },
     { "tag": "RATING_DESCRIPTION_VICTORY_TYPE_HEADER", "value": "Победа" },
 
-    { "tag": "RATING_DESCRIPTION_VICTORY_SCIENCE", "value": "Научная" },
-    { "tag": "RATING_DESCRIPTION_VICTORY_CULTURE", "value": "Культурная" },
-    { "tag": "RATING_DESCRIPTION_VICTORY_DOMINATION", "value": "Военная" },
-    { "tag": "RATING_DESCRIPTION_VICTORY_RELIGIOUS", "value": "Религиозная" },
-    { "tag": "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "value": "Дипломатическая" },
+    { "tag": "RATING_DESCRIPTION_VICTORY_SCIENCE", "value": "Научная <:Science_Victory:1051205348574375946>" },
+    { "tag": "RATING_DESCRIPTION_VICTORY_CULTURE", "value": "Культурная <:Culture_Victory:1051205338172502077>" },
+    { "tag": "RATING_DESCRIPTION_VICTORY_DOMINATION", "value": "Военная <:Domination_Victory:1051205343444729906>" },
+    { "tag": "RATING_DESCRIPTION_VICTORY_RELIGIOUS", "value": "Религиозная <:Religious_Victory:1051205346179420260>" },
+    { "tag": "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "value": "Дипломатическая <:Diplomatic_Victory:1051205340861038702>" },
     { "tag": "RATING_DESCRIPTION_VICTORY_CC", "value": "CC" },
     { "tag": "RATING_DESCRIPTION_VICTORY_GG", "value": "GG" },
 
@@ -82,19 +82,19 @@
     { "tag": "RATING_ADD_FIELD_VALUE_TITLE", "value": "Значение:" },
 
     { "tag": "RATING_RESET_USER_TITLE", "value": "🔄 Сбросить рейтинг игрока" },
-    { "tag": "RATING_RESET_USER_DESCRIPTION", "value": "Вы сбросите рейтинг игрока <@[USER_ID]>.\n\n❗ **Это действие нельзя отменить!**" },
+    { "tag": "RATING_RESET_USER_DESCRIPTION", "value": "Вы сбросите рейтинг игрока <@[USER_ID]>.\n❗ **Это действие нельзя отменить!**" },
     { "tag": "RATING_RESET_USER_NOTIFICATION_DESCRIPTION", "value": "Рейтинг игрока <@[USER_ID]> успешно сброшен." },
 
-    { "tag": "RATING_RESET_ALL_TITLE", "value": "🔄 Стереть профиль пользователя" },
-    { "tag": "RATING_RESET_ALL_DESCRIPTION", "value": "Вы сбросите рейтинг [USERS_AMOUNT] игроков.\n\n❗ **Это действие нельзя отменить!**" },
+    { "tag": "RATING_RESET_ALL_TITLE", "value": "🔄 Сбросить рейтинг всех игроков" },
+    { "tag": "RATING_RESET_ALL_DESCRIPTION", "value": "Вы сбросите рейтинг [USERS_AMOUNT] игроков.\n❗ **Это действие нельзя отменить!**" },
     { "tag": "RATING_RESET_ALL_NOTIFICATION_DESCRIPTION", "value": "Рейтинг [USERS_AMOUNT] игроков успешно сброшен." },
 
-    { "tag": "RATING_WIPE_USER_TITLE", "value": "🗑️ Стереть профиль пользователя" },
-    { "tag": "RATING_WIPE_USER_DESCRIPTION", "value": "Вы удалите всю рейтинговую информацию игрока <@[USER_ID]>. Сюда входят рейтинг, количество побед/поражений, типы побед и прочее.\n\n❗ **Это действие нельзя отменить!**" },
+    { "tag": "RATING_WIPE_USER_TITLE", "value": "🗑️ Стереть профиль игрока" },
+    { "tag": "RATING_WIPE_USER_DESCRIPTION", "value": "Вы удалите всю рейтинговую информацию игрока <@[USER_ID]>. Сюда входят рейтинг, количество побед/поражений, типы побед и прочее.\n❗ **Это действие нельзя отменить!**" },
     { "tag": "RATING_WIPE_USER_NOTIFICATION_DESCRIPTION", "value": "Профиль игрока <@[USER_ID]> успешно удален." },
 
     { "tag": "RATING_WIPE_ALL_TITLE", "value": "🗑️ Стереть профили всех игроков" },
-    { "tag": "RATING_WIPE_ALL_DESCRIPTION", "value": "Вы удалите всю рейтинговую информацию [USERS_AMOUNT] игроков. Сюда входят рейтинг, количество побед/поражений, типы побед и прочее.\n\n❗ **Это действие нельзя отменить!**" },
+    { "tag": "RATING_WIPE_ALL_DESCRIPTION", "value": "Вы удалите всю рейтинговую информацию [USERS_AMOUNT] игроков. Сюда входят рейтинг, количество побед/поражений, типы побед и прочее.\n❗ **Это действие нельзя отменить!**" },
     { "tag": "RATING_WIPE_ALL_NOTIFICATION_DESCRIPTION", "value": "Профили [USERS_AMOUNT] игроков успешно удалены." },
 
     { "tag": "RATING_CONFIRM_BUTTON", "value": "Подтвердить" },

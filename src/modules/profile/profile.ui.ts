@@ -19,11 +19,12 @@ export class ProfileUI extends ModuleBaseUI {
         ffaLines: string[],
         teamersLines: string[],
     ): EmbedBuilder[] {
+        let emptyField: APIEmbedField = {name: "⠀", value: "⠀"};
         let generalDescription: string =  `${generalLines[0]}: ${entityUserRating.rating}
         ${generalLines[1]}: ${entityUserRating.host}
         ${generalLines[2]}: ${entityUserRating.subIn}/${entityUserRating.subOut}
         ${generalLines[3]}: ${entityUserRating.leave}
-        ${generalLines[4]}: ${entityUserRating.lastGame ? UtilsGeneratorTimestamp.getFormattedDate(entityUserRating.lastGame) : "—"}`;
+        ${generalLines[4]}: ${entityUserRating.lastGame ? UtilsGeneratorTimestamp.getFormattedDate(entityUserRating.lastGame) : "—"}\n⠀`;
 
         let description: string[] = [
             `${ffaLines[0]}: ${entityUserRating.ffaRating}
@@ -45,7 +46,15 @@ export class ProfileUI extends ModuleBaseUI {
         ];
 
         let fields: APIEmbedField[] = fieldsHeaders.map((header: string, index: number) => { return {name: header, value: description[index]}; });
-        fields = fields.slice(0, 1).concat({name: "⠀", value: "⠀"}, ...fields.slice(1, 3), {name: "⠀", value: "⠀"}, ...fields.slice(3, 4));
+        fields = fields.slice(0, 1).concat(emptyField, ...fields.slice(1, 3), emptyField, ...fields.slice(3, 4));
+        if(entityUserRating.ffaFirst === 0)
+            fields[2] = emptyField;
+        if(entityUserRating.ffaTotal === 0)
+            fields.splice(0, 3);
+        if(entityUserRating.teamersWin === 0)
+            fields[fields.length-1] = emptyField;
+        if(entityUserRating.teamersTotal === 0)
+            fields.splice(fields.length-3, 3);
 
         return UtilsGeneratorEmbed.getSingle(
             title,
@@ -126,7 +135,7 @@ export class ProfileUI extends ModuleBaseUI {
         return UtilsGeneratorEmbed.getSingle(
             title,
             "#999999",
-            "",
+            (ratingNotes.length === 0) ? otherLines[0] : "",
             fieldTitles.map((title: string, index: number) => { return {name: title, value: values[index]}; }),
             author.tag,
             author.avatarURL()

@@ -9,7 +9,7 @@ export abstract class DiscordEvents {
     @Slash({ name: "about", description: "Bot information" })
     public async about(
         interaction: CommandInteraction
-    ) { await this.discordService.about(interaction); }
+    ) { this.discordService.about(interaction); }
 
     // Особое событие
     // не передавать управление в DiscordService
@@ -20,11 +20,11 @@ export abstract class DiscordEvents {
 
     @Once({event: "ready"})
     public async onceReady([clientArg]: ArgsOf<"ready">, client: Client) {
-        await this.discordService.onceReady(client);
+        this.discordService.onceReady(client);
     }
 
     @On({event: "guildCreate"})
     public async onGuildCreate([guild]: ArgsOf<"guildCreate">, client: Client) {
-        await this.discordService.onGuildCreate(guild);
+        this.discordService.onGuildCreate(guild);
     }
 }

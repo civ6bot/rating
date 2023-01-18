@@ -65,12 +65,8 @@ export class ModuleBaseService {
         tag: string,
         ...args: (string|number)[]
     ): Promise<string> {
-        return await this.databaseServiceText.getOne(
-            (typeof interaction_lang === 'string')
-                ? interaction_lang as string
-                : (await this.getOneSettingString(interaction_lang, "BASE_LANGUAGE")),
-            tag, args
-        );
+        let lang: string = await this.getOneSettingString(interaction_lang, "BASE_LANGUAGE");
+        return await this.databaseServiceText.getOne(lang, tag, args);
     }
 
     protected async getManyText(

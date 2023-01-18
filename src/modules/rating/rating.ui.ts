@@ -12,18 +12,23 @@ export class RatingUI extends ModuleBaseUI {
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
         usersRating: EntityUserRating[],
 
-        descriptionHeaders: string[],
+        descriptionHeaders: string[],       // 4 // ID, gameType, host, victory
         victoryLine: string,
         civLines: string[],
 
         isRequiredGameID: boolean = true
     ): string {
-        let description: string = (isRequiredGameID) ? `${descriptionHeaders[0]}: **__${ratingNotes[0].gameID}__**\n` : "";
-        description += `${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n${descriptionHeaders[2]}: ${victoryLine}\n`;
+        let description: string = (isRequiredGameID) ? `${descriptionHeaders[0]}: **${ratingNotes[0].gameID}**\n` : "";
+        if(ratingNotes[0]?.gameType)
+            description += `${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n`;
+        description += `${descriptionHeaders[3]}: ${victoryLine}\n`;
         if(ratingNotes.filter(ratingNote => ratingNote.isHost).length > 0)
-            description += `${descriptionHeaders[3]}: <@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>\n`;
+            description += `${descriptionHeaders[2]}: <@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>\n`;
         description += "\n";
-
+        
+        if(ratingNotes.length === 0)
+            return description;
+        
         let placeLines: string[] = [];
         let ratingChangeLines: string[] = [];
         let ratingEmojiLines: string[] = [];
@@ -35,7 +40,7 @@ export class RatingUI extends ModuleBaseUI {
 
         let playersTotal: number = ratingNotes.filter(ratingNote => !ratingNote.isSubOut).length;
         let teamsTotal: number = ratingNotes[0].placeTotal;
-        let playersPerTeam: number = (playersTotal/teamsTotal)%1 || 1;
+        let playersPerTeam: number = Math.min(Math.floor(playersTotal/teamsTotal), 8) || 1;
         for(let i: number = 0; i < teamsTotal; i++) {
             let currentPlace: number = ratingNotes[i*playersPerTeam].place;
             let minBound: number = -1, maxBound: number = -1;
@@ -44,10 +49,10 @@ export class RatingUI extends ModuleBaseUI {
                     (minBound === -1)
                         ? minBound = j
                         : maxBound = j;
-            minBound = (minBound/playersPerTeam)%1 + 1;
-            maxBound = (maxBound/playersPerTeam)%1 + 1;
-            let placeLine: string = (minBound === maxBound)
-                ? `${currentPlace}`
+            minBound = Math.floor(minBound/playersPerTeam) + 1;
+            maxBound = Math.floor(maxBound/playersPerTeam) + 1;
+            let placeLine: string = ((minBound === maxBound) || (maxBound === 0))
+                ? ` ${currentPlace}`
                 : `${minBound}..${maxBound}`;
             for(let k: number = 0; k < playersPerTeam; k++) 
                 placeLines.push(placeLine);
@@ -57,13 +62,13 @@ export class RatingUI extends ModuleBaseUI {
         
         ratingNotes.forEach((ratingNote: EntityRatingNote|EntityPendingRatingNote, index: number) => {
             ratingChangeLines.push(spacesString.concat(`${ratingNote.typedRating >= 0 ? "+" : ""}${ratingNote.typedRating}`).slice(-4));
-            if(ratingNote.isSubIn)
+            if(ratingNote.isSubIn || ratingNote.isSubOut)
                 ratingEmojiLines.push("🔄");
             else if(ratingNote.typedRating >= 0)
                 ratingEmojiLines.push("📈");
             else
                 ratingEmojiLines.push("📉");
-            ratingTotalLines.push(spacesString.concat(`(${ratingNote.gameType === "FFA" ? (usersRating[index].ffaRating) : usersRating[index].teamersRating})`).slice(-4));
+            ratingTotalLines.push(spacesString.concat(`(${ratingNote.gameType === "FFA" ? (usersRating[index].ffaRating) : usersRating[index].teamersRating})`).slice(-6));
             if(ratingNote.isHost)
                 statusEmojiLines.push("🖥️");
             else if(ratingNote.isLeave)
@@ -71,17 +76,17 @@ export class RatingUI extends ModuleBaseUI {
             else
                 statusEmojiLines.push("<:EmptySpace:1057693249776660552>");
             userLines.push(`<@${ratingNote.userID}>`);
-            userCivLines.push(civLines[ratingNote.civilizationID || -1] || "");
+            userCivLines.push((ratingNote.isSubOut) ? "" : civLines[ratingNote.civilizationID || -1] || "");
         });
         let placeLineMaxLength: number = Math.max(...placeLines.map(str => str.length));
-        placeLines.map(str => Array<string>(placeLineMaxLength-str.length).fill(" ").join("")+str);
+        placeLines = placeLines.map(str => Array<string>(placeLineMaxLength-str.length).fill(" ").join("")+str);
         for(let i: number = 0; i < placeLines.length; i++) {
-            if(
-                ((i !== 0) && (ratingNotes[i].isSubOut) && (!ratingNotes[i-1].isSubOut)) ||
-                ((teamsTotal !== playersTotal) && ((i+1)%playersPerTeam !== 0))
-            )
+            if((i !== 0) && (
+                ((ratingNotes[i].isSubOut) && (!ratingNotes[i-1].isSubOut)) ||                      // Начало списка заменённых игроков
+                ((i < playersTotal) && (teamsTotal !== playersTotal) && (i%playersPerTeam === 0))   // для режима Teamers: следующая команда
+            ))
                 description += "\n";
-            description += `\`${placeLines[i]}\`  \`${ratingChangeLines[i]}\` ${ratingEmojiLines[i]} \`${ratingTotalLines[i]}\` ${statusEmojiLines[i]} ${userLines} ${userCivLines}\n`;
+            description += `\`${placeLines[i]}\`  \`${ratingChangeLines[i]}\` ${ratingEmojiLines[i]} \`${ratingTotalLines[i]}\` ${statusEmojiLines[i]} ${userLines[i]} ${userCivLines[i]}\n`;
         }
         return description;
     }
@@ -91,10 +96,10 @@ export class RatingUI extends ModuleBaseUI {
         usersRating: EntityUserRating[],
         descriptionHeaders: string[],       // 3 // ID, type, host
     ): string {
-        let description: string = `${descriptionHeaders[0]}: **__${ratingNotes[0].gameID}__** <:No:808418109319938099>\n${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n`;
+        let description: string = `${descriptionHeaders[0]}: **${ratingNotes[0].gameID}** <:No:808418109319938099>\n${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n`;
         for(let i in ratingNotes)
                 if(ratingNotes[i].isHost) {
-                    description += `${descriptionHeaders[3]}: <@${ratingNotes[i].userID}>\n`;
+                    description += `${descriptionHeaders[2]}: <@${ratingNotes[i].userID}>\n`;
                     break;
                 }
         description += "\n";
@@ -103,12 +108,13 @@ export class RatingUI extends ModuleBaseUI {
         ratingNotes.forEach((ratingNote: EntityRatingNote, index: number) => {
             if((index !== 0) && (ratingNote.isSubOut) && (!ratingNotes[index-1].isSubOut))
                 description += "\n";
-            description += `\`${spacesString.concat(`${ratingNote.typedRating*-1 >= 0 ? "+" : ""}${ratingNote.typedRating*-1}`).slice(-4)}\`  \`${spacesString.concat(`(${ratingNote.gameType === "FFA" ? usersRating[index].ffaRating : usersRating[index].teamersRating})`).slice(-4)}\`  <@${ratingNote.userID}>`;
+            description += `\`${spacesString.concat(`${ratingNote.typedRating*-1 >= 0 ? "+" : ""}${ratingNote.typedRating*-1}`).slice(-4)}\`  \`${spacesString.concat(`(${ratingNote.gameType === "FFA" ? usersRating[index].ffaRating : usersRating[index].teamersRating})`).slice(-6)}\`  <@${ratingNote.userID}>\n`;
         });
         return description;
     }
 
-    private getVictoryObjectLines(gameType: string|null, victoryType: string|null, victoryLines: string[]): string[] {
+    private getVictoryObjectLine(gameType: string|null, victoryType: string|null, victoryLines: string[]): string {
+        /*
         let thumbnailVictoryImages: string[] = [
             "https://media.discordapp.net/attachments/795265098159357953/1051199855172792372/Science_Victory.png",
             "https://media.discordapp.net/attachments/795265098159357953/1051199855550275584/Culture_Victory.png",
@@ -116,6 +122,8 @@ export class RatingUI extends ModuleBaseUI {
             "https://media.discordapp.net/attachments/795265098159357953/1051199857899077743/Religious_Victory.png",
             "https://media.discordapp.net/attachments/795265098159357953/1051199858226241687/Diplomatic_Victory.png"
         ];
+        */
+        victoryLines.push("—");
         let victoryIndex: number;
         switch(victoryType) {
             case "Science":
@@ -129,12 +137,15 @@ export class RatingUI extends ModuleBaseUI {
             case "Diplomatic":
                 victoryIndex = 4; break;
             default:
-                victoryIndex = (gameType === "FFA") ? 5 : 6;
+                if(gameType === "FFA")
+                    victoryIndex = 5;
+                else if(gameType === "Teamers")
+                    victoryIndex = 6;
+                else
+                    victoryIndex = 7;
+                break;
         }
-        return [
-            victoryLines[victoryIndex],
-            thumbnailVictoryImages[victoryIndex] || ""
-        ];
+        return victoryLines[victoryIndex];
     }
 
 
@@ -147,15 +158,15 @@ export class RatingUI extends ModuleBaseUI {
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
         title: string,                      // Разные для accept/revert
-        descriptionHeaders: string[],       // 4 // ID, type, victoryName, host
+        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
         victoryLines: string[],
         civLines: string[],
         moderatorPrefix: string
     ): EmbedBuilder[] {          
-        let victoryObjectLines: string[] = this.getVictoryObjectLines(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
+        let victoryLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
         let description: string = this.getFullDescriptionFromNotes(
             ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLines[0], civLines
+            descriptionHeaders, victoryLine, civLines
         );
             
         return UtilsGeneratorEmbed.getSingle(
@@ -165,7 +176,7 @@ export class RatingUI extends ModuleBaseUI {
             [],
             `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
             author.avatarURL(),
-            victoryObjectLines[1]
+            ""
         );
     }
 
@@ -188,6 +199,7 @@ export class RatingUI extends ModuleBaseUI {
             [],
             `${moderatorPrefix} ${author.tag}`,
             author.avatarURL(),
+            ""
         );
     }
 
@@ -199,7 +211,7 @@ export class RatingUI extends ModuleBaseUI {
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
         title: string,
-        descriptionHeaders: string[],       // 4 // ID, type, victoryName, host
+        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
         victoryLines: string[],
         civLines: string[],
         moderatorPrefix: string,
@@ -208,10 +220,10 @@ export class RatingUI extends ModuleBaseUI {
         warningDescription: string,
         warningDescriptionLines: string[],
     ): EmbedBuilder[] {
-        let victoryObjectLines: string[] = this.getVictoryObjectLines(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
+        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
         let description: string = this.getFullDescriptionFromNotes(
             ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLines[0], civLines,
+            descriptionHeaders, victoryObjectLine, civLines,
             false
         );
         let predescription: string = readyDescription + "\n\n";
@@ -226,7 +238,7 @@ export class RatingUI extends ModuleBaseUI {
             [],
             `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
             author.avatarURL(),
-            victoryObjectLines[1]
+            ""
         );
     }
 
@@ -238,7 +250,7 @@ export class RatingUI extends ModuleBaseUI {
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
         title: string,
-        descriptionHeaders: string[],       // 4 // ID, type, victoryName, host
+        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
         victoryLines: string[],
         civLines: string[],
         moderatorPrefix: string,
@@ -248,13 +260,13 @@ export class RatingUI extends ModuleBaseUI {
         warningDescription: string,
         warningDescriptionLines: string[],
     ): EmbedBuilder[] {
-        let victoryObjectLines: string[] = this.getVictoryObjectLines(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
+        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0]?.gameType || null, ratingNotes[0]?.victoryType || null, victoryLines);
         let description: string = this.getFullDescriptionFromNotes(
             ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLines[0], civLines,
+            descriptionHeaders, victoryObjectLine, civLines,
             false
         );
-        let predescription: string = errorDescription + errorDescriptionLines.map(line => `<:No:808418109319938099> ${line}`).join("\n") + "\n\n";
+        let predescription: string = errorDescription + "\n" + errorDescriptionLines.map(line => `<:No:808418109319938099> ${line}`).join("\n") + "\n\n";
         if(warningDescriptionLines.length > 0)
             predescription += warningDescription + "\n" + warningDescriptionLines.map(line => `⚠️ ${line}`).join("\n") + "\n\n";
         description = predescription + description;
@@ -265,7 +277,8 @@ export class RatingUI extends ModuleBaseUI {
             description,
             [],
             `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
-            author.avatarURL()
+            author.avatarURL(),
+            ""
         );
     }
 
@@ -293,14 +306,14 @@ export class RatingUI extends ModuleBaseUI {
 
         title: string,
         rejectDescription: string,
-        descriptionHeaders: string[],       // 4 // ID, type, victoryName, host
+        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
         victoryLines: string[],
         civLines: string[],
     ): EmbedBuilder[] {
-        let victoryObjectLines: string[] = this.getVictoryObjectLines(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
+        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
         let description: string = this.getFullDescriptionFromNotes(
             ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLines[0], civLines
+            descriptionHeaders, victoryObjectLine, civLines
         );
 
         return UtilsGeneratorEmbed.getSingle(
@@ -310,20 +323,22 @@ export class RatingUI extends ModuleBaseUI {
             [],
             guild?.name,
             guild?.iconURL(),
-            victoryLines[1]
+            ""
         );
     }
 
     public reportProcessingButtons(
         authorID: string,
         pendingGameID: number,
-        labels: string[]
+        labels: string[],
+        isConfirmDisabled: boolean = false
     ): ActionRowBuilder<ButtonBuilder>[] {
         return UtilsGeneratorButton.getList(
             labels,
             [],
             [ButtonStyle.Success, ButtonStyle.Danger],
-            [`rating-report-user-confirm-${pendingGameID}-${authorID}`, `rating-report-user-delete-${pendingGameID}-${authorID}`]
+            [`rating-report-user-confirm-${pendingGameID}-${authorID}`, `rating-report-user-delete-${pendingGameID}-${authorID}`],
+            [isConfirmDisabled, false]
         );
     }
 
@@ -374,7 +389,10 @@ export class RatingUI extends ModuleBaseUI {
             [
                 {name: headers[0], value: `<@${userRating.userID}>`},
                 {name: headers[1], value: type},
-                {name: headers[2], value: `${ratingChange >= 0 ? "+" : ""}${ratingChange} (${(type === "FFA" ? userRating.ffaRating : userRating.teamersRating)})`}
+                {name: headers[2], value: `${ratingChange >= 0 ? "+" : ""}${ratingChange} (${
+                    (type === "FFA") ? userRating.ffaRating : 
+                    (type === "Teamers") ? userRating.teamersRating : userRating.rating
+                })`}
             ],
             `${moderatorPrefix} ${author.tag}`,
             author.avatarURL()

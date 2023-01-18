@@ -28,11 +28,11 @@ export class LeaderboardService extends ModuleBaseService {
     }
 
     private async updateLeaderboardConfigByMessage(type: string, message: Message): Promise<void> {
-        await this.updateLeaderboardConfig(message.guild?.id as string, type, message.channel.id, message.id);
+        this.updateLeaderboardConfig(message.guild?.id as string, type, message.channel.id, message.id);
     }
 
     private async updateLeaderboardConfig(guildID: string, type: string, channelID: string = "", messageID: string = ""): Promise<void> {
-        await this.updateManySetting(
+        this.updateManySetting(
             guildID, 
             (type === "FFA") 
                 ? ["LEADERBOARD_FFA_CHANNEL_ID", "LEADERBOARD_FFA_MESSAGE_ID"]
@@ -66,7 +66,7 @@ export class LeaderboardService extends ModuleBaseService {
         let title: string = await this.getOneText(guildID, (type === "FFA") ? "LEADERBOARD_STATIC_FFA_TITLE" : "LEADERBOARD_STATIC_TEAMERS_TITLE");
         let emptyDescription: string = await this.getOneText(guildID, "LEADERBOARD_DESCRIPTION_EMPTY");
 
-        await message.edit({content: this.leaderboardUI.leaderboardStaticMessage(
+        message.edit({content: this.leaderboardUI.leaderboardStaticMessage(
             userRatings, 
             type, 
             this.leaderboardSmallPlayersPerPage, 
@@ -98,8 +98,8 @@ export class LeaderboardService extends ModuleBaseService {
             interaction.user,
             type,
             userRatings.slice(
-                (this.leaderboardSmallPlayersPerPage-1)*pageCurrent, 
-                (this.leaderboardSmallPlayersPerPage)*pageCurrent,
+                (pageCurrent-1)*this.leaderboardSmallPlayersPerPage, 
+                (pageCurrent)*this.leaderboardSmallPlayersPerPage, 
             ),
             title,
             emptyDescription,
@@ -115,25 +115,25 @@ export class LeaderboardService extends ModuleBaseService {
         );
 
         if(interaction.type === InteractionType.MessageComponent)
-            await interaction.message.edit({embeds: embed, components: component});
+            interaction.message.edit({embeds: embed, components: component});
         else 
-            await interaction.reply({embeds: embed, components: component});
+            interaction.reply({embeds: embed, components: component});
     }
 
     public async leaderboardPageButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
         let type: string = interaction.customId.split("-")[1];
         let pageCurrent: number = Number(interaction.customId.split("-")[3]);
-        await this.leaderboard(interaction, type, pageCurrent);
+        this.leaderboard(interaction, type, pageCurrent);
     }
 
     public async leaderboardDeleteButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        await interaction.message.delete();
+        interaction.message.delete();
     }
 
     public async leaderboardStaticInfo(interaction: CommandInteraction){
@@ -149,7 +149,7 @@ export class LeaderboardService extends ModuleBaseService {
         let linkValue: string = await this.getOneText(interaction, "LEADERBOARD_STATIC_INFO_LINK_VALUE");
         let description: string = await this.getOneText(interaction, "LEADERBOARD_STATIC_INFO_HELP_DESCRIPTION");
 
-        await interaction.reply({
+        interaction.reply({
             embeds: this.leaderboardUI.leaderboardStaticInfoEmbed(
                 messages,
                 title,
@@ -166,7 +166,7 @@ export class LeaderboardService extends ModuleBaseService {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "LEADERBOARD_ERROR_NO_PERMISSION"
             ]);
-            return await interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});
+            return interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
         let previousMessage: Message|null = await this.getLeaderboardMessage(interaction.guild?.id as string, type);
         if(previousMessage !== null) {
@@ -177,10 +177,10 @@ export class LeaderboardService extends ModuleBaseService {
             let message: Message = await (interaction.channel as GuildTextBasedChannel).send({content: "Please, wait..."});
             this.updateLeaderboardConfigByMessage(type, message);
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_SUCCESS_NOTIFY"]);
-            await interaction.reply({embeds: this.leaderboardUI.notify(textLines[0], textLines[1]), ephemeral: true});
+            interaction.reply({embeds: this.leaderboardUI.notify(textLines[0], textLines[1]), ephemeral: true});
         } catch {
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_ERROR_SEND"]);
-            await interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});
+            interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
     }
 }

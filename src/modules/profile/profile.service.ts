@@ -79,24 +79,24 @@ export class ProfileService extends ModuleBaseService {
         );
 
         if(interaction.type === InteractionType.MessageComponent)
-            await interaction.message.edit({embeds: embed, components: component});
+            interaction.message.edit({embeds: embed, components: component});
         else
-            await interaction.reply({embeds: embed, components: component});
+            interaction.reply({embeds: embed, components: component});
     }
 
     public async profileShowHistoryButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
         let member: GuildMember = await (interaction.guild as Guild).members.fetch(interaction.customId.split("-")[3]);
-        await this.history(interaction, member);
+        this.history(interaction, member);
     }
 
     public async profileDeleteButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        await interaction.message.delete();
+        interaction.message.delete();
     }
 
 
@@ -148,34 +148,34 @@ export class ProfileService extends ModuleBaseService {
         );
 
         if(interaction.type === InteractionType.MessageComponent)
-            await interaction.message.edit({embeds: embed, components: component});
+            interaction.message.edit({embeds: embed, components: component});
         else 
-            await interaction.reply({embeds: embed, components: component});
+            interaction.reply({embeds: embed, components: component});
     }
 
     public async historyPageButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
         let userID: string = interaction.customId.split("-")[1];
         let member: GuildMember = await interaction.guild?.members.fetch(userID) as GuildMember;
         let pageCurrent: number = Number(interaction.customId.split("-")[3]);
-        await this.history(interaction, member, pageCurrent);
+        this.history(interaction, member, pageCurrent);
     }
 
     public async historyShowProfileButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
         let member: GuildMember = await (interaction.guild as Guild).members.fetch(interaction.customId.split("-")[3]);
-        await this.profile(interaction, member);
+        this.profile(interaction, member);
     }
 
     public async historyDeleteButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        await interaction.message.delete();
+        interaction.message.delete();
     }
 
 
@@ -232,26 +232,26 @@ export class ProfileService extends ModuleBaseService {
         );
 
         if(interaction.type === InteractionType.MessageComponent)
-            await interaction.message.edit({embeds: embed, components: component});
+            interaction.message.edit({embeds: embed, components: component});
         else 
-            await interaction.reply({embeds: embed, components: component});
+            interaction.reply({embeds: embed, components: component});
     }
 
     public async bestCivsPageButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
         let type: string = interaction.customId.split("-")[1];
         let userID: string = interaction.customId.split("-")[3];
         let member: GuildMember = await interaction.guild?.members.fetch(userID) as GuildMember;
         let pageCurrent: number = Number(interaction.customId.split("-")[4]);
-        await this.bestCivs(interaction, member, type, pageCurrent);
+        this.bestCivs(interaction, member, type, pageCurrent);
     }
 
     public async bestCivsDeleteButton(interaction: ButtonInteraction) {
-        await interaction.deferUpdate();
+        interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        await interaction.message.delete();
+        interaction.message.delete();
     }
 }

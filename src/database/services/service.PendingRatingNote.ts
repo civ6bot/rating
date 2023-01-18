@@ -6,10 +6,7 @@ export class DatabaseServicePendingRatingNote {
     protected database: EntityManager = outerDataSource.manager;
 
     public async getNextGameID(guildID: string): Promise<number> {
-        return ((await this.database.findOne(EntityPendingRatingNote, {
-            where: {guildID: guildID},
-            order: {gameID: "DESC"},
-        }))?.gameID || 0) + 1;
+        return 1+Math.round(Math.random()*Math.pow(10, 8));        // Псевдорандомное число, чтобы избежать одинаковых ID из-за спама
     }
 
     public async insertAll(notes: EntityPendingRatingNote[]): Promise<EntityPendingRatingNote[]> {

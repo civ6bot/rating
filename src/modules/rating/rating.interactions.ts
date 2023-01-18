@@ -1,5 +1,5 @@
-import { ApplicationCommandOptionType, ButtonInteraction, CommandInteraction, GuildMember, ModalSubmitInteraction } from "discord.js";
-import {Discord, Slash, ButtonComponent, SlashGroup, SlashOption, SlashChoice, ModalComponent} from "discordx";
+import { ApplicationCommandOptionType, ButtonInteraction, CommandInteraction, GuildMember, Message, ModalSubmitInteraction } from "discord.js";
+import {Discord, Slash, ButtonComponent, SlashGroup, SlashOption, SlashChoice, ModalComponent, On, ArgsOf, Client} from "discordx";
 import { RatingService } from "./rating.service";
 
 @Discord()
@@ -7,6 +7,16 @@ import { RatingService } from "./rating.service";
 @SlashGroup("rating")
 export abstract class RatingInteractions {
     private ratingService: RatingService = new RatingService();
+
+    @On({event: "messageCreate"})
+    public async onMessageCreate([message]: ArgsOf<"messageCreate">, client: Client) {
+        this.ratingService.onMessageCreate(message);
+    }
+
+    @On({event: "messageUpdate"})
+    public async onMessageUpdate([oldMessage, newMessage]: ArgsOf<"messageUpdate">, client: Client) {
+        this.ratingService.onMessageUpdate(newMessage as Message);
+    }
 
     @Slash({name: "report", description: "Create game report"})
     public async report(
@@ -25,32 +35,32 @@ export abstract class RatingInteractions {
             required: true,
         }) msg: string,
         interaction: CommandInteraction
-    ) { await this.ratingService.report(interaction, gameType, msg); }
+    ) { this.ratingService.report(interaction, gameType, msg); }
 
     @ButtonComponent({id: /rating-report-user-delete-\d+-\d+/})  // rating-report-user-delete-newGameID-authorID
     public async reportUserDeleteButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.reportUserDeleteButton(interaction); }
+    ) { this.ratingService.reportUserDeleteButton(interaction); }
 
     @ButtonComponent({id: /rating-report-user-confirm-\d+-\d+/})  // rating-report-user-confirm-newGameID-authorID
     public async reportUserConfirmButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.reportUserConfirmButton(interaction); }
+    ) { this.ratingService.reportUserConfirmButton(interaction); }
 
     @ButtonComponent({id: /rating-report-moderator-reject-\d+-\d+/})  // rating-report-moderator-reject-newGameID-authorID    Автор и любой модератор могут нажать
     public async reportModeratorRejectButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.reportModeratorRejectButton(interaction); }
+    ) { this.ratingService.reportModeratorRejectButton(interaction); }
 
     @ModalComponent({id: /rating-report-moderator-reject-modal-\d+-\d+/}) // rating-report-moderator-reject-modal-newGameID-authorID     Ответ модератора
     public async modalSetting(
         interaction: ModalSubmitInteraction
-    ) { await this.ratingService.reportModeratorRejectModal(interaction); }
+    ) { this.ratingService.reportModeratorRejectModal(interaction); }
 
     @ButtonComponent({id: /rating-report-moderator-accept-\d+/})  // rating-report-moderator-accept-newGameID-authorID    Любой модератор может нажать, authorID для обратной связи
     public async reportModeratorAcceptButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.reportModeratorAcceptButton(interaction); }
+    ) { this.ratingService.reportModeratorAcceptButton(interaction); }
 
     @Slash({name: "cancel", description: "Cancel game by ID"})
     public async cancel(
@@ -61,7 +71,7 @@ export abstract class RatingInteractions {
             required: true,
         }) gameID: number,
         interaction: CommandInteraction
-    ) { await this.ratingService.cancel(interaction, gameID); }
+    ) { this.ratingService.cancel(interaction, gameID); }
 
     @Slash({name: "revert", description: "Cancel game by ID"})
     public async revert(
@@ -72,7 +82,7 @@ export abstract class RatingInteractions {
             required: true,
         }) gameID: number,
         interaction: CommandInteraction
-    ) { await this.ratingService.revert(interaction, gameID); }
+    ) { this.ratingService.revert(interaction, gameID); }
 
     @Slash({name: "set", description: "Set rating of user manually"})
     public async setUser(
@@ -82,7 +92,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        //@SlashChoice({name: "General", value: "General"})
+        @SlashChoice({name: "General", value: "General"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({
@@ -98,7 +108,7 @@ export abstract class RatingInteractions {
             required: true,
         }) amount: number,
         interaction: CommandInteraction
-    ) { await this.ratingService.setUser(interaction, user, gameType, amount); }
+    ) { this.ratingService.setUser(interaction, user, gameType, amount); }
 
     
     @Slash({name: "add", description: "Add rating of user manually"})
@@ -109,7 +119,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        //@SlashChoice({name: "General", value: "General"})
+        @SlashChoice({name: "General", value: "General"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({
@@ -125,7 +135,7 @@ export abstract class RatingInteractions {
             required: true,
         }) amount: number,
         interaction: CommandInteraction
-    ) { await this.ratingService.addUser(interaction, user, gameType, amount); }
+    ) { this.ratingService.addUser(interaction, user, gameType, amount); }
 }
 
 @Discord()
@@ -147,34 +157,34 @@ export abstract class RatingResetInteractions {
             required: true,
         }) user: GuildMember,
         interaction: CommandInteraction
-    ) { await this.ratingService.resetUser(interaction, user); }
+    ) { this.ratingService.resetUser(interaction, user); }
 
     @ButtonComponent({id: /rating-reset-user-cancel-\d+/})  // rating-reset-user-cancel-authorID
     public async resetUserCancelButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.resetUserCancelButton(interaction); }
+    ) { this.ratingService.resetUserCancelButton(interaction); }
 
     @ButtonComponent({id: /rating-reset-user-confirm-\d+-\d+/})  // rating-reset-user-confirm-userID-authorID
     public async resetUserConfirmButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.resetUserConfirmButton(interaction); }
+    ) { this.ratingService.resetUserConfirmButton(interaction); }
 
 
 
     @Slash({name: "all", description: "Reset rating of all users"})
     public async resetAll(
         interaction: CommandInteraction
-    ) { await this.ratingService.resetAll(interaction); }
+    ) { this.ratingService.resetAll(interaction); }
 
     @ButtonComponent({id: /rating-reset-all-cancel-\d+/})  // rating-reset-all-cancel-authorID
     public async resetAllCancelButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.resetAllCancelButton(interaction); }
+    ) { this.ratingService.resetAllCancelButton(interaction); }
 
     @ButtonComponent({id: /rating-reset-all-confirm-\d+/})  // rating-reset-all-confirm-authorID
     public async resetAllConfirmButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.resetAllConfirmButton(interaction); }
+    ) { this.ratingService.resetAllConfirmButton(interaction); }
 }
 
 @Discord()
@@ -196,32 +206,32 @@ export abstract class RatingWipeInteractions {
             required: true,
         }) user: GuildMember,
         interaction: CommandInteraction
-    ) { await this.ratingService.wipeUser(interaction, user); }
+    ) { this.ratingService.wipeUser(interaction, user); }
 
     @ButtonComponent({id: /rating-wipe-user-cancel-\d+/})  // rating-wipe-user-cancel-authorID
     public async wipeUserCancelButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.wipeUserCancelButton(interaction); }
+    ) { this.ratingService.wipeUserCancelButton(interaction); }
 
     @ButtonComponent({id: /rating-wipe-user-confirm-\d+-\d+/})  // rating-wipe-user-confirm-userID-authorID
     public async wipeUserConfirmButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.wipeUserConfirmButton(interaction); }
+    ) { this.ratingService.wipeUserConfirmButton(interaction); }
 
 
 
     @Slash({name: "all", description: "Delete all rating information of all users"})
     public async wipeAll(
         interaction: CommandInteraction
-    ) { await this.ratingService.wipeAll(interaction); }
+    ) { this.ratingService.wipeAll(interaction); }
 
     @ButtonComponent({id: /rating-wipe-all-cancel-\d+/})  // rating-wipe-all-cancel-authorID
     public async wipeAllCancelButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.wipeAllCancelButton(interaction); }
+    ) { this.ratingService.wipeAllCancelButton(interaction); }
 
     @ButtonComponent({id: /rating-wipe-all-confirm-\d+/})  // rating-wipe-all-confirm-authorID
     public async wipeAllConfirmButton(
         interaction: ButtonInteraction
-    ) { await this.ratingService.wipeAllConfirmButton(interaction); }
+    ) { this.ratingService.wipeAllConfirmButton(interaction); }
 }
