@@ -294,6 +294,11 @@ export class RatingService extends ModuleBaseService {
         usersRating: EntityUserRating[],
         eloK: number, eloD: number, victoryMultiplier: number
     ): void {
+        victoryMultiplier = 1.5;
+        // База данных не может хранить дробные числа,
+        // но при этом пользователь не может измениять коэффициент,
+        // поэтому временно переназначается здесь.
+
         let gameType: string|null = pendingRatingNotes[0]?.gameType || null;
         let playersTotal: number = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length;
         let victoryType: string|null = pendingRatingNotes[0]?.victoryType || null;
@@ -370,7 +375,7 @@ export class RatingService extends ModuleBaseService {
             }
             subOutIndex++;
         });
-        if((victoryType !== null) && (victoryType !== "CC") && (victoryType !== "GG"))
+        if(!!victoryType && (victoryType !== "CC") && (victoryType !== "GG"))
             pendingRatingNotes.forEach(pendingRatingNote => {
                 pendingRatingNote.rating = Math.round(pendingRatingNote.rating*victoryMultiplier);
                 pendingRatingNote.typedRating = Math.round(pendingRatingNote.typedRating*victoryMultiplier);
