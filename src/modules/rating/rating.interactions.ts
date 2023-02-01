@@ -10,12 +10,12 @@ export abstract class RatingInteractions {
 
     @On({event: "messageCreate"})
     public async onMessageCreate([message]: ArgsOf<"messageCreate">, client: Client) {
-        this.ratingService.onMessageCreate(message);
+        this.ratingService.onMessage(message, true);
     }
 
     @On({event: "messageUpdate"})
     public async onMessageUpdate([oldMessage, newMessage]: ArgsOf<"messageUpdate">, client: Client) {
-        this.ratingService.onMessageUpdate(newMessage as Message);
+        this.ratingService.onMessage(newMessage as Message, false);
     }
 
     @Slash({name: "report", description: "Create game report"})
@@ -73,7 +73,7 @@ export abstract class RatingInteractions {
         interaction: CommandInteraction
     ) { this.ratingService.cancel(interaction, gameID); }
 
-    @Slash({name: "revert", description: "Cancel game by ID"})
+    @Slash({name: "revert", description: "Bring back canceled game by ID"})
     public async revert(
         @SlashOption({
             name: "id",

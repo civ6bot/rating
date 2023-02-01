@@ -2,14 +2,14 @@ import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction,
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { DatabaseServiceRatingNote } from "../../database/services/service.RatingNote";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
-import { UtilsServiceCivilizations } from "../../utils/services/utils.service.civilizations";
+import { UtilsDataCivilizations } from "../../utils/data/utils.data.civilizations";
 import { ModuleBaseService } from "../base/base.service";
 import { BestCivsEntity } from "./profile.models";
 import { ProfileUI } from "./profile.ui";
 
 export class ProfileService extends ModuleBaseService {
-    private historyLinesPerPage: number = 10;
-    private bestCivsPerPage: number = 10;
+    private historyLinesPerPage: number = 16;
+    private bestCivsPerPage: number = 16;
 
     private profileUI: ProfileUI = new ProfileUI();
 
@@ -37,7 +37,7 @@ export class ProfileService extends ModuleBaseService {
                 ? bestCivsEntities[index].victories++
                 : bestCivsEntities[index].defeats++;
         });
-        bestCivsEntities.sort((a, b): number => a.winrate-b.winrate || a.victories-b.victories || a.id-b.id);
+        bestCivsEntities.sort((a, b): number => b.winrate-a.winrate || b.victories-a.victories || a.id-b.id);
         return bestCivsEntities;
     }
 
@@ -127,8 +127,8 @@ export class ProfileService extends ModuleBaseService {
         let labels: string[] = await this.getManyText(interaction, [
             "HISTORY_SHOW_PROFILE_BUTTON", "HISTORY_DELETE_BUTTON"
         ]);
-        let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
-            .map(str => str.slice(str.indexOf("<")));
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str]))).map(str => str.slice(str.indexOf("<")));
 
         let embed: EmbedBuilder[] = this.profileUI.historyEmbed(
             interaction.user, 
@@ -210,8 +210,8 @@ export class ProfileService extends ModuleBaseService {
             "BEST_CIVS_WINRATE_FIELD_TITLE"
         ]);
         let label: string = await this.getOneText(interaction, "BEST_CIVS_DELETE_BUTTON");
-        let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
-            .map(str => str.slice(str.indexOf("<")));
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str]))).map(str => str.slice(str.indexOf("<")));
 
         let embed: EmbedBuilder[] = this.profileUI.bestCivsEmbed(
             interaction.user, 

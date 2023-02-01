@@ -2,7 +2,7 @@
   { "setting": "RATING_DEFAULT_POINTS", "value": 1000 },
   { "setting": "RATING_ELO_D", "value": 400 },
   { "setting": "RATING_ELO_K", "value": 30 },
-  { "setting": "RATING_VICTORY_MULTIPLIER", "value": 1.5 },
+  { "setting": "RATING_VICTORY_MULTIPLIER_PERCENT", "value": 50 },
 
   { "setting": "RATING_POINTS_TO_ROLE", "value": "" },
   { "setting": "RATING_ROLES_ID", "value": "" },

@@ -1,27 +1,15 @@
-import {
-    JSONDynamicConfigEntityBoolean, JSONDynamicConfigEntityBooleanGameSetting, JSONDynamicConfigEntityChannelMany,
-    JSONDynamicConfigEntityNumber, JSONDynamicConfigEntityNumberMany, JSONDynamicConfigEntityRoleMany,
-    JSONDynamicConfigEntityString, JSONDynamicConfigEntityTeamersForbiddenPairs
-} from "../../types/type.JSON.DynamicConfigEntities";
+import { DynamicConfigEntity } from "./dynamicConfig.models";
 
 export const tagsMap: Map<string, string[]> = new Map<string, string[]>([
     ["DYNAMIC_CONFIG_TITLE", [
         "DYNAMIC_CONFIG_LANGUAGE", "DYNAMIC_CONFIG_MODERATION",
-        "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES",
-        "DYNAMIC_CONFIG_RATING_REPORTS", "DYNAMIC_CONFIG_RATING_NOTIFICATION"
+        "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "DYNAMIC_CONFIG_RATING_REPORTS", 
+        "DYNAMIC_CONFIG_RATING_NOTIFICATION", "DYNAMIC_CONFIG_LEADERBOARD"
     ]],
 ]);
 
-export const configsMap = new Map<string, (JSONDynamicConfigEntityNumber
-    |JSONDynamicConfigEntityString
-    |JSONDynamicConfigEntityBoolean
-    |JSONDynamicConfigEntityTeamersForbiddenPairs
-    |JSONDynamicConfigEntityBooleanGameSetting
-    |JSONDynamicConfigEntityNumberMany
-    |JSONDynamicConfigEntityRoleMany
-    |JSONDynamicConfigEntityChannelMany
-    )[]>([
-    ["DYNAMIC_CONFIG_LANGUAGE", []],
+export const configsMap = new Map<string, DynamicConfigEntity[]>([
+    ["DYNAMIC_CONFIG_LANGUAGE", []],        // Особая конфигурация, берётся из БД и реализуется в методах
     ["DYNAMIC_CONFIG_MODERATION", [
         {
             configTag: "MODERATION_ROLE_MODERATORS_ID",
@@ -54,6 +42,13 @@ export const configsMap = new Map<string, (JSONDynamicConfigEntityNumber
             maxValue: 10000
         },
         {
+            configTag: "RATING_VICTORY_MULTIPLIER_PERCENT",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT",
+            type: "Number",
+            minValue: 0,
+            maxValue: 100
+        },
+        {
             configTag: "RATING_ROLES_ID",
             textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS",
             type: "RoleMany",
@@ -80,8 +75,8 @@ export const configsMap = new Map<string, (JSONDynamicConfigEntityNumber
             type: "Boolean"
         },
         {
-            configTag: "RATING_BOT_REPORTS_CHANNEL_ID",
-            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_BOT",
+            configTag: "RATING_USER_REPORTS_CHANNEL_ID",
+            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_USER",
             type: "ChannelMany",
             minAmount: 0,
             maxAmount: 1
@@ -94,16 +89,16 @@ export const configsMap = new Map<string, (JSONDynamicConfigEntityNumber
             maxAmount: 1
         },
         {
-            configTag: "RATING_REPORT_MODERATION_EMOJIS",
-            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE",
-            type: "Boolean"
-        },
-        {
-            configTag: "RATING_USER_REPORTS_CHANNEL_ID",
-            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_USER",
+            configTag: "RATING_BOT_REPORTS_CHANNEL_ID",
+            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_BOT",
             type: "ChannelMany",
             minAmount: 0,
             maxAmount: 1
+        },
+        {
+            configTag: "RATING_REPORT_MODERATION_EMOJIS",
+            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE",
+            type: "Boolean"
         }
     ]],
     ["DYNAMIC_CONFIG_RATING_NOTIFICATION", [
@@ -127,5 +122,21 @@ export const configsMap = new Map<string, (JSONDynamicConfigEntityNumber
             textTag: "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL",
             type: "Boolean"
         }
+    ]],
+    ["DYNAMIC_CONFIG_LEADERBOARD", [
+        {
+            configTag: "LEADERBOARD_MAX_LENGTH",
+            textTag: "DYNAMIC_CONFIG_LEADERBOARD_LENGTH",
+            type: "Number",
+            minValue: 3,
+            maxValue: 500
+        },
+        {
+            configTag: "LEADERBOARD_STATIC_MAX_LENGTH",
+            textTag: "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH",
+            type: "Number",
+            minValue: 3,
+            maxValue: 500
+        },
     ]],
 ]);

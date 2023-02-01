@@ -1,7 +1,8 @@
 import {DatabaseServiceConfig} from "../../database/services/service.Config";
 import {DatabaseServiceText} from "../../database/services/service.Text";
-import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
+import {ButtonInteraction, CommandInteraction, GuildMember, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
 import {EntityConfig} from "../../database/entities/entity.Config";
+import {UtilsServiceUsers} from "../../utils/services/utils.service.users";
 
 export class ModuleBaseService {
     protected databaseServiceConfig: DatabaseServiceConfig = new DatabaseServiceConfig();
@@ -17,7 +18,7 @@ export class ModuleBaseService {
     }
 
     protected async getManySettingString(
-        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | string,
+        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | StringSelectMenuInteraction | string,
         ...settings: string[]
     ): Promise<string[]> {
         return (typeof interaction === "string")
@@ -26,7 +27,7 @@ export class ModuleBaseService {
     }
 
     protected async updateManySetting(
-        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | string,
+        interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | StringSelectMenuInteraction | string,
         configTags: string[],
         configValues: string[]
     ): Promise<boolean> {
@@ -76,5 +77,17 @@ export class ModuleBaseService {
     ): Promise<string[]> {
         let lang: string = await this.getOneSettingString(interaction, "BASE_LANGUAGE");
         return this.databaseServiceText.getMany(lang, tags, args);
+    }
+
+    protected async isModerator(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | StringSelectMenuInteraction | GuildMember): Promise<boolean> {
+        let member: GuildMember = (interaction.constructor.name === "GuildMember")
+            ? interaction as GuildMember
+            : (interaction as CommandInteraction | ButtonInteraction | ModalSubmitInteraction | StringSelectMenuInteraction).member as GuildMember;
+        if(UtilsServiceUsers.isAdmin(member))
+            return true;
+        let moderationRolesID: string[] = (await this.getOneSettingString(
+            member.guild.id, "MODERATION_ROLE_MODERATORS_ID"
+        )).split(" ");
+        return member.roles.cache.some((value, key) => (moderationRolesID.indexOf(key) !== -1));
     }
 }

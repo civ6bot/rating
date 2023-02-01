@@ -6,17 +6,15 @@ import {DiscordService} from "./discord.service";
 export abstract class DiscordEvents {
     private discordService: DiscordService = new DiscordService();
 
+    @On({event: "interactionCreate"})
+    public async onInteractionCreate([interaction]: ArgsOf<"interactionCreate">, client: Client) {
+        this.discordService.onInteractionCreate(interaction, client);
+    }
+
     @Slash({ name: "about", description: "Bot information" })
     public async about(
         interaction: CommandInteraction
     ) { this.discordService.about(interaction); }
-
-    // Особое событие
-    // не передавать управление в DiscordService
-    @On({event: "interactionCreate"})
-    public async onInteractionCreate([interaction]: ArgsOf<"interactionCreate">, client: Client) {
-        client.executeInteraction(interaction);
-    }
 
     @Once({event: "ready"})
     public async onceReady([clientArg]: ArgsOf<"ready">, client: Client) {

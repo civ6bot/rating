@@ -7,18 +7,14 @@
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER", "value": "Input integer from [MIN_VALUE] to [MAX_VALUE]." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_STRING", "value": "Setting hasn't been changed." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_BOOLEAN_GAME_SETTING", "value": "Game vote should have at least 2 available options." },
-    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Setting hasn't been changed. Your list has errors.\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – pair of civilizations on newline;\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma and dash." },
-    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_SAME_IN_PAIR", "value": "Setting hasn't been changed. List has pair with same civilization.\n\n[CIVILIZATION_ERROR]\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma and dash." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Setting hasn't been changed. Your list has errors.\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – pair of civilizations on newline;\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma, brackets and dash." },    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_SAME_IN_PAIR", "value": "Setting hasn't been changed. List has pair with same civilization.\n\n[CIVILIZATION_ERROR]\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nCheck input syntax:\n  – civilizations divided by comma;\n  – no pair hasn't same civilizations;\n  – no special characters except comma and dash." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_TRIANGLE", "value": "Setting hasn't been changed. List has civilizations that cannot be separated between 2 teams.\n\n[CIVILIZATIONS_ERRORS]\n\nYour input:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nBe sure that pairs don't form \"triangles\" of civilizations." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] integers in the range from [MIN_VALUE] to [MAX_VALUE]." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_ROLE_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] roles (or roles ID)." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_CHANNEL_MANY", "value": "Input from [MIN_AMOUNT] to [MAX_AMOUNT] channels (or channels ID)." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_EMOJI", "value": "Input full emoji name with ID. Write backslash (\"\\\\\") character before emoji to get it." },
 
     { "tag": "DYNAMIC_CONFIG_BUTTON_BACK", "value": "Back" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_FIRST", "value": "First page" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_PREVIOUS", "value": "Prev. page" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_NEXT", "value": "Next Page" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_LAST", "value": "Last page" },
     { "tag": "DYNAMIC_CONFIG_BUTTON_RESET", "value": "Reset settings" },
     { "tag": "DYNAMIC_CONFIG_BUTTON_DELETE", "value": "Delete message" },
 
@@ -63,6 +59,8 @@
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Elo D" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Special victory additional points, %" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "Roles IDs" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "List of min points to get role" },
@@ -95,6 +93,15 @@
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR", "value": "Accepted report, to author" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL", "value": "Accepted report, to all" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" }
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD", "value": "Leaderboard" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_EMOJI", "value": "🏆" },
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Max length of leaderboard message" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "📰" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Max length of static leaderboard" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" }
   ]
 }

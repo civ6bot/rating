@@ -1,6 +1,0 @@
-[
-  { "setting": "DYNAMIC_CONFIG_PAGINATION_SIZE", "value": 6 },
-  { "setting": "DYNAMIC_CONFIG_LIFE_TIME_MS", "value": 300000 },
-  
-  { "setting": "MODERATION_ROLE_MODERATORS_ID", "value": "" }
-]

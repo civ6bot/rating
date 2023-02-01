@@ -1,13 +1,12 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildMember, GuildTextBasedChannel, InteractionType, Message } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildTextBasedChannel, InteractionType, Message } from "discord.js";
 import { discordClient } from "../../client/client";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
-import { UtilsServiceUsers } from "../../utils/services/utils.service.users";
 import { ModuleBaseService } from "../base/base.service";
 import { LeaderboardUI } from "./leaderboard.ui";
 
 export class LeaderboardService extends ModuleBaseService {
-    private leaderboardSmallPlayersPerPage: number = 10;
+    private leaderboardPlayersPerPage: number = 25;
 
     private leaderboardUI: LeaderboardUI = new LeaderboardUI();
 
@@ -15,20 +14,6 @@ export class LeaderboardService extends ModuleBaseService {
 
     private isOwner(interaction: ButtonInteraction): boolean {
         return interaction.customId.split("-")[2] === interaction.user.id;
-    }
-
-    private async isModerator(interaction: CommandInteraction | ButtonInteraction): Promise<boolean> {
-        let member: GuildMember = interaction.member as GuildMember;
-        if(UtilsServiceUsers.isAdmin(member))
-            return true;
-        let moderationRolesID: string[] = (await this.getOneSettingString(
-            interaction, "MODERATION_ROLE_MODERATORS_ID"
-        )).split(" ");
-        return member.roles.cache.some((value, key) => (moderationRolesID.indexOf(key) !== -1));
-    }
-
-    private async updateLeaderboardConfigByMessage(type: string, message: Message): Promise<void> {
-        this.updateLeaderboardConfig(message.guild?.id as string, type, message.channel.id, message.id);
     }
 
     private async updateLeaderboardConfig(guildID: string, type: string, channelID: string = "", messageID: string = ""): Promise<void> {
@@ -59,20 +44,25 @@ export class LeaderboardService extends ModuleBaseService {
         let message: Message|null = await this.getLeaderboardMessage(guildID, type);
         if(message === null)
             return;
-        let leaderboardMaxLength: number = await this.getOneSettingNumber(guildID, "LEADERBOARD_MAX_LENGTH");
+        let leaderboardMaxLength: number = await this.getOneSettingNumber(guildID, "LEADERBOARD_STATIC_MAX_LENGTH");
         let userRatings: EntityUserRating[] = (type === "FFA")
             ? await this.databaseServiceUserRating.getBestRatingFFA(guildID, leaderboardMaxLength)
             : await this.databaseServiceUserRating.getBestRatingTeamers(guildID, leaderboardMaxLength);
         let title: string = await this.getOneText(guildID, (type === "FFA") ? "LEADERBOARD_STATIC_FFA_TITLE" : "LEADERBOARD_STATIC_TEAMERS_TITLE");
         let emptyDescription: string = await this.getOneText(guildID, "LEADERBOARD_DESCRIPTION_EMPTY");
-
-        message.edit({content: this.leaderboardUI.leaderboardStaticMessage(
-            userRatings, 
-            type, 
-            this.leaderboardSmallPlayersPerPage, 
-            title, 
-            emptyDescription
-        )});
+        let fieldHeaders: string[] = await this.getManyText(guildID, [
+            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER"
+        ]);
+        message.edit({
+            embeds: this.leaderboardUI.leaderboardStaticEmbed(
+                userRatings,
+                type,
+                this.leaderboardPlayersPerPage,
+                title,
+                emptyDescription,
+                fieldHeaders
+            ), content: null
+        });
     }
 
     public async leaderboard(interaction: CommandInteraction | ButtonInteraction, type: string, pageCurrent: number = 1){
@@ -80,7 +70,7 @@ export class LeaderboardService extends ModuleBaseService {
         let userRatings: EntityUserRating[] = (type === "FFA")
             ? await this.databaseServiceUserRating.getBestRatingFFA(interaction.guild?.id as string, leaderboardMaxLength)
             : await this.databaseServiceUserRating.getBestRatingTeamers(interaction.guild?.id as string, leaderboardMaxLength);
-        let pageTotal: number = Math.ceil(userRatings.length/this.leaderboardSmallPlayersPerPage);
+        let pageTotal: number = Math.ceil(userRatings.length/this.leaderboardPlayersPerPage);
         switch(pageCurrent) {
             case 99:                            // нельзя использовать одинаковые ID кнопок
                 pageCurrent = 1; break;         // поэтому чтобы избежать повторений, было сделано это
@@ -92,20 +82,23 @@ export class LeaderboardService extends ModuleBaseService {
             pageCurrent, Math.max(pageTotal, 1)
         );
         let emptyDescription: string = await this.getOneText(interaction, "LEADERBOARD_DESCRIPTION_EMPTY");
+        let fieldHeaders: string[] = await this.getManyText(interaction, [
+            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER"
+        ]);
         let label: string = await this.getOneText(interaction, "LEADERBOARD_DELETE");
 
         let embed: EmbedBuilder[] = this.leaderboardUI.leaderboardEmbed(
             interaction.user,
             type,
             userRatings.slice(
-                (pageCurrent-1)*this.leaderboardSmallPlayersPerPage, 
-                (pageCurrent)*this.leaderboardSmallPlayersPerPage, 
+                (pageCurrent-1)*this.leaderboardPlayersPerPage, 
+                (pageCurrent)*this.leaderboardPlayersPerPage, 
             ),
             title,
             emptyDescription,
+            fieldHeaders,
             pageCurrent,
-            pageTotal,
-            this.leaderboardSmallPlayersPerPage
+            this.leaderboardPlayersPerPage
         ), component: ActionRowBuilder<ButtonBuilder>[] = await this.leaderboardUI.leaderboardButtons(
             type,
             interaction.user.id,
@@ -175,9 +168,10 @@ export class LeaderboardService extends ModuleBaseService {
         }
         try {
             let message: Message = await (interaction.channel as GuildTextBasedChannel).send({content: "Please, wait..."});
-            this.updateLeaderboardConfigByMessage(type, message);
+            this.updateLeaderboardConfig(message.guild?.id as string, type, message.channel.id, message.id);
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_SUCCESS_NOTIFY"]);
             interaction.reply({embeds: this.leaderboardUI.notify(textLines[0], textLines[1]), ephemeral: true});
+            this.updateLeaderboardStaticContent(interaction.guild?.id as string, type);
         } catch {
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_ERROR_SEND"]);
             interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});

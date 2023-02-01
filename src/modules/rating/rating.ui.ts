@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Guild, ModalBuilder, TextInputStyle, User } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, Guild, ModalBuilder, TextInputStyle, User } from "discord.js";
 import { EntityPendingRatingNote } from "../../database/entities/entity.PendingRatingNote";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
@@ -8,24 +8,57 @@ import { UtilsGeneratorModal } from "../../utils/generators/utils.generator.moda
 import { ModuleBaseUI } from "../base/base.ui";
 
 export class RatingUI extends ModuleBaseUI {
-    private getFullDescriptionFromNotes(
+    private thumbnailVictoryImages: string[] = [
+        "https://media.discordapp.net/attachments/795265098159357953/1051199855172792372/Science_Victory.png",
+        "https://media.discordapp.net/attachments/795265098159357953/1051199855550275584/Culture_Victory.png",
+        "https://cdn.discordapp.com/attachments/795265098159357953/1051199855852269698/Domination_Victory.png",
+        "https://media.discordapp.net/attachments/795265098159357953/1051199857899077743/Religious_Victory.png",
+        "https://media.discordapp.net/attachments/795265098159357953/1051199858226241687/Diplomatic_Victory.png"
+    ];
+
+    private getVictoryObjectLine(gameType: string|null, victoryType: string|null, victoryLines: string[]): string {
+        victoryLines.push("—");
+        let victoryIndex: number;
+        switch(victoryType) {
+            case "Science":
+                victoryIndex = 0; break;
+            case "Culture":
+                victoryIndex = 1; break;
+            case "Domination":
+                victoryIndex = 2; break;
+            case "Religious":
+                victoryIndex = 3; break;
+            case "Diplomatic":
+                victoryIndex = 4; break;
+            default:
+                if(gameType === "FFA")
+                    victoryIndex = 5;
+                else if(gameType === "Teamers")
+                    victoryIndex = 6;
+                else
+                    victoryIndex = 7;
+                break;
+        }
+        return victoryLines[victoryIndex];
+    }
+
+    private getHeaderDescription(
+        descriptionHeaders: string[],
+        values: string[],
+        isRequiredArray: boolean[]
+    ): string {
+        return descriptionHeaders
+            .map((descriptionHeader: string, index: number): string => `${descriptionHeader}: **${(values[index].length) ? values[index] : "—"}**`)
+            .filter((value: string, index: number): boolean => isRequiredArray[index] ?? true)
+            .join("\n");
+    }
+
+    private getUserDescriptionFromNotes(
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
         usersRating: EntityUserRating[],
-
-        descriptionHeaders: string[],       // 4 // ID, gameType, host, victory
-        victoryLine: string,
-        civLines: string[],
-
-        isRequiredGameID: boolean = true
+        civLines: string[]
     ): string {
-        let description: string = (isRequiredGameID) ? `${descriptionHeaders[0]}: **${ratingNotes[0].gameID}**\n` : "";
-        if(ratingNotes[0]?.gameType)
-            description += `${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n`;
-        description += `${descriptionHeaders[3]}: ${victoryLine}\n`;
-        if(ratingNotes.filter(ratingNote => ratingNote.isHost).length > 0)
-            description += `${descriptionHeaders[2]}: <@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>\n`;
-        description += "\n";
-        
+        let description: string = "";
         if(ratingNotes.length === 0)
             return description;
         
@@ -58,7 +91,7 @@ export class RatingUI extends ModuleBaseUI {
                 placeLines.push(placeLine);
         }
         for(let i: number = playersTotal; i < ratingNotes.length; i++)
-            placeLines.push(" - ");
+            placeLines.push(" -- ");
         
         ratingNotes.forEach((ratingNote: EntityRatingNote|EntityPendingRatingNote, index: number) => {
             ratingChangeLines.push(spacesString.concat(`${ratingNote.typedRating >= 0 ? "+" : ""}${ratingNote.typedRating}`).slice(-4));
@@ -76,7 +109,7 @@ export class RatingUI extends ModuleBaseUI {
             else
                 statusEmojiLines.push("<:EmptySpace:1057693249776660552>");
             userLines.push(`<@${ratingNote.userID}>`);
-            userCivLines.push((ratingNote.isSubOut) ? "" : civLines[ratingNote.civilizationID || -1] || "");
+            userCivLines.push((ratingNote.isSubOut) ? "" : civLines[ratingNote.civilizationID ?? -1] || "");
         });
         let placeLineMaxLength: number = Math.max(...placeLines.map(str => str.length));
         placeLines = placeLines.map(str => Array<string>(placeLineMaxLength-str.length).fill(" ").join("")+str);
@@ -91,21 +124,15 @@ export class RatingUI extends ModuleBaseUI {
         return description;
     }
 
-    private getCancelDescriptionFromNotes(
-        ratingNotes: EntityRatingNote[],
-        usersRating: EntityUserRating[],
-        descriptionHeaders: string[],       // 3 // ID, type, host
+    // Более простой вариант
+    // Без мест, цивилизаций и эмодзи
+    private getUserCancelDescriptionFromNotes(
+        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        usersRating: EntityUserRating[]
     ): string {
-        let description: string = `${descriptionHeaders[0]}: **${ratingNotes[0].gameID}** <:No:808418109319938099>\n${descriptionHeaders[1]}: ${ratingNotes[0].gameType}\n`;
-        for(let i in ratingNotes)
-                if(ratingNotes[i].isHost) {
-                    description += `${descriptionHeaders[2]}: <@${ratingNotes[i].userID}>\n`;
-                    break;
-                }
-        description += "\n";
-
+        let description: string = "";
         let spacesString: string = "    ";
-        ratingNotes.forEach((ratingNote: EntityRatingNote, index: number) => {
+        ratingNotes.forEach((ratingNote: EntityRatingNote|EntityPendingRatingNote, index: number) => {
             if((index !== 0) && (ratingNote.isSubOut) && (!ratingNotes[index-1].isSubOut))
                 description += "\n";
             description += `\`${spacesString.concat(`${ratingNote.typedRating*-1 >= 0 ? "+" : ""}${ratingNote.typedRating*-1}`).slice(-4)}\`  \`${spacesString.concat(`(${ratingNote.gameType === "FFA" ? usersRating[index].ffaRating : usersRating[index].teamersRating})`).slice(-6)}\`  <@${ratingNote.userID}>\n`;
@@ -113,175 +140,128 @@ export class RatingUI extends ModuleBaseUI {
         return description;
     }
 
-    private getVictoryObjectLine(gameType: string|null, victoryType: string|null, victoryLines: string[]): string {
-        /*
-        let thumbnailVictoryImages: string[] = [
-            "https://media.discordapp.net/attachments/795265098159357953/1051199855172792372/Science_Victory.png",
-            "https://media.discordapp.net/attachments/795265098159357953/1051199855550275584/Culture_Victory.png",
-            "https://cdn.discordapp.com/attachments/795265098159357953/1051199855852269698/Domination_Victory.png",
-            "https://media.discordapp.net/attachments/795265098159357953/1051199857899077743/Religious_Victory.png",
-            "https://media.discordapp.net/attachments/795265098159357953/1051199858226241687/Diplomatic_Victory.png"
-        ];
-        */
-        victoryLines.push("—");
-        let victoryIndex: number;
-        switch(victoryType) {
-            case "Science":
-                victoryIndex = 0; break;
-            case "Culture":
-                victoryIndex = 1; break;
-            case "Domination":
-                victoryIndex = 2; break;
-            case "Religious":
-                victoryIndex = 3; break;
-            case "Diplomatic":
-                victoryIndex = 4; break;
-            default:
-                if(gameType === "FFA")
-                    victoryIndex = 5;
-                else if(gameType === "Teamers")
-                    victoryIndex = 6;
-                else
-                    victoryIndex = 7;
-                break;
-        }
-        return victoryLines[victoryIndex];
-    }
 
 
-
-    public reportAcceptRevertEmbed(
+    public reportBrightEmbed(
         author: User,
         isModerator: boolean,
 
         usersRating: EntityUserRating[],
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
-        title: string,                      // Разные для accept/revert
-        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
+        title: string,
+        description: string,                // pre-description
+
+        descriptionHeaders: string[],       // 4: ID, type, host, victoryName
+        descriptionHeadersFlags: boolean[],
         victoryLines: string[],
         civLines: string[],
+
         moderatorPrefix: string
-    ): EmbedBuilder[] {          
-        let victoryLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
-        let description: string = this.getFullDescriptionFromNotes(
-            ratingNotes, usersRating,
-            descriptionHeaders, victoryLine, civLines
-        );
-            
+    ): EmbedBuilder[] {
+        let values: string[] = [
+            String(ratingNotes[0].gameID),
+            ratingNotes[0].gameType || "",
+            (ratingNotes.filter(ratingNote => ratingNote.isHost)[0]?.userID) ? `<@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>` : "",
+            this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines)
+        ];
+        description = description + 
+            ((description.length) ? "\n\n" : "") + 
+            this.getHeaderDescription(descriptionHeaders, values, descriptionHeadersFlags) + 
+            "\n\n" + 
+            this.getUserDescriptionFromNotes(ratingNotes, usersRating, civLines);
+        let color: ColorResolvable = ((ratingNotes[0].gameType === "FFA") ? "#389FFF" : "#00FF40");
+
         return UtilsGeneratorEmbed.getSingle(
             title,
-            (ratingNotes[0].gameType === "FFA") ? "#389FFF" : "#00FF40",
+            color,
             description,
             [],
             `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
-            author.avatarURL(),
-            ""
+            author.avatarURL()
         );
     }
 
-    public reportCancelEmbed(
+    public reportDarkShortEmbed(
         author: User,
 
         usersRating: EntityUserRating[],
-        ratingNotes: EntityRatingNote[],
+        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
         title: string,
-        descriptionHeaders: string[],       // 3 // ID, type, host
+        description: string,                // pre-description
+
+        descriptionHeaders: string[],       // 4: ID, type, host, victoryName
+        descriptionHeadersFlags: boolean[],
+
         moderatorPrefix: string
     ): EmbedBuilder[] {
-        let description: string = this.getCancelDescriptionFromNotes(ratingNotes, usersRating, descriptionHeaders);
+        let values: string[] = [
+            String(ratingNotes[0].gameID),
+            ratingNotes[0].gameType || "",
+            (ratingNotes.filter(ratingNote => ratingNote.isHost)[0]?.userID) ? `<@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>` : "",
+            ""
+        ];
+        description = description + 
+            ((description.length) ? "\n\n" : "") + 
+            this.getHeaderDescription(descriptionHeaders, values, descriptionHeadersFlags) + 
+            "\n\n" + 
+            this.getUserCancelDescriptionFromNotes(ratingNotes, usersRating);
+        let color: ColorResolvable = ((ratingNotes[0].gameType === "FFA") ? "#1F578C" : "#008221");
 
         return UtilsGeneratorEmbed.getSingle(
             title,
-            (ratingNotes[0].gameType === "FFA") ? "#1F578C" : "#008221",
+            color,
             description,
             [],
             `${moderatorPrefix} ${author.tag}`,
-            author.avatarURL(),
-            ""
+            author.avatarURL()
         );
     }
 
-    public reportProcessingOKEmbed(
-        author: User,
+    public reportDangerEmbed(
+        author: User|Guild,
         isModerator: boolean,
 
         usersRating: EntityUserRating[],
         ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
 
         title: string,
-        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
+        description: string,                // pre-description
+
+        descriptionHeaders: string[],       // 4: ID, type, host, victoryName
+        descriptionHeadersFlags: boolean[],
         victoryLines: string[],
         civLines: string[],
-        moderatorPrefix: string,
 
-        readyDescription: string,
-        warningDescription: string,
-        warningDescriptionLines: string[],
+        moderatorPrefix: string
     ): EmbedBuilder[] {
-        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
-        let description: string = this.getFullDescriptionFromNotes(
-            ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLine, civLines,
-            false
-        );
-        let predescription: string = readyDescription + "\n\n";
-        if(warningDescriptionLines.length > 0)
-            predescription += warningDescription + "\n" + warningDescriptionLines.map(line => `⚠️ ${line}`).join("\n") + "\n\n";
-        description = predescription + description;
-            
-        return UtilsGeneratorEmbed.getSingle(
-            title,
-            (ratingNotes[0].gameType === "FFA") ? "#389FFF" : "#00FF40",
-            description,
-            [],
-            `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
-            author.avatarURL(),
-            ""
-        );
-    }
-
-    public reportProcessingErrorEmbed(
-        author: User,
-        isModerator: boolean,
-
-        usersRating: EntityUserRating[],
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
-
-        title: string,
-        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
-        victoryLines: string[],
-        civLines: string[],
-        moderatorPrefix: string,
-
-        errorDescription: string,
-        errorDescriptionLines: string[],
-        warningDescription: string,
-        warningDescriptionLines: string[],
-    ): EmbedBuilder[] {
-        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0]?.gameType || null, ratingNotes[0]?.victoryType || null, victoryLines);
-        let description: string = this.getFullDescriptionFromNotes(
-            ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLine, civLines,
-            false
-        );
-        let predescription: string = errorDescription + "\n" + errorDescriptionLines.map(line => `<:No:808418109319938099> ${line}`).join("\n") + "\n\n";
-        if(warningDescriptionLines.length > 0)
-            predescription += warningDescription + "\n" + warningDescriptionLines.map(line => `⚠️ ${line}`).join("\n") + "\n\n";
-        description = predescription + description;
-            
+        let values: string[] = [
+            String(ratingNotes[0].gameID),
+            ratingNotes[0].gameType || "",
+            (ratingNotes.filter(ratingNote => ratingNote.isHost)[0]?.userID) ? `<@${ratingNotes.filter(ratingNote => ratingNote.isHost)[0].userID}>` : "",
+            this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines)
+        ];
+        description = description + 
+            ((description.length) ? "\n\n" : "") + 
+            this.getHeaderDescription(descriptionHeaders, values, descriptionHeadersFlags) + 
+            "\n\n" + 
+            this.getUserDescriptionFromNotes(ratingNotes, usersRating, civLines);
+        
         return UtilsGeneratorEmbed.getSingle(
             title,
             "#DD2E44",
             description,
             [],
-            `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
-            author.avatarURL(),
-            ""
+            (author.constructor.name === "Guild") ? (author as Guild).name : `${(isModerator) ? moderatorPrefix + " " : ""}${(author as User).tag}`,
+            (author.constructor.name === "Guild") ? (author as Guild).iconURL() : (author as User).avatarURL()
         );
     }
 
+
+
+    // Предложение перейти из личных сообщений на сообщение с отчётом
+    // Проверяющийся или подтверждённый
     public reportPMEmbed(
         gameType: string,
         title: string,
@@ -295,35 +275,6 @@ export class RatingUI extends ModuleBaseUI {
             [],
             guild?.name,
             guild?.iconURL()
-        );
-    }
-
-    public reportRejectPMEmbed(
-        guild: Guild,
-
-        usersRating: EntityUserRating[],
-        ratingNotes: EntityPendingRatingNote[],
-
-        title: string,
-        rejectDescription: string,
-        descriptionHeaders: string[],       // 4 // ID, type, host, victoryName
-        victoryLines: string[],
-        civLines: string[],
-    ): EmbedBuilder[] {
-        let victoryObjectLine: string = this.getVictoryObjectLine(ratingNotes[0].gameType, ratingNotes[0].victoryType, victoryLines);
-        let description: string = this.getFullDescriptionFromNotes(
-            ratingNotes, usersRating,
-            descriptionHeaders, victoryObjectLine, civLines
-        );
-
-        return UtilsGeneratorEmbed.getSingle(
-            title,
-            "#DD2E44",
-            rejectDescription + "\n\n" + description,
-            [],
-            guild?.name,
-            guild?.iconURL(),
-            ""
         );
     }
 
@@ -366,8 +317,9 @@ export class RatingUI extends ModuleBaseUI {
             title,
             ["rating-report-moderator-reject-modal-description"],
             [label],
-            [],
-            [TextInputStyle.Short]
+            [""],
+            [TextInputStyle.Short],
+            true
         );
     }
 

@@ -6,6 +6,9 @@
 
     { "tag": "LEADERBOARD_DESCRIPTION_EMPTY", "value": "Users not found." },
 
+    { "tag": "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "value": "Player" },
+    { "tag": "LEADERBOARD_DESCRIPTION_RATING_HEADER", "value": "Rating" },
+
     { "tag": "LEADERBOARD_DELETE", "value": "Delete" },
 
     { "tag": "LEADERBOARD_STATIC_TITLE", "value": "Leaderboard static messages info" },

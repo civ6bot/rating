@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildMember, Message, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildMember, Message, ModalSubmitInteraction, PermissionFlagsBits, TextChannel } from "discord.js";
 import { discordClient } from "../../client/client";
 import { EntityPendingRatingNote } from "../../database/entities/entity.PendingRatingNote";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
@@ -7,14 +7,15 @@ import { DatabaseServicePendingRatingNote } from "../../database/services/servic
 import { DatabaseServiceRatingNote } from "../../database/services/service.RatingNote";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
 import { UtilsGeneratorTimestamp } from "../../utils/generators/utils.generator.timestamp";
-import { UtilsServiceCivilizations } from "../../utils/services/utils.service.civilizations";
+import { UtilsDataCivilizations } from "../../utils/data/utils.data.civilizations";
 import { UtilsServiceEmojis } from "../../utils/services/utils.service.emojis";
 import { UtilsServicePM } from "../../utils/services/utils.service.PM";
 import { UtilsServiceTime } from "../../utils/services/utils.service.time";
-import { UtilsServiceUsers } from "../../utils/services/utils.service.users";
 import { ModuleBaseService } from "../base/base.service";
 import { RatingChatMessageData } from "./rating.models";
 import { RatingUI } from "./rating.ui";
+import { UtilsServiceSyntax } from "../../utils/services/utils.service.syntax";
+import { RatingAdapter } from "./rating.adapter";
 
 export class RatingService extends ModuleBaseService {
     public static processingSlashMessages: (Message|undefined)[] = [];
@@ -23,6 +24,8 @@ export class RatingService extends ModuleBaseService {
     public ratingProcessingTimeoutMs: number = UtilsServiceTime.getMs(300, "s");
 
     private ratingUI: RatingUI = new RatingUI();
+
+    private ratingAdapter: RatingAdapter = new RatingAdapter();
 
     private databaseServiceUserRating: DatabaseServiceUserRating = new DatabaseServiceUserRating();
     private databaseServiceRatingNote: DatabaseServiceRatingNote = new DatabaseServiceRatingNote();
@@ -58,16 +61,6 @@ export class RatingService extends ModuleBaseService {
 
     private isOwner(interaction: ButtonInteraction): boolean {
         return interaction.customId.split("-").pop() === interaction.user.id;
-    }
-
-    private async isModerator(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction): Promise<boolean> {
-        let member: GuildMember = interaction.member as GuildMember;
-        if(UtilsServiceUsers.isAdmin(member))
-            return true;
-        let moderationRolesID: string[] = (await this.getOneSettingString(
-            interaction, "MODERATION_ROLE_MODERATORS_ID"
-        )).split(" ");
-        return member.roles.cache.some((value, key) => (moderationRolesID.indexOf(key) !== -1));
     }
 
     private getEloRatingChange(
@@ -129,21 +122,25 @@ export class RatingService extends ModuleBaseService {
             "RATING_REPORT_SYNONYMS_VICTORY_DIPLOMATIC", "RATING_REPORT_SYNONYMS_VICTORY_CC",
             "RATING_REPORT_SYNONYMS_VICTORY_GG"                             // 12
         ];
-
+        let newLinesIndex: number = msg.indexOf("\n\n\n");
+        if(newLinesIndex === -1)
+            newLinesIndex = msg.length;
         let words: string[] = msg
             .concat("\n")
-            .slice(0, msg.indexOf("\n\n\n"))            // Все данные за 3 переносами строки игнорируются
+            .slice(0, newLinesIndex)            // Все данные за 3 переносами строки игнорируются
             .replaceAll(/[.,;\-\n]/g, " ")
             .toLowerCase()
             .split(" ")
             .filter(str => str.length > 0);
         let synonyms: string[][] = (await this.getManyText(guildID, textKeywords)).map(synonym => synonym.split(", "));
-        let civLines: string[] = await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags);
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])));
         let baseLanguageCivLines: string[] = [];
         if(!isBaseLanguage) {
             let englishSynonyms: string[][] = (await this.getManyText("DEFAULT", textKeywords)).map(synonym => synonym.split(", "));
             synonyms = synonyms.map((synonym: string[], index: number): string[] => synonym.concat(englishSynonyms[index]));
-            baseLanguageCivLines = await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags);
+            let baseCivEmojis: string[] = await this.getManySettingString("DEFAULT", ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+            baseLanguageCivLines = await this.getManyText("DEFAULT", UtilsDataCivilizations.civilizationsTags, baseCivEmojis.map(str => [str]));
         }
 
         let regexUserID: RegExp = new RegExp(/<@\d+>/);
@@ -152,7 +149,7 @@ export class RatingService extends ModuleBaseService {
             tempIsTieFlag: boolean = false,
             tempHostUserID: string = "";
         words.forEach((word: string, index: number) => {
-            let parseResult: boolean[] = synonyms.map(synonym => UtilsServiceCivilizations.searchTexts(word, synonym).length > 0);
+            let parseResult: boolean[] = synonyms.map(synonym => UtilsServiceSyntax.searchExactlyTexts(word, synonym).length > 0);
             let synonymIndex: number = parseResult.indexOf(true);
             if(synonymIndex !== -1) 
                 switch(synonymIndex) {
@@ -228,10 +225,14 @@ export class RatingService extends ModuleBaseService {
                 return;
             }
 
-            let bans: number[] = UtilsServiceCivilizations.parseBans(words.slice(index, index+2).join(" "), civLines).bans      // Если это упоминание цивилизации
-                .concat(UtilsServiceCivilizations.parseBans(words.slice(index, index+2).join(" "), baseLanguageCivLines).bans);
-            if((bans.length > 0) && (pendingRatingNotes.length > 0)) {
-                pendingRatingNotes[pendingRatingNotes.length-1].civilizationID = bans[0];
+            let wordsToParseCivilization: string[] = words.slice(index, index+3);
+            for(let i: number = 0; i < wordsToParseCivilization.length; i++) 
+                if(wordsToParseCivilization[i].indexOf("@") !== -1) 
+                    wordsToParseCivilization.splice(i);
+            let bans: number[] = UtilsServiceSyntax.parseBans(wordsToParseCivilization.join(" "), baseLanguageCivLines).bans        // Если это упоминание цивилизации
+                .concat(UtilsServiceSyntax.parseBans(wordsToParseCivilization.join(" "), civLines).bans);                          // (сначала на английском, потом на другом)
+            if((bans.length > 0) && (pendingRatingNotes.length > 0) && (pendingRatingNotes[pendingRatingNotes.length-1].civilizationID === undefined)) {   // Если ещё не указана цивилизация,
+                pendingRatingNotes[pendingRatingNotes.length-1].civilizationID = bans[0];                                                   // то выдать её игроку
                 if(pendingRatingNotes[pendingRatingNotes.length-1].isSubOut && pendingRatingNotes[pendingRatingNotes.length-2].isSubIn)     // Заменяющий тоже получает цивилизацию
                     pendingRatingNotes[pendingRatingNotes.length-2].civilizationID = bans[0];
             }
@@ -292,13 +293,8 @@ export class RatingService extends ModuleBaseService {
     public calculateRatingNotes(
         pendingRatingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
         usersRating: EntityUserRating[],
-        eloK: number, eloD: number, victoryMultiplier: number
+        eloK: number, eloD: number, victoryMultiplierPercent: number
     ): void {
-        victoryMultiplier = 1.5;
-        // База данных не может хранить дробные числа,
-        // но при этом пользователь не может измениять коэффициент,
-        // поэтому временно переназначается здесь.
-
         let gameType: string|null = pendingRatingNotes[0]?.gameType || null;
         let playersTotal: number = pendingRatingNotes.filter(pendingRatingNote => !pendingRatingNote.isSubOut).length;
         let victoryType: string|null = pendingRatingNotes[0]?.victoryType || null;
@@ -317,10 +313,6 @@ export class RatingService extends ModuleBaseService {
         }
         if((gameType === null) || (playersPerTeam % 1))     // Если дробное, т.е. не делится
             return; 
-        if(gameType === "FFA")
-            victoryType = "CC";
-        else if(gameType === "Teamers")
-            victoryType = "GG";
         
         for(let i: number = 0; i < teamsTotal-1; i++)           // Основные игроки
             for(let j: number = 0; j < playersPerTeam; j++) 
@@ -375,10 +367,10 @@ export class RatingService extends ModuleBaseService {
             }
             subOutIndex++;
         });
-        if(!!victoryType && (victoryType !== "CC") && (victoryType !== "GG"))
+        if(!!victoryType && (victoryType !== "CC") && (victoryType !== "GG")) 
             pendingRatingNotes.forEach(pendingRatingNote => {
-                pendingRatingNote.rating = Math.round(pendingRatingNote.rating*victoryMultiplier);
-                pendingRatingNote.typedRating = Math.round(pendingRatingNote.typedRating*victoryMultiplier);
+                pendingRatingNote.rating = Math.round(pendingRatingNote.rating*(1+victoryMultiplierPercent/100));
+                pendingRatingNote.typedRating = Math.round(pendingRatingNote.typedRating*(1+victoryMultiplierPercent/100));
             });
     }
 
@@ -417,7 +409,7 @@ export class RatingService extends ModuleBaseService {
                 ? errorTags.push("RATING_REPORT_ERROR_HOST")
                 : warningTags.push("RATING_REPORT_WARNING_HOST");
         }
-        if(pendingRatingNotes.some(pendingRatingNote => !pendingRatingNote.civilizationID)) {    // Может быть undefined
+        if(pendingRatingNotes.some(pendingRatingNote => pendingRatingNote.civilizationID === undefined)) {    // Может быть undefined
             (isReportCivs) 
                 ? errorTags.push("RATING_REPORT_ERROR_CIVILIZATIONS")
                 : warningTags.push("RATING_REPORT_WARNING_CIVILIZATIONS");
@@ -536,95 +528,40 @@ export class RatingService extends ModuleBaseService {
         }
     }
     
-    public async onMessageCreate(message: Message) {
+    public async onMessage(message: Message, isCreated: boolean) {
+        if(message.author.id === discordClient.user?.id)
+            return;
         let guildID: string|null = message.guildId;
         if(guildID === null)
             return;
         let userChannelID = await this.getOneSettingString(message.guild?.id as string, "RATING_USER_REPORTS_CHANNEL_ID");
         if(userChannelID !== message.channel.id)
             return;
-        let pendingRatingNotes: EntityPendingRatingNote[] = await this.generatePendingRatingNotes(guildID, message.content);
-        if(pendingRatingNotes.length === 0)
-            return;
-
-        let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(guildID, pendingRatingNotes.map(note => note.userID));
-        let [eloK, eloD, victoryMultiplier] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER");
-        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplier);
-        let {errors, warnings} = await this.checkPendingRatingNotes(pendingRatingNotes, guildID);
-        this.applyPendingRating(usersRating, pendingRatingNotes);
-        let descriptionHeaders: string[] = await this.getManyText(guildID, [
-            "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
-            "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
-        ]);
-        let victoryLines: string[] = await this.getManyText(guildID, [
-            "RATING_DESCRIPTION_VICTORY_SCIENCE", "RATING_DESCRIPTION_VICTORY_CULTURE",
-            "RATING_DESCRIPTION_VICTORY_DOMINATION", "RATING_DESCRIPTION_VICTORY_RELIGIOUS",
-            "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
-            "RATING_DESCRIPTION_VICTORY_GG"
-        ]);
-        let civLines: string[] = (await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags))
-            .map(str => str.slice(str.indexOf("<")));
-        let warningsDescription: string = await this.getOneText(guildID, "RATING_REPORT_WARNINGS_TITLE");
-        let warningDescriptionLines: string[] = await this.getManyText(guildID, warnings);
-        let title: string = await this.getOneText(guildID, "RATING_REPORT_TITLE");
-        let labels: string[] = await this.getManyText(guildID, [
-            "RATING_CONFIRM_BUTTON", "RATING_CANCEL_BUTTON" 
-        ]);
-
-        if(errors.length === 0)
-            this.databaseServicePendingRatingNote.insertAll(pendingRatingNotes);
-
-        let embeds: EmbedBuilder[], buttons: ActionRowBuilder<ButtonBuilder>[];
-        if(errors.length > 0) {
-            let errorsDescription: string = await this.getOneText(guildID, "RATING_REPORT_ERRORS_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
-            let errorDescriptionLines: string[] = await this.getManyText(guildID, errors);
-            embeds = this.ratingUI.reportProcessingErrorEmbed(
-                message.author, false,
-                usersRating, pendingRatingNotes, 
-                title, descriptionHeaders, victoryLines, civLines, "",
-                errorsDescription, errorDescriptionLines, warningsDescription, warningDescriptionLines
-            );
-            buttons = this.ratingUI.reportProcessingButtons(message.author.id, pendingRatingNotes[0].gameID, labels, true)
-        } else {
-            let readyDescription: string = await this.getOneText(guildID, "RATING_REPORT_OK_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
-            embeds = this.ratingUI.reportProcessingOKEmbed(
-                message.author, false,
-                usersRating, pendingRatingNotes,
-                title, descriptionHeaders, victoryLines, civLines, "",
-                readyDescription, warningsDescription, warningDescriptionLines
-            );
-            buttons = this.ratingUI.reportProcessingButtons(message.author.id, pendingRatingNotes[0].gameID, labels);
-        }
         
-        RatingService.processingChatMessages.set(message.id, {
-            userMessage: message,
-            botMessage: await message.reply({embeds: embeds, components: buttons}),
-            timeOfDelete: Date.now()+this.ratingProcessingTimeoutMs,
-            timeout: setTimeout(RatingService.deleteNextProcessingChatMessage, this.ratingProcessingTimeoutMs),
-            pendingGameID: pendingRatingNotes[0].gameID
-        });
-    }
+        let pendingRatingNotes: EntityPendingRatingNote[];
+        let botMessage: Message|null = null;
+        if(isCreated) {
+            if(!message.guild?.members.cache.get(discordClient.user?.id as string)?.permissionsIn(userChannelID).has(PermissionFlagsBits.SendMessages))
+                return;
+            pendingRatingNotes = await this.generatePendingRatingNotes(guildID, message.content);
+            if(pendingRatingNotes.length === 0)
+                return;
+        } else {
+            let data: RatingChatMessageData|undefined = RatingService.processingChatMessages.get(message.id);
+            if(!data)
+                return;
+            pendingRatingNotes = await this.generatePendingRatingNotes(guildID, message.content);
+            if(pendingRatingNotes.length === 0)
+                return;
+            clearTimeout(data.timeout);
+            this.databaseServicePendingRatingNote.deleteAllByGameID(data.pendingGameID);
+            botMessage = data.botMessage;
+        }
 
-    public async onMessageUpdate(message: Message) {
-        let guildID: string|null = message.guildId;
-        if(guildID === null)
-            return;
-        let userChannelID = await this.getOneSettingString(message.guild?.id as string, "RATING_USER_REPORTS_CHANNEL_ID");
-        if(userChannelID !== message.channel.id)
-            return;
-        let data: RatingChatMessageData|undefined = RatingService.processingChatMessages.get(message.id);
-        if(!data)
-            return;
-        let pendingRatingNotes: EntityPendingRatingNote[] = await this.generatePendingRatingNotes(guildID, message.content);
-        if(pendingRatingNotes.length === 0)
-            return;
-
-        clearTimeout(data.timeout);
-        this.databaseServicePendingRatingNote.deleteAllByGameID(data.pendingGameID);
-
+        let isModedrator: boolean = await this.isModerator(message.member as GuildMember);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(guildID, pendingRatingNotes.map(note => note.userID));
-        let [eloK, eloD, victoryMultiplier] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER");
-        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplier);
+        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
         let {errors, warnings} = await this.checkPendingRatingNotes(pendingRatingNotes, guildID);
         this.applyPendingRating(usersRating, pendingRatingNotes);
         let descriptionHeaders: string[] = await this.getManyText(guildID, [
@@ -637,13 +574,15 @@ export class RatingService extends ModuleBaseService {
             "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
             "RATING_DESCRIPTION_VICTORY_GG"
         ]);
-        let civLines: string[] = (await this.getManyText(guildID, UtilsServiceCivilizations.civilizationsTags))
+        let moderatorPrefix: string = await this.getOneText(message.guild?.id as string, "RATING_MODERATOR_PREFIX_BOTTOM");
+        let civEmojis: string[] = await this.getManySettingString(guildID, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(guildID, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let warningsDescription: string = await this.getOneText(guildID, "RATING_REPORT_WARNINGS_TITLE");
         let warningDescriptionLines: string[] = await this.getManyText(guildID, warnings);
         let title: string = await this.getOneText(guildID, "RATING_REPORT_TITLE");
         let labels: string[] = await this.getManyText(guildID, [
-            "RATING_CONFIRM_BUTTON", "RATING_CANCEL_BUTTON" 
+            isModedrator ? "RATING_CONFIRM_BUTTON" : "RATING_SEND_BUTTON", "RATING_CANCEL_BUTTON" 
         ]);
 
         if(errors.length === 0)
@@ -653,27 +592,37 @@ export class RatingService extends ModuleBaseService {
         if(errors.length > 0) {
             let errorsDescription: string = await this.getOneText(guildID, "RATING_REPORT_ERRORS_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
             let errorDescriptionLines: string[] = await this.getManyText(guildID, errors);
-            embeds = this.ratingUI.reportProcessingErrorEmbed(
-                message.author, false,
+            let descriptionHeadersFlags: boolean[] = [false, true, true, true];
+            let description: string = [errorsDescription].concat(errorDescriptionLines, (warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
+            embeds = this.ratingUI.reportDangerEmbed(
+                message.author, isModedrator,
                 usersRating, pendingRatingNotes, 
-                title, descriptionHeaders, victoryLines, civLines, "",
-                errorsDescription, errorDescriptionLines, warningsDescription, warningDescriptionLines
+                title, description,
+                descriptionHeaders, descriptionHeadersFlags,
+                victoryLines, civLines, 
+                moderatorPrefix
             );
             buttons = this.ratingUI.reportProcessingButtons(message.author.id, pendingRatingNotes[0].gameID, labels, true)
         } else {
             let readyDescription: string = await this.getOneText(guildID, "RATING_REPORT_OK_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
-            embeds = this.ratingUI.reportProcessingOKEmbed(
-                message.author, false,
+            let description: string = [readyDescription].concat((warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
+            let descriptionHeadersFlags: boolean[] = [false, true, true, true];
+            embeds = this.ratingUI.reportBrightEmbed(
+                message.author, isModedrator,
                 usersRating, pendingRatingNotes,
-                title, descriptionHeaders, victoryLines, civLines, "",
-                readyDescription, warningsDescription, warningDescriptionLines
+                title, description,
+                descriptionHeaders, descriptionHeadersFlags,
+                victoryLines, civLines,
+                moderatorPrefix
             );
             buttons = this.ratingUI.reportProcessingButtons(message.author.id, pendingRatingNotes[0].gameID, labels);
         }
 
         RatingService.processingChatMessages.set(message.id, {
             userMessage: message,
-            botMessage: await data.botMessage.edit({embeds: embeds, components: buttons}),
+            botMessage: (isCreated)
+                ? await message.reply({embeds: embeds, components: buttons})
+                : await (botMessage as Message).edit({embeds: embeds, components: buttons}),
             timeOfDelete: Date.now()+this.ratingProcessingTimeoutMs,
             timeout: setTimeout(RatingService.deleteNextProcessingChatMessage, this.ratingProcessingTimeoutMs),
             pendingGameID: pendingRatingNotes[0].gameID
@@ -692,8 +641,8 @@ export class RatingService extends ModuleBaseService {
 
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.generatePendingRatingNotes(interaction, msg, type);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, pendingRatingNotes.map(note => note.userID));
-        let [eloK, eloD, victoryMultiplier] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER");
-        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplier);
+        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
         let {errors, warnings} = await this.checkPendingRatingNotes(pendingRatingNotes, interaction);
         this.applyPendingRating(usersRating, pendingRatingNotes);
         let descriptionHeaders: string[] = await this.getManyText(interaction, [
@@ -707,7 +656,8 @@ export class RatingService extends ModuleBaseService {
             "RATING_DESCRIPTION_VICTORY_GG"
         ]);
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let warningsDescription: string = await this.getOneText(interaction, "RATING_REPORT_WARNINGS_TITLE");
         let warningDescriptionLines: string[] = await this.getManyText(interaction, warnings);
@@ -716,30 +666,37 @@ export class RatingService extends ModuleBaseService {
             let title: string = await this.getOneText(interaction, "BASE_ERROR_TITLE");
             let errorsDescription: string = await this.getOneText(interaction, "RATING_REPORT_ERRORS_TITLE");
             let errorDescriptionLines: string[] = await this.getManyText(interaction, errors);
+            let description: string = [errorsDescription].concat(errorDescriptionLines, (warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
+            let descriptionHeadersFlags: boolean[] = [false, true, true ,true];
             return interaction.reply({
-                embeds: this.ratingUI.reportProcessingErrorEmbed(
+                embeds: this.ratingUI.reportDangerEmbed(
                     interaction.user, isModedrator,
                     usersRating, pendingRatingNotes, 
-                    title, descriptionHeaders, victoryLines, civLines, moderatorPrefix,
-                    errorsDescription, errorDescriptionLines, warningsDescription, warningDescriptionLines
+                    title, description,
+                    descriptionHeaders, descriptionHeadersFlags,
+                    victoryLines, civLines, 
+                    moderatorPrefix
                 ),
                 ephemeral: true
             });
         }
-
         this.databaseServicePendingRatingNote.insertAll(pendingRatingNotes);
 
         let readyDescription: string = await this.getOneText(interaction, "RATING_REPORT_OK_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
         let title: string = await this.getOneText(interaction, "RATING_REPORT_TITLE");
         let labels: string[] = await this.getManyText(interaction, [
-            "RATING_CONFIRM_BUTTON", "RATING_CANCEL_BUTTON" 
+            (isModedrator) ? "RATING_CONFIRM_BUTTON" : "RATING_SEND_BUTTON", "RATING_CANCEL_BUTTON" 
         ]);
+        let description: string = [readyDescription].concat((warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
+        let descriptionHeadersFlags: boolean[] = [false, true, true, true];
         RatingService.processingSlashMessages.push(await interaction.reply({
-            embeds: this.ratingUI.reportProcessingOKEmbed(
+            embeds: this.ratingUI.reportBrightEmbed(
                 interaction.user, isModedrator,
                 usersRating, pendingRatingNotes,
-                title, descriptionHeaders, victoryLines, civLines, moderatorPrefix,
-                readyDescription, warningsDescription, warningDescriptionLines
+                title, description,
+                descriptionHeaders, descriptionHeadersFlags,
+                victoryLines, civLines,
+                moderatorPrefix
             ), components: this.ratingUI.reportProcessingButtons(interaction.user.id, pendingRatingNotes[0].gameID, labels),
             fetchReply: true
         }));
@@ -756,12 +713,10 @@ export class RatingService extends ModuleBaseService {
     }
 
     public async reportUserConfirmButton(interaction: ButtonInteraction) {
-        interaction.deferUpdate();
         if(!this.isOwner(interaction))
-            return;
+            return interaction.deferUpdate();
         if(await this.isModerator(interaction)) 
             return this.reportModeratorAcceptButton(interaction);
-        await interaction.message.edit({components: []});
         let moderatorReportChannelID: string = await this.getOneSettingString(interaction, "RATING_MODERATOR_REPORTS_CHANNEL_ID");
         let pendingGameID: number = Number(interaction.customId.split("-")[4]);
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
@@ -769,62 +724,72 @@ export class RatingService extends ModuleBaseService {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"
             ]);
-            return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
+            return interaction.update({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
+        let channel: TextChannel|null = (await interaction.guild?.channels.fetch(moderatorReportChannelID)) as TextChannel|null;
+            if(channel === null) {
+                let textLines: string[] = await this.getManyText(interaction, [
+                    "BASE_ERROR_TITLE", "RATING_ERROR_NO_REPORT_CHANNEL"
+                ]);
+                return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
+            }
+        let usersID: string[] = pendingRatingNotes.map(note => note.userID);
+        let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
+        let title: string = await this.getOneText(interaction, "RATING_MODERATION_TITLE");
+        let descriptionHeaders: string[] = await this.getManyText(interaction, [
+            "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
+            "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
+        ]);
+        let victoryLines: string[] = await this.getManyText(interaction, [
+            "RATING_DESCRIPTION_VICTORY_SCIENCE", "RATING_DESCRIPTION_VICTORY_CULTURE",
+            "RATING_DESCRIPTION_VICTORY_DOMINATION", "RATING_DESCRIPTION_VICTORY_RELIGIOUS",
+            "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
+            "RATING_DESCRIPTION_VICTORY_GG"
+        ]);
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
+            .map(str => str.slice(str.indexOf("<")));
+        let labels: string[] = await this.getManyText(interaction, [
+            "RATING_CONFIRM_BUTTON", "RATING_CANCEL_BUTTON" 
+        ]);
+        let [isReportReactEmojis, isReportAllNotify] = await this.getManySettingNumber(interaction, "RATING_REPORT_MODERATION_EMOJIS", "RATING_REPORT_ALL_PM_NOTIFY");
+        let description: string = (isReportReactEmojis) ? await this.getOneText(interaction, "RATING_REPORT_CHECK_EMOJI_VOTE_DESCRIPTION") : "";
+        let descriptionHeadersFlags: boolean[] = [false, true, true, true];
+        let reportMessage: Message;
         try {
-            let channel: TextChannel|null = (await interaction.guild?.channels.fetch(moderatorReportChannelID)) as TextChannel|null;
-            if(channel === null)
-                throw "ChannelIsNull";
-            let usersID: string[] = pendingRatingNotes.map(note => note.userID);
-            let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
-            let title: string = await this.getOneText(interaction, "RATING_MODERATION_TITLE");
-            let descriptionHeaders: string[] = await this.getManyText(interaction, [
-                "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
-                "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
-            ]);
-            let victoryLines: string[] = await this.getManyText(interaction, [
-                "RATING_DESCRIPTION_VICTORY_SCIENCE", "RATING_DESCRIPTION_VICTORY_CULTURE",
-                "RATING_DESCRIPTION_VICTORY_DOMINATION", "RATING_DESCRIPTION_VICTORY_RELIGIOUS",
-                "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
-                "RATING_DESCRIPTION_VICTORY_GG"
-            ]);
-            let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
-                .map(str => str.slice(str.indexOf("<")));
-            let labels: string[] = await this.getManyText(interaction, [
-                "RATING_CONFIRM_BUTTON", "RATING_CANCEL_BUTTON" 
-            ]);
-            let [isReportReactEmojis, isReportAllNotify] = await this.getManySettingNumber(interaction, "RATING_REPORT_MODERATION_EMOJIS", "RATING_REPORT_ALL_PM_NOTIFY");
-            let reportMessage: Message = await channel.send({
-                embeds: this.ratingUI.reportAcceptRevertEmbed(
-                    interaction.user, false,
-                    usersRating, pendingRatingNotes,
-                    title, descriptionHeaders, victoryLines, civLines, ""
+            reportMessage = await channel.send({
+                embeds: this.ratingUI.reportBrightEmbed(
+                    interaction.user, false,                        // Это сообщение может появиться только
+                    usersRating, pendingRatingNotes,                // из-за игрока (без прав), поэтому:
+                    title, description,                             // isModerator = false,
+                    descriptionHeaders, descriptionHeadersFlags,    // moderatorPrefix = ""
+                    victoryLines, civLines, 
+                    ""
                 ), components: this.ratingUI.reportModeratorButtons(interaction.user.id, pendingGameID, labels)
             });
-            let textLines: string[] = await this.getManyText(interaction, [
-                "BASE_NOTIFY_TITLE", "RATING_REPORT_SUCCESS_DESCRIPTION"
-            ]);
-            if(isReportReactEmojis) 
-                UtilsServiceEmojis.reactOrder(reportMessage, ["<:Yes:808418109710794843>", "<:No:808418109319938099>"]);
-            
-            interaction.message.edit({embeds: this.ratingUI.notify(textLines[0], textLines[1])});
-            if(isReportAllNotify) {
-                let gameType: string = pendingRatingNotes[0].gameType as string;
-                let textLines: string[] = await this.getManyText(interaction, [
-                    "RATING_REPORT_MODERATION_PM_NOTIFY_TITLE", "RATING_REPORT_MODERATION_PM_NOTIFY_DESCRIPTION"
-                ], [[gameType], [reportMessage.url]]);
-                let embed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(
-                    gameType, textLines[0], textLines[1], interaction.guild
-                );
-                usersID.filter(userID => userID !== interaction.user.id)
-                    .forEach(userID => UtilsServicePM.send(userID, embed));
-            }
         } catch {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_NO_REPORT_CHANNEL"
             ]);
-            interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
-        }        
+            return interaction.update({embeds: this.ratingUI.error(textLines[0], textLines[1])});
+        }
+        let textLines: string[] = await this.getManyText(interaction, [
+            "BASE_NOTIFY_TITLE", "RATING_REPORT_SUCCESS_DESCRIPTION"
+        ]);
+        if(isReportReactEmojis) 
+            UtilsServiceEmojis.reactOrder(reportMessage, ["<:Yes:808418109710794843>", "<:No:808418109319938099>"]);
+        interaction.update({embeds: this.ratingUI.notify(textLines[0], textLines[1]), components: []});
+        if(isReportAllNotify) {
+            let gameType: string = pendingRatingNotes[0].gameType as string;
+            let textLines: string[] = await this.getManyText(interaction, [
+                "RATING_REPORT_MODERATION_PM_NOTIFY_TITLE", "RATING_REPORT_MODERATION_PM_NOTIFY_DESCRIPTION"
+            ], [[gameType], [reportMessage.url]]);
+            let embed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(
+                gameType, textLines[0], textLines[1], interaction.guild
+            );
+            usersID.filter(userID => userID !== interaction.user.id)
+                .forEach(userID => UtilsServicePM.send(userID, embed));
+        }     
     }
 
     public async reportModeratorRejectButton(interaction: ButtonInteraction) {
@@ -846,7 +811,6 @@ export class RatingService extends ModuleBaseService {
                 interaction.customId.split("-").pop() as string, pendingGameID, textLines[0], textLines[1])
             );
         }
-
         interaction.message.delete();
         this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
     }
@@ -860,15 +824,18 @@ export class RatingService extends ModuleBaseService {
         }
         let rejectDescription: string = Array.from(interaction.fields.fields.values())[0].value || "";
         let pendingGameID: number = Number(interaction.customId.split("-")[5]);
-        interaction.message?.delete();
+        await interaction.deferUpdate();
+        await interaction.message?.delete();
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
         if(pendingRatingNotes.length > 0) {
             let authorID: string = interaction.customId.split("-").pop() as string;
             let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, pendingRatingNotes.map(note => note.userID));
-            let textLines: string[] = await this.getManyText(interaction, [
-                "RATING_REPORT_REJECT_TITLE", (rejectDescription.length > 0) ? "RATING_REPORT_REJECT_DESCRIPTION" : "RATING_REPORT_REJECT_NO_REASON_DESCRIPTION"
-            ], [null, [interaction.user.tag, rejectDescription]]);
+            let title: string = await this.getOneText(interaction, "RATING_REPORT_REJECT_TITLE");
+            let description: string = await this.getOneText(interaction, 
+                (rejectDescription.length > 0) ? "RATING_REPORT_REJECT_DESCRIPTION" : "RATING_REPORT_REJECT_NO_REASON_DESCRIPTION",
+                interaction.user.tag, rejectDescription
+            );
             let descriptionHeaders: string[] = await this.getManyText(interaction, [
                 "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
                 "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
@@ -879,11 +846,17 @@ export class RatingService extends ModuleBaseService {
                 "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
                 "RATING_DESCRIPTION_VICTORY_GG"
             ]);
-            let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
+            let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+            let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
                 .map(str => str.slice(str.indexOf("<")));
-            UtilsServicePM.send(authorID, this.ratingUI.reportRejectPMEmbed(
-                interaction.guild as Guild, usersRating, pendingRatingNotes,
-                textLines[0], textLines[1], descriptionHeaders, victoryLines, civLines
+            let descriptionHeadersFlags: boolean[] = [false, true, true, true];
+            UtilsServicePM.send(authorID, this.ratingUI.reportDangerEmbed(
+                interaction.guild as Guild, false,                  // Это сообщение может появиться только из-за модератора,
+                usersRating, pendingRatingNotes,                    // но присылается от лица сервера, поэтому:
+                title, description,                                 // author = interaction.guid,
+                descriptionHeaders, descriptionHeadersFlags,        // isModerator = false,
+                victoryLines, civLines,                             // moderatorPrefix = ""
+                ""
             ));
         }
     }
@@ -899,7 +872,8 @@ export class RatingService extends ModuleBaseService {
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         if(pendingRatingNotes.length === 0) {
             let textLines: string[] = await this.getManyText(interaction, ["BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"]);
-            return interaction.message.edit({
+            interaction.message.reactions.removeAll();
+            return interaction.update({
                 embeds: this.ratingUI.error(textLines[0], textLines[1]),
                 components: []
             });
@@ -908,8 +882,8 @@ export class RatingService extends ModuleBaseService {
         let ratingNotes: EntityRatingNote[] = this.convertToRatingNotes(pendingRatingNotes, await this.databaseServiceRatingNote.getNextGameID(interaction.guild?.id as string));
         let usersID: string[] = ratingNotes.map(note => note.userID);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
-        let [eloK, eloD, victoryMultiplier] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER");
-        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplier);
+        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+        this.calculateRatingNotes(pendingRatingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
         this.applyRating(usersRating, ratingNotes);
         this.databaseServiceRatingNote.insertAll(ratingNotes);
         this.databaseServiceUserRating.update(usersRating);
@@ -918,7 +892,6 @@ export class RatingService extends ModuleBaseService {
             usersRating.map(userRating => userRating.userID), 
             usersRating.map(userRating => userRating.rating)
         );
-        
         let title: string = await this.getOneText(interaction, "RATING_REPORT_TITLE");
         let descriptionHeaders: string[] = await this.getManyText(interaction, [
             "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
@@ -930,26 +903,48 @@ export class RatingService extends ModuleBaseService {
             "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
             "RATING_DESCRIPTION_VICTORY_GG"
         ]);
-        let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let embed: EmbedBuilder[] = this.ratingUI.reportAcceptRevertEmbed(
+        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let embed: EmbedBuilder[] = this.ratingUI.reportBrightEmbed(
             interaction.user, true,
             usersRating, ratingNotes,
-            title, descriptionHeaders, victoryLines, civLines, moderatorPrefix
+            title, "",
+            descriptionHeaders, descriptionHeadersFlags,
+            victoryLines, civLines,
+            moderatorPrefix
         );
-        interaction.message.edit({embeds: embed, components: []});
-
         let botReportChannelID: string = await this.getOneSettingString(interaction, "RATING_BOT_REPORTS_CHANNEL_ID");
         let channel: TextChannel|null = (await interaction.guild?.channels.fetch(botReportChannelID)) as TextChannel|null;
-        if(channel !== null)
-            try {
-                channel.send({embeds: embed});
-            } catch {}
+
+        let pmTitle: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_TITLE", ratingNotes[0].gameType);
+        let pmModeratorDescription: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_MODERATOR_DESCRIPTION");
+
+        let reportMessage: Message|undefined;
+        try {
+            if(!channel)
+                throw "ChannelIsNull";
+            reportMessage = await channel.send({embeds: embed});
+        } catch {
+            reportMessage = undefined;
+        }
+        if(reportMessage) {
+            await interaction.reply({embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription), ephemeral: true});
+            await interaction.message.delete();
+        } else {
+            interaction.deferUpdate();
+            reportMessage = interaction.message;
+            interaction.update({embeds: embed, components: []});
+        }
+        let pmDescription: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_DESCRIPTION", interaction.user.tag, reportMessage.url);
+        let pmEmbed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(ratingNotes[0].gameType, pmTitle, pmDescription, interaction.guild);
         let [isAuthorNotify, isAllNotify] = await this.getManySettingNumber(interaction, "RATING_ACCEPT_AUTHOR_PM_NOTIFY", "RATING_ACCEPT_ALL_PM_NOTIFY");
         let authorID: string = interaction.customId.split("-").pop() as string;
-        usersID.filter(userID => isAllNotify || (isAuthorNotify && (userID === authorID)))
-            .forEach(userID => UtilsServicePM.send(userID, embed));
+        usersID.filter(userID => (userID !== interaction.user.id) && (isAllNotify || (isAuthorNotify && (userID === authorID))))
+            .forEach(userID => UtilsServicePM.send(userID, pmEmbed));
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, ratingNotes[0].gameType);
     }
 
 
@@ -987,13 +982,16 @@ export class RatingService extends ModuleBaseService {
         let title: string = await this.getOneText(interaction, "RATING_CANCEL_TITLE");
         let descriptionHeaders: string[] = await this.getManyText(interaction, [
             "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",
-            "RATING_DESCRIPTION_HOST_HEADER"
+            "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
         ]);
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let embed: EmbedBuilder[] = this.ratingUI.reportCancelEmbed(
+        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let embed: EmbedBuilder[] = this.ratingUI.reportDarkShortEmbed(
             interaction.user,
             usersRating, ratingNotes,
-            title, descriptionHeaders, moderatorPrefix
+            title, "",
+            descriptionHeaders, descriptionHeadersFlags,
+            moderatorPrefix
         );
         interaction.reply({embeds: embed});
 
@@ -1003,6 +1001,7 @@ export class RatingService extends ModuleBaseService {
                 let channel: TextChannel|null = (await interaction.guild?.channels.fetch(channelID)) as (TextChannel|null);
                 channel?.send({embeds: embed});
             } catch {}
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, ratingNotes[0].gameType);
     }
 
     public async revert(interaction: CommandInteraction, gameID: number) {
@@ -1046,13 +1045,18 @@ export class RatingService extends ModuleBaseService {
             "RATING_DESCRIPTION_VICTORY_DIPLOMATIC", "RATING_DESCRIPTION_VICTORY_CC",
             "RATING_DESCRIPTION_VICTORY_GG"
         ]);
-        let civLines: string[] = (await this.getManyText(interaction, UtilsServiceCivilizations.civilizationsTags))
+        let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
+        let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let embed: EmbedBuilder[] = this.ratingUI.reportAcceptRevertEmbed(
+        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let embed: EmbedBuilder[] = this.ratingUI.reportBrightEmbed(
             interaction.user, true,
             usersRating, ratingNotes,
-            title, descriptionHeaders, victoryLines, civLines, moderatorPrefix
+            title, "",
+            descriptionHeaders, descriptionHeadersFlags,
+            victoryLines, civLines,
+            moderatorPrefix
         );
         interaction.reply({embeds: embed});
 
@@ -1062,6 +1066,7 @@ export class RatingService extends ModuleBaseService {
                 let channel: TextChannel|null = (await interaction.guild?.channels.fetch(channelID)) as (TextChannel|null);
                 channel?.send({embeds: embed});
             } catch {}
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, ratingNotes[0].gameType);
     }
 
 
@@ -1148,6 +1153,8 @@ export class RatingService extends ModuleBaseService {
                 let channel: TextChannel|null = (await interaction.guild?.channels.fetch(channelID)) as (TextChannel|null);
                 channel?.send({embeds: embed});
             } catch {}
+        if(type !== "Total")
+            this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, type);
     }
 
 
@@ -1199,6 +1206,8 @@ export class RatingService extends ModuleBaseService {
         ], [null, [userID]]);
         await interaction.reply({embeds: this.ratingUI.notify(textLines[0], textLines[1]), ephemeral: true});
         await interaction.message.delete();
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "FFA");
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "Teamers");
     }
 
 
@@ -1256,6 +1265,8 @@ export class RatingService extends ModuleBaseService {
         ], [null, [usersRating.length]]);
         await interaction.reply({embeds: this.ratingUI.notify(textLines[0], textLines[1]), ephemeral: true});
         await interaction.message.delete();
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "FFA");
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "Teamers");
     }
 
 
@@ -1306,6 +1317,8 @@ export class RatingService extends ModuleBaseService {
         ], [null, [userID]]);
         await interaction.reply({embeds: this.ratingUI.notify(textLines[0], textLines[1]), ephemeral: true});
         await interaction.message.delete();
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "FFA");
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "Teamers");
     }
 
 
@@ -1362,5 +1375,7 @@ export class RatingService extends ModuleBaseService {
         ], [null, [usersRating.length]]);
         await interaction.reply({embeds: this.ratingUI.notify(textLines[0], textLines[1]), ephemeral: true});
         await interaction.message.delete();
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "FFA");
+        this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, "Teamers");
     }
 }

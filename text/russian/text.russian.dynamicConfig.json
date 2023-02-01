@@ -7,18 +7,15 @@
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER", "value": "Введите целочисленное значение от [MIN_VALUE] до [MAX_VALUE]." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_STRING", "value": "Настройка не была изменена." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_BOOLEAN_GAME_SETTING", "value": "Голосование должно иметь хотя бы 2 доступные опции. Если вы хотите отключить это голосование, воспользуйтесь соответствующей настройкой." },
-    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Настройка не была изменена. Список содержит ошибки.\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что вы вводите пары цивилизации корректно:\n  – каждая пара цивилизаций записана с новой строки;\n  – цивилизации разделены запятой;\n  – ни одна пара не содержит двух одинаковых лидеров;\n  – текст не содержит специальных символов, кроме запятой и дефиса." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_PARSE", "value": "Настройка не была изменена. Список содержит ошибки.\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что вы вводите пары цивилизации корректно:\n  – каждая пара цивилизаций записана с новой строки;\n  – цивилизации разделены запятой;\n  – ни одна пара не содержит двух одинаковых лидеров;\n  – текст не содержит специальных символов, кроме запятой, скобок и дефиса." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_SAME_IN_PAIR", "value": "Настройка не была изменена. Список содержит пару, в которой записана одна и та же цивилизация.\n\n[CIVILIZATION_ERROR]\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что вы вводите пары цивилизации корректно:\n  – каждая пара цивилизаций записана с новой строки;\n  – цивилизации разделены запятой;\n  – ни одна пара не содержит двух одинаковых лидеров;\n  – текст не содержит специальных символов, кроме запятой и дефиса." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_TEAMERS_FORBIDDEN_PAIRS_TRIANGLE", "value": "Настройка не была изменена. В списке присутствуют цивилизации, которые не могут быть разделены между двумя командами.\n\n[CIVILIZATIONS_ERRORS]\n\nВы ввели:\n```txt\n[CIVILIZATIONS_INPUT_TEXT]\n```\nУбедитесь, что перечисленные цивилизации не образуют всевозможные пары, и повторите попытку." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] целых чисел в диапазоне от от [MIN_VALUE] до [MAX_VALUE]." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_ROLE_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] ролей или ID ролей." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_CHANNEL_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] каналов или ID каналов." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_EMOJI", "value": "Input full emoji name with ID. Write backslash (\"\\\\\") character before emoji to get it." },
 
     { "tag": "DYNAMIC_CONFIG_BUTTON_BACK", "value": "Назад" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_FIRST", "value": "На первую страницу" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_PREVIOUS", "value": "Пред. страница" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_NEXT", "value": "След. страница" },
-    { "tag": "DYNAMIC_CONFIG_BUTTON_LAST", "value": "На последнюю страницу" },
     { "tag": "DYNAMIC_CONFIG_BUTTON_RESET", "value": "Сбросить настройки" },
     { "tag": "DYNAMIC_CONFIG_BUTTON_DELETE", "value": "Удалить сообщение" },
 
@@ -63,6 +60,8 @@
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Эло, D" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Доп. очки рейтинга за особую победу, %" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "ID ролей" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "Минимумы очков для получения ролей" },
@@ -95,6 +94,15 @@
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR", "value": "Отчет принят, для автора" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL", "value": "Отчет принят, для всех игроков" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" }
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD", "value": "Таблица лидеров" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_EMOJI", "value": "🏆" },
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Макс. длина списка лучших игроков" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "📰" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Макс. длина статической таблицы" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" }
   ]
 }

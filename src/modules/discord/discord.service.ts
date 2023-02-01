@@ -1,4 +1,4 @@
-import { ActivityType, ChannelType, CommandInteraction, Guild, TextChannel } from "discord.js";
+import { ActivityType, ChannelType, CommandInteraction, Guild, Interaction, InteractionType, PermissionFlagsBits, TextChannel } from "discord.js";
 import { Client } from "discordx";
 import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 import { ModuleBaseService } from "../base/base.service";
@@ -6,6 +6,27 @@ import { DiscordUI } from "./discord.ui";
 
 export class DiscordService extends ModuleBaseService {
     private discordUI: DiscordUI = new DiscordUI();
+
+    public async onInteractionCreate(interaction: Interaction, client: Client) {
+        let hasPermission: boolean = interaction.guild?.members.cache.get(client.user?.id as string)?.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.SendMessages) ?? true;
+        let isGuild: boolean = !!interaction.guild?.id;
+        let isSlashCommand: boolean = interaction.type === InteractionType.ApplicationCommand;
+        
+        if(hasPermission && (isGuild || (!isGuild && !isSlashCommand)))
+            return client.executeInteraction(interaction);
+        if(!interaction.isRepliable())
+            return;
+        if(hasPermission && !isGuild && isSlashCommand) {
+            let textStrings: string[] = await this.getManyText("DEFAULT", [
+                "BASE_ERROR_TITLE", "DISCORD_ERROR_INTERACTION_NO_GUILD"
+            ]);
+            return interaction.reply({embeds: this.discordUI.error(textStrings[0], textStrings[1]), ephemeral: true});
+        }
+        let textStrings: string[] = await this.getManyText(interaction.guild?.id as string, [
+            "BASE_ERROR_TITLE", "DISCORD_ERROR_INTERACTION_NO_PERMISSION"
+        ]);
+        return interaction.reply({embeds: this.discordUI.error(textStrings[0], textStrings[1]), ephemeral: true});
+    }
 
     public async onceReady(client: Client) {
         await client.initApplicationCommands();

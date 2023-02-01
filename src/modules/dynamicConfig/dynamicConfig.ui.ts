@@ -1,115 +1,111 @@
-import {ModuleBaseUI} from "../base/base.ui";
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, StringSelectMenuBuilder, TextInputStyle} from "discord.js";
-import {DynamicConfig, DynamicConfigEntityTeamersForbiddenPairs} from "./dynamicConfig.models";
-import {UtilsGeneratorEmbed} from "../../utils/generators/utils.generator.embed";
-import {UtilsGeneratorMenu} from "../../utils/generators/utils.generator.menu";
-import {UtilsGeneratorButton} from "../../utils/generators/utils.generator.button";
-import {UtilsGeneratorModal} from "../../utils/generators/utils.generator.modal";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, ModalBuilder, StringSelectMenuBuilder, TextInputStyle, User } from "discord.js";
+import { UtilsGeneratorButton } from "../../utils/generators/utils.generator.button";
+import { UtilsGeneratorEmbed } from "../../utils/generators/utils.generator.embed";
+import { UtilsGeneratorMenu } from "../../utils/generators/utils.generator.menu";
+import { UtilsGeneratorModal } from "../../utils/generators/utils.generator.modal";
+import { ModuleBaseUI } from "../base/base.ui";
 
 export class DynamicConfigUI extends ModuleBaseUI {
-    public configEmbed(
-        dynamicConfig: DynamicConfig,
-        titleEmoji: string, title: string, titlePage: string,
+    public config(
+        title: string, titleEmoji: string, titlePage: string, pageCurrent: number, pageTotal: number,
         description: string,
-        emojis: string[], options: string[],
-        noValue: string = ""    // для страницы самого верхнего уровня не нужно пустое значение
+        options: string[], optionsEmoji: string[], values: string[],
+        author: User
     ): EmbedBuilder[] {
-        let values: string[] = dynamicConfig.getStringifiedValues();
-        if(dynamicConfig.isConfig && dynamicConfig.getLastChild().configs[0]?.type === "TeamersForbiddenPairs") {
-            let dynamicConfigEntityTeamersForbiddenPairs: DynamicConfigEntityTeamersForbiddenPairs = (dynamicConfig.getLastChild().configs[0] as DynamicConfigEntityTeamersForbiddenPairs);
-            let pairString: string = dynamicConfigEntityTeamersForbiddenPairs.civilizationPairIndexes
-                .map((value: number[]): string => `– ${dynamicConfigEntityTeamersForbiddenPairs.civilizationTexts[value[0]]}, ${dynamicConfigEntityTeamersForbiddenPairs.civilizationTexts[value[1]]}`)
-                .join("\n");
-            if(pairString === "")
-                pairString = noValue;
-            values = ["\n" + pairString];
-            options = [`__**${options[0]}**__`];
-        }
+        title = `${titleEmoji} ${title}`;
+        if(pageTotal > 1)
+            title += `, ${titlePage} ${pageCurrent}/${pageTotal}`;
 
+        description += "\n\n" + options.map((option: string, index: number): string => {
+            let str: string = `${optionsEmoji[index]} ${option}`;
+            if(values[index])
+                str += `: ${values[index]}`;
+            return str;
+        }).join("\n") + "\n⠀";
         return UtilsGeneratorEmbed.getSingle(
-            (dynamicConfig.pageTotal > 1)
-                ? `${titleEmoji} ${title}, ${titlePage} ${dynamicConfig.pageCurrent}/${dynamicConfig.pageTotal}`
-                : `${titleEmoji} ${title}`,
+            title,
             "#F4900C",
-            description + "\n\n" + emojis.map(
-                (value: string, index: number): string =>
-                    (dynamicConfig.isConfig)
-                        ? `${emojis[index]} ${options[index]}: ${values[index] || noValue}`
-                        : `${emojis[index]} ${options[index]}`
-            ).join("\n") + "\n" + "⠀",    // невидимый пробел для следующей строки
+            description,
             [],
-            dynamicConfig.interaction.user.tag,
-            dynamicConfig.interaction.user.avatarURL()
-        );
-    }
-
-    public configMenu(
-        placeholder: string,
-        labels: string[],
-        emojis: string[],
-        descriptions: string[] = []
-    ): ActionRowBuilder<StringSelectMenuBuilder>[] {
-        return UtilsGeneratorMenu.build(
-            "dynamicConfig-menu",
-            placeholder,
-            labels,
-            emojis,
-            Array.from(new Array(labels.length).keys()).map((value: number): string => String(value)),
-            descriptions
+            author.tag,
+            author.avatarURL()
         );
     }
 
     public configButtons(
-        dynamicConfig: DynamicConfig,
-        labels: string[]        // back, navigation, reset, delete
+        authorID: string,
+        labels: string[],       // back, reset, delete | отсутствуют 1st, prev, next, last,
+        pageCurrent: number,
+        pageTotal: number,
+        currentConfigTag: string,
+        parentConfigTag: string
     ): ActionRowBuilder<ButtonBuilder>[] {
-        let indexes: number[] = Array.from(Array(labels.length).keys());
-        if(dynamicConfig.pageTotal === 1)
-            indexes.splice(1, 4);
-        else if (dynamicConfig.pageTotal === 2) {
-            indexes.splice(4, 1);
-            indexes.splice(1, 1);
-        }
-        if(!dynamicConfig.hasAnyChild())
-            indexes.splice(0, 1);
+        let indexes: number[] = [];
+        if(parentConfigTag !== "")
+            indexes.push(0);
+        if(pageTotal === 2)
+            indexes.push(2, 3);
+        else if(pageTotal > 2)
+            indexes.push(1, 2, 3, 4);
+        indexes.push(5, 6);
 
         let filterFunction = (value: any, index: number): boolean => (indexes.indexOf(index) !== -1);
-        labels = labels.filter(filterFunction);
+
+        labels = [labels[0], ...Array<string>(4).fill(""), ...labels.slice(1)].filter(filterFunction);
+        let styles = [
+            ButtonStyle.Secondary, ButtonStyle.Secondary,
+            ButtonStyle.Secondary, ButtonStyle.Secondary,
+            ButtonStyle.Secondary, ButtonStyle.Danger,
+            ButtonStyle.Danger
+        ].filter(filterFunction);
+        let emojis = ["⬅", "⏮", "◀", "▶", "⏭", "🔄", "✖️"].filter(filterFunction);
+        let customIDArray: string[] = [
+            `dynamicConfig-button-back-${authorID}-${parentConfigTag}`,
+            `dynamicConfig-button-page-${authorID}-99-${currentConfigTag}`,
+            `dynamicConfig-button-page-${authorID}-${pageCurrent-1}-${currentConfigTag}`,
+            `dynamicConfig-button-page-${authorID}-${pageCurrent+1}-${currentConfigTag}`,
+            `dynamicConfig-button-page-${authorID}-100-${currentConfigTag}`,
+            `dynamicConfig-button-reset-${authorID}-${pageCurrent}-${currentConfigTag}`,
+            `dynamicConfig-button-delete-${authorID}`,
+        ].filter(filterFunction);
         let isDisabledArray: boolean[] = [
             false,
-            dynamicConfig.pageCurrent === 1,
-            dynamicConfig.pageCurrent === 1,
-            dynamicConfig.pageCurrent === dynamicConfig.pageTotal,
-            dynamicConfig.pageCurrent === dynamicConfig.pageTotal,
+            pageCurrent === 1,
+            pageCurrent === 1,
+            pageCurrent === pageTotal,
+            pageCurrent === pageTotal,
             false,
             false
         ].filter(filterFunction);
-        let emojis: string[] = ["⬅", "⏮", "◀", "▶", "⏭", "🔄", "✖️"].filter(filterFunction);
-        let customIDArray: string[] = [
-            "dynamicConfig-button-back",
-            "dynamicConfig-button-first",
-            "dynamicConfig-button-previous",
-            "dynamicConfig-button-next",
-            "dynamicConfig-button-last",
-            "dynamicConfig-button-reset",
-            "dynamicConfig-button-delete",
-        ].filter(filterFunction);
-        let styles: ButtonStyle[] = [
-            ButtonStyle.Primary,
-            ButtonStyle.Secondary,
-            ButtonStyle.Secondary,
-            ButtonStyle.Secondary,
-            ButtonStyle.Secondary,
-            ButtonStyle.Danger,
-            ButtonStyle.Danger
-        ].filter(filterFunction);
+        
+        return UtilsGeneratorButton.getList(
+            labels, 
+            emojis, 
+            styles, 
+            customIDArray, 
+            isDisabledArray
+        );
+    }
 
-        return UtilsGeneratorButton.getList(labels, emojis, styles, customIDArray, isDisabledArray);
+    public configMenu(
+        userID: string,
+        placeholder: string,
+        labels: string[],
+        emojis: string[],
+        configTags: string[]
+    ): ActionRowBuilder<StringSelectMenuBuilder>[] {
+        return UtilsGeneratorMenu.build(
+            `dynamicConfig-menu-${userID}`,
+            placeholder,
+            labels,
+            emojis,
+            configTags
+        );
     }
 
     public configModal(
-        title: string,
         configTag: string,
+        title: string,
         label: string,
         defaultValue: string,
         isStyleParagraphText: boolean = false,
@@ -127,24 +123,32 @@ export class DynamicConfigUI extends ModuleBaseUI {
     };
 
     public configResetEmbed(
-        dynamicConfig: DynamicConfig,
         title: string,
-        description: string
+        description: string,
+        author: User
     ): EmbedBuilder[] {
         return UtilsGeneratorEmbed.getSingle(
             title,
             "#F4900C",
             description,
             [],
-            dynamicConfig.interaction.user.tag,
-            dynamicConfig.interaction.user.avatarURL()
+            author.tag,
+            author.avatarURL()
         );
     }
 
-    public configResetButtons(labels: string[]): ActionRowBuilder<ButtonBuilder>[] {
+    public configResetButtons(
+        labels: string[],
+        userID: string,
+        configTag: string,
+        pageCurrent: number
+    ): ActionRowBuilder<ButtonBuilder>[] {
         let styles: ButtonStyle[] = [ButtonStyle.Success, ButtonStyle.Danger];
         let emojis: string[] = ["🔄", "✖️"];
-        let customIDs: string[] = ["dynamicConfig-button-reset-confirm", "dynamicConfig-button-reset-deny"];
+        let customIDs: string[] = [
+            `dynamicConfig-button-reset-confirm-${userID}-${configTag}`, 
+            `dynamicConfig-button-reset-deny-${userID}-${pageCurrent}-${configTag}`
+        ];
         return UtilsGeneratorButton.getList(labels, emojis, styles, customIDs);
     }
 }

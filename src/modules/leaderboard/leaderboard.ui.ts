@@ -1,51 +1,75 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, Message, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, Message, User } from "discord.js";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { UtilsGeneratorButton } from "../../utils/generators/utils.generator.button";
 import { UtilsGeneratorEmbed } from "../../utils/generators/utils.generator.embed";
 import { ModuleBaseUI } from "../base/base.ui";
 
 export class LeaderboardUI extends ModuleBaseUI {
+    private lineURL: string = "https://cdn.discordapp.com/attachments/795265098159357953/1060482761695187034/line.png";
+
+    private getFieldArray(
+        type: string,
+        userRatings: EntityUserRating[],
+        fieldHeaders: string[],
+        pageCurrent: number,
+        playersPerPage: number,
+    ): APIEmbedField[] {
+        let usersFieldValue: string = userRatings.slice((pageCurrent-1)*playersPerPage, pageCurrent*playersPerPage)
+            .map((userRating: EntityUserRating, index: number): string => `${ function(index: number, pageCurrent: number, playersPerPage: number){
+                let place: number = (pageCurrent-1)*playersPerPage+index+1;
+                switch(place) {
+                    case 1:
+                        return "🥇";
+                    case 2:
+                        return "🥈";
+                    case 3:
+                        return "🥉";
+                    case 4:
+                        return `\n**${place}**.`;
+                    default:
+                        return `**${place}**.`;
+                }
+            }(index, pageCurrent, playersPerPage)} <@${userRating.userID}>`)
+            .join("\n");
+        let ratingFieldValue: string = userRatings.slice((pageCurrent-1)*playersPerPage, pageCurrent*playersPerPage)
+            .map((userRating: EntityUserRating, index: number): string => 
+                ((type === "FFA") ? String(userRating.ffaRating) : String(userRating.teamersRating)) + 
+                (((pageCurrent-1)*playersPerPage+index+1 === 3) ? "\n\n" : "\n")
+            ).join("");
+        return [
+            {name: fieldHeaders[0], value: usersFieldValue},
+            {name: fieldHeaders[1], value: ratingFieldValue}
+        ];
+    }
+
     public leaderboardEmbed(
         author: User,
         type: string,
         userRatings: EntityUserRating[],
         title: string,
         emptyDescription: string,
+        fieldHeaders: string[],
         pageCurrent: number,
-        pageTotal: number,
         playersPerPage: number
     ): EmbedBuilder[] {
         let description: string;
-        if(userRatings.length === 0)
-            description = emptyDescription;
-        else {
-            let placeLength: number = String(Math.min(playersPerPage*pageCurrent, pageTotal)).length;
-            let ratingLength: number = (type === "FFA")
-                ? String(userRatings[0].ffaRating).length
-                : String(userRatings[0].teamersRating).length;
-            let spaceString: string = "    ";    // 4 spaces 
-            description = userRatings.map((userRating: EntityUserRating, index: number): string => `\`${
-                spaceString.concat(String(index+1+(pageCurrent-1)*playersPerPage)).slice(-placeLength)
-            }\`  \`${
-                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(-ratingLength)
-            }\`  <@${userRating.userID}>`)
-                .join("\n");
-        }
-
+        description = (userRatings.length === 0) ? emptyDescription : "";
         return UtilsGeneratorEmbed.getSingle(
             title,
             (type === "FFA") ? "#389fff" : "#00ff40",
             description,
-            [],
+            this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage),
             author.tag,
-            author.avatarURL()
+            author.avatarURL(),
+            null,
+            this.lineURL
         );
     }
 
     public leaderboardButtons(
         type: string,
         authorID: string,
-        label: String,
+        label: string,
         pageCurrent: number,
         pageTotal: number
     ): ActionRowBuilder<ButtonBuilder>[] {
@@ -105,29 +129,29 @@ export class LeaderboardUI extends ModuleBaseUI {
         );
     }
 
-    public leaderboardStaticMessage(
+    public leaderboardStaticEmbed(
         userRatings: EntityUserRating[],
         type: string,
         playersPerPage: number,
         title: string,
-        emptyDescription: string
-    ): string {
-        let content: string = `__**${title}**__\n`;
-        if(userRatings.length === 0)
-            content += `\n*${emptyDescription}.*`;
-        else {
-            let placeLength: number = String(userRatings.length).length;
-            let ratingLength: number = (type === "FFA")
-                ? String(userRatings[0].ffaRating).length
-                : String(userRatings[0].teamersRating).length;
-            let spaceString: string = "    ";    // 4 spaces 
-            content += userRatings.map((userRating: EntityUserRating, index: number): string => ((index % playersPerPage) === 0) ? "\n" : "" + `\`${
-                spaceString.concat(String(index+1)).slice(-placeLength)
-            }\`  \`${
-                spaceString.concat(String((type === "FFA") ? userRating.ffaRating : userRating.teamersRating)).slice(-ratingLength)
-            }\`  <@${userRating.userID}>`)
-                .join("\n");
-        }
-        return content;
+        emptyDescription: string,
+        fieldHeaders: string[]
+    ): EmbedBuilder[] {
+        let embedsLength: number = Math.ceil(userRatings.length/playersPerPage);
+        let userRatingGroups: EntityUserRating[][] = [];
+        while(userRatings.length > 0)
+            userRatingGroups.push(userRatings.splice(0, playersPerPage));
+        return UtilsGeneratorEmbed.getList(
+            [title],
+            Array<ColorResolvable>(embedsLength).fill((type === "FFA") ? "#389fff" : "#00ff40"),
+            (embedsLength === 0) ? [emptyDescription] : [],
+            userRatingGroups.map((userRatingGroup: EntityUserRating[], index: number): APIEmbedField[] => this.getFieldArray(
+                type, userRatingGroup, fieldHeaders, index+1, playersPerPage
+            )),
+            null,
+            null,
+            [],
+            (embedsLength > 0) ? Array<string>(embedsLength).fill(this.lineURL) : []
+        );
     }
 }

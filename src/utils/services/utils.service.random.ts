@@ -10,8 +10,8 @@ export class UtilsServiceRandom {
 
     public static getBrightColor(): HexColorString {
         return '#' + this
-            .shuffle([0, 255, Math.floor(Math.random()*256)])             // bright color
-            .map(x => ("0" + x.toString(16)).slice(-2))                     // to hex
-            .reduce((str, substr) => str+substr) as HexColorString; // to string
+            .shuffle([0, 255, Math.floor(Math.random()*256)])           // bright color
+            .map(x => ("0" + x.toString(16)).slice(-2))                 // to hex
+            .reduce((str, substr) => str+substr) as HexColorString;     // to string
     }
 }

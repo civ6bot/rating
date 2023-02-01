@@ -6,6 +6,9 @@
 
     { "tag": "LEADERBOARD_DESCRIPTION_EMPTY", "value": "Игроки не найдены." },
 
+    { "tag": "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "value": "Игрок" },
+    { "tag": "LEADERBOARD_DESCRIPTION_RATING_HEADER", "value": "Рейтинг" },
+
     { "tag": "LEADERBOARD_DELETE", "value": "Удалить" },
 
     { "tag": "LEADERBOARD_STATIC_TITLE", "value": "Сообщения с таблицами лидеров" },

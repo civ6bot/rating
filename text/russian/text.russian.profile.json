@@ -9,7 +9,7 @@
     { "tag": "PROFILE_TEAMERS_VICTORIES_FIELD_TITLE", "value": "Победы Teamers" },
 
     { "tag": "PROFILE_GENERAL_RATING", "value": "Общий рейтинг" },
-    { "tag": "PROFILE_GENERAL_HOST", "value": "Игр проведено" },
+    { "tag": "PROFILE_GENERAL_HOST", "value": "Игр захостил" },
     { "tag": "PROFILE_GENERAL_SUB", "value": "Заменил / был заменен" },
     { "tag": "PROFILE_GENERAL_LEAVE", "value": "Покинул игр" },
     { "tag": "PROFILE_GENERAL_LAST_GAME", "value": "Дата последней игры" },
@@ -50,7 +50,7 @@
     { "tag": "BEST_CIVS_DESCRIPTION_EMPTY", "value": "У этого игрока нет записей игр." },
 
     { "tag": "BEST_CIVS_LEADER_FIELD_TITLE", "value": "Лидер" },
-    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "Побед-поражений" },
+    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "Побед/поражений" },
     { "tag": "BEST_CIVS_WINRATE_FIELD_TITLE", "value": "Доля побед" },
 
     { "tag": "BEST_CIVS_DELETE_BUTTON", "value": "Удалить" }

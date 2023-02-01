@@ -20,29 +20,29 @@ export class ProfileUI extends ModuleBaseUI {
         teamersLines: string[],
     ): EmbedBuilder[] {
         let emptyField: APIEmbedField = {name: "⠀", value: "⠀"};
-        let generalDescription: string =  `${generalLines[0]}: ${entityUserRating.rating}
-        ${generalLines[1]}: ${entityUserRating.host}
-        ${generalLines[2]}: ${entityUserRating.subIn}/${entityUserRating.subOut}
-        ${generalLines[3]}: ${entityUserRating.leave}
-        ${generalLines[4]}: ${entityUserRating.lastGame ? UtilsGeneratorTimestamp.getFormattedDate(entityUserRating.lastGame) : "—"}\n⠀`;
+        let generalDescription: string =  `${generalLines[0]}: ${entityUserRating.rating}\n` +
+        `🖥️ ${generalLines[1]}: ${entityUserRating.host}\n` +
+        `🔄 ${generalLines[2]}: ${entityUserRating.subIn}/${entityUserRating.subOut}\n` +
+        `💨 ${generalLines[3]}: ${entityUserRating.leave}\n` +
+        `🗓️ ${generalLines[4]}: ${entityUserRating.lastGame ? UtilsGeneratorTimestamp.getFormattedDate(entityUserRating.lastGame) : "—"}\n⠀`;
 
         let description: string[] = [
-            `${ffaLines[0]}: ${entityUserRating.ffaRating}
-            ${ffaLines[1]}: ${entityUserRating.ffaTotal}
-            ${ffaLines[2]}: ${entityUserRating.ffaWin}/${entityUserRating.ffaLose}
-            ${ffaLines[3]}: ${entityUserRating.ffaFirst}`,
+            `${ffaLines[0]}: ${entityUserRating.ffaRating}\n` +
+            `${ffaLines[1]}: ${entityUserRating.ffaTotal}\n` +
+            `${ffaLines[2]}: ${entityUserRating.ffaWin}/${entityUserRating.ffaLose}\n` +
+            `${ffaLines[3]}: ${entityUserRating.ffaFirst}`,
 
-            `<:Science_Victory:1051205348574375946> / <:Culture_Victory:1051205338172502077>⠀⠀⠀${entityUserRating.ffaVictoryScience} / ${entityUserRating.ffaVictoryCulture}
-            <:Domination_Victory:1051205343444729906> / <:Religious_Victory:1051205346179420260>⠀⠀⠀${entityUserRating.ffaVictoryDomination} / ${entityUserRating.ffaVictoryReligious}
-            <:Diplomatic_Victory:1051205340861038702> / <:Victory_FFA_CC:1051205350692491356>⠀⠀⠀${entityUserRating.ffaVictoryDiplomatic} / ${entityUserRating.ffaVictoryCC}`,
+            `<:Science_Victory:1051205348574375946> / <:Culture_Victory:1051205338172502077>⠀⠀⠀${entityUserRating.ffaVictoryScience} / ${entityUserRating.ffaVictoryCulture}\n` +
+            `<:Domination_Victory:1051205343444729906> / <:Religious_Victory:1051205346179420260>⠀⠀⠀${entityUserRating.ffaVictoryDomination} / ${entityUserRating.ffaVictoryReligious}\n` +
+            `<:Diplomatic_Victory:1051205340861038702> / <:Victory_FFA_CC:1051205350692491356>⠀⠀⠀${entityUserRating.ffaVictoryDiplomatic} / ${entityUserRating.ffaVictoryCC}`,
 
-            `${teamersLines[0]}: ${entityUserRating.teamersRating}
-            ${teamersLines[1]}: ${entityUserRating.teamersTotal}
-            ${teamersLines[2]}: ${entityUserRating.teamersWin}/${entityUserRating.teamersLose}`,
+            `${teamersLines[0]}: ${entityUserRating.teamersRating}\n` +
+            `${teamersLines[1]}: ${entityUserRating.teamersTotal}\n` +
+            `${teamersLines[2]}: ${entityUserRating.teamersWin}/${entityUserRating.teamersLose}`,
 
-            `<:Science_Victory:1051205348574375946> / <:Culture_Victory:1051205338172502077>⠀⠀⠀${entityUserRating.teamersVictoryScience} / ${entityUserRating.teamersVictoryCulture}
-            <:Domination_Victory:1051205343444729906> / <:Religious_Victory:1051205346179420260>⠀⠀⠀${entityUserRating.teamersVictoryDomination} / ${entityUserRating.teamersVictoryReligious}
-            <:Diplomatic_Victory:1051205340861038702> / <:Victory_Teamers_GG:1051205352558972999>⠀⠀⠀${entityUserRating.teamersVictoryDiplomatic} / ${entityUserRating.teamersVictoryGG}`
+            `<:Science_Victory:1051205348574375946> / <:Culture_Victory:1051205338172502077>⠀⠀⠀${entityUserRating.teamersVictoryScience} / ${entityUserRating.teamersVictoryCulture}\n` +
+            `<:Domination_Victory:1051205343444729906> / <:Religious_Victory:1051205346179420260>⠀⠀⠀${entityUserRating.teamersVictoryDomination} / ${entityUserRating.teamersVictoryReligious}\n` +
+            `<:Diplomatic_Victory:1051205340861038702> / <:Victory_Teamers_GG:1051205352558972999>⠀⠀⠀${entityUserRating.teamersVictoryDiplomatic} / ${entityUserRating.teamersVictoryGG}`
         ];
 
         let fields: APIEmbedField[] = fieldsHeaders.map((header: string, index: number) => { return {name: header, value: description[index]}; });
@@ -204,9 +204,9 @@ export class ProfileUI extends ModuleBaseUI {
                 let civLine: string = civLines[bestCivsEntity.id];
                 return civLine.slice(civLine.indexOf("<"));
             }).join("\n"),
-            bestCivsEntites.map((bestCivsEntity) => `\`${bestCivsEntity.victories}-${bestCivsEntity.defeats}\``)
+            bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.victories} / ${bestCivsEntity.defeats}`)
                 .join("\n"),
-            bestCivsEntites.map((bestCivsEntity) => `\`${bestCivsEntity.winrate}\` %`)
+            bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.winrate} %`)
                 .join("\n")
         ];
 

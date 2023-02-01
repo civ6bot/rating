@@ -1,6 +1,6 @@
-import {Discord, Slash, SelectMenuComponent, ModalComponent, ButtonComponent} from "discordx";
-import {ButtonInteraction, CommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction} from "discord.js";
-import {DynamicConfigService} from "./dynamicConfig.service";
+import { ButtonInteraction, CommandInteraction, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
+import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
+import { DynamicConfigService } from "./dynamicConfig.service";
 
 @Discord()
 export abstract class DynamicConfigInteractions {
@@ -11,57 +11,46 @@ export abstract class DynamicConfigInteractions {
         interaction: CommandInteraction
     ) { await this.dynamicConfigService.config(interaction); }
 
-    @SelectMenuComponent({id: "dynamicConfig-menu"})
+    @SelectMenuComponent({id: /dynamicConfig-menu-\d+/})        // dynamicConfig-menu-userID    Есть дополнительные объекты
     public async menu(
         interaction: StringSelectMenuInteraction
     ) { await this.dynamicConfigService.menu(interaction); }
 
-    @ModalComponent({id: "dynamicConfig-modal"})
+    @ModalComponent({id: /dynamicConfig-modal/})                // dynamicConfig-modal  Есть дополнительные объекты
     public async modalSetting(
         interaction: ModalSubmitInteraction
     ) { await this.dynamicConfigService.modalSetting(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-reset"})
+
+
+    @ButtonComponent({id: /dynamicConfig-button-back-\d+[\w-]+/})          // dynamicConfig-button-back-userID-CONFIG_TAG
+    public async backButton(
+        interaction: ButtonInteraction
+    ) { await this.dynamicConfigService.backButton(interaction); } 
+
+    @ButtonComponent({id: /dynamicConfig-button-page-\d+-\d+-[\w-]+/})          // dynamicConfig-button-page-userID-pageID-CONFIG_TAG
+    public async pageButton(
+        interaction: ButtonInteraction
+    ) { await this.dynamicConfigService.pageButton(interaction); }
+
+    @ButtonComponent({id: /dynamicConfig-button-reset-\d+-\d+-[\w-]+/})    // dynamicConfig-button-reset-userID-pageID-CONFIG_TAG
     public async resetButton(
         interaction: ButtonInteraction
     ) { await this.dynamicConfigService.resetButton(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-delete"})
+    @ButtonComponent({id: /dynamicConfig-button-delete-\d+/})           // dynamicConfig-button-delete-userID
     public async deleteButton(
         interaction: ButtonInteraction
     ) { await this.dynamicConfigService.deleteButton(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-first"})
-    public async firstPageButton(
-        interaction: ButtonInteraction
-    ) { await this.dynamicConfigService.firstPageButton(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-previous"})
-    public async previousPageButton(
-        interaction: ButtonInteraction
-    ) { await this.dynamicConfigService.previousPageButton(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-next"})
-    public async nextPageButton(
-        interaction: ButtonInteraction
-    ) { await this.dynamicConfigService.nextPageButton(interaction); }
-
-    @ButtonComponent({id: "dynamicConfig-button-last"})
-    public async lastPageButton(
-        interaction: ButtonInteraction
-    ) { await this.dynamicConfigService.lastPageButton(interaction); }
-
-    @ButtonComponent({id: "dynamicConfig-button-back"})
-    public async backButton(
-        interaction: ButtonInteraction
-    ) { await this.dynamicConfigService.backButton(interaction); }
-
-    @ButtonComponent({id: "dynamicConfig-button-reset-confirm"})
+    @ButtonComponent({id: /dynamicConfig-button-reset-confirm-\d+-[\w-]+/})    // dynamicConfig-button-reset-confirm-userID-CONFIG_TAG
     public async resetConfirmButton(
         interaction: ButtonInteraction
     ) { await this.dynamicConfigService.resetConfirmButton(interaction); }
 
-    @ButtonComponent({id: "dynamicConfig-button-reset-deny"})
+    @ButtonComponent({id: /dynamicConfig-button-reset-deny-\d+-\d+-[\w-]+/})   // dynamicConfig-button-reset-deny-userID-pageID-CONFIG_TAG
     public async resetDenyButton(
         interaction: ButtonInteraction
     ) { await this.dynamicConfigService.resetDenyButton(interaction); }
