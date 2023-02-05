@@ -1,4 +1,4 @@
-import { EntityManager, IsNull, Not } from "typeorm";
+import { EntityManager, IsNull, Like, Not } from "typeorm";
 import { outerDataSource } from "../database.datasources";
 import { EntityRatingNote } from "../entities/entity.RatingNote";
 
@@ -44,33 +44,19 @@ export class DatabaseServiceRatingNote {
         });
     }
 
-    public async getAllByUserIDBestCivs(guildID: string, userID: string, gameType: string): Promise<EntityRatingNote[]> {
-        if(gameType === "Total")
-            return await this.database.find(EntityRatingNote, {
-                where: {
-                    guildID: guildID,
-                    userID: userID,
-                    isActive: true,
-                    civilizationID: Not(IsNull()),
-                },
-                order: {
-                    civilizationID: "ASC",
-                    typedRating: "DESC"
-                }
-            });
-        else 
-            return await this.database.find(EntityRatingNote, {
-                where: {
-                    guildID: guildID,
-                    userID: userID,
-                    isActive: true,
-                    civilizationID: Not(IsNull()),
-                    gameType: gameType
-                },
-                order: {
-                    civilizationID: "ASC",
-                    typedRating: "DESC"
-                }
-            });
+    public async getBestCivs(gameType: string, guildID: string|null = null, userID: string|null = null): Promise<EntityRatingNote[]> {
+        return await this.database.find(EntityRatingNote, {
+            where: {
+                guildID: (guildID === null) ? Like("%") : guildID,
+                userID: (userID === null) ? Like("%") : userID,
+                isActive: true,
+                civilizationID: Not(IsNull()),
+                gameType: (gameType === "Total") ? Like("%") : gameType
+            },
+            order: {
+                civilizationID: "ASC",
+                typedRating: "DESC"
+            }
+        });
     }
 }

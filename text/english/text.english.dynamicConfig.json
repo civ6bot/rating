@@ -29,7 +29,6 @@
     { "tag": "DYNAMIC_CONFIG_NOTIFY_RESET_SUCCESS", "value": "Setting have been successfully reset." },
 
     { "tag": "DYNAMIC_CONFIG_TITLE", "value": "Change configuration" },
-    { "tag": "DYNAMIC_CONFIG_TITLE_EMOJI", "value": "\uD83D\uDD27" },
     { "tag": "DYNAMIC_CONFIG_TITLE_PAGE", "value": "page" },
     { "tag": "DYNAMIC_CONFIG_CHOOSE_GROUP_DESCRIPTION", "value": "Choose category from menu." },
     { "tag": "DYNAMIC_CONFIG_CHOOSE_CONFIG_DESCRIPTION", "value": "Choose setting from menu." },
@@ -40,68 +39,45 @@
 
 
     { "tag": "DYNAMIC_CONFIG_LANGUAGE", "value": "Language" },
-    { "tag": "DYNAMIC_CONFIG_LANGUAGE_EMOJI", "value": "\uD83C\uDF0D" },
 
 
     { "tag": "DYNAMIC_CONFIG_MODERATION", "value": "Moderation" },
-    { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
 
     { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Moderator roles (ID)" },
-    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Rating points and roles calculation" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS", "value": "Default points" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS_EMOJI", "value": "🔰" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K", "value": "Elo K" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Elo D" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Special victory additional points, %" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "Roles IDs" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "List of min points to get role" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Reports and channels" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST", "value": "Host required" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST_EMOJI", "value": "🖥️" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS", "value": "Civilizations required" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT", "value": "Rating history channel (for bot)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT_EMOJI", "value": "📨" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR", "value": "Pending reports (for moderators)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR_EMOJI", "value": "📨" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE", "value": "Set emojis on pending reports" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE_EMOJI", "value": "📜" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER", "value": "New reports channel (for users)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER_EMOJI", "value": "📨" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION", "value": "Notifications" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_EMOJI", "value": "📲" },
     
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR", "value": "Rejected report, to author" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR_EMOJI", "value": "🚫" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL", "value": "Pending report, to all" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL_EMOJI", "value": "📜" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR", "value": "Accepted report, to author" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL", "value": "Accepted report, to all" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" },
 
 
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD", "value": "Leaderboard" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_EMOJI", "value": "🏆" },
 
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Max length of leaderboard message" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "📰" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Max length of static leaderboard" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" }
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES", "value": "Show games in leaderboard" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Show games static leaderboard" }
   ]
 }

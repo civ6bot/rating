@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonStyle, EmbedBuilder, User } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, User } from "discord.js";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { UtilsGeneratorButton } from "../../utils/generators/utils.generator.button";
@@ -8,6 +8,8 @@ import { ModuleBaseUI } from "../base/base.ui";
 import { BestCivsEntity } from "./profile.models";
 
 export class ProfileUI extends ModuleBaseUI {
+    private lineURL: string = "https://cdn.discordapp.com/attachments/795265098159357953/1070652459564945500/line.png";
+    
     public profileEmbed(
         user: User,
         author: User,
@@ -89,12 +91,19 @@ export class ProfileUI extends ModuleBaseUI {
         civLines: string[]
     ): EmbedBuilder[] {
         let values: string[] = [
-            ratingNotes.map((ratingNote: EntityRatingNote): string => `<t:${Math.round(ratingNote.date.getTime()/1000)}:d>, ${ratingNote.gameType}`).join("\n"),
+            ratingNotes.map((ratingNote: EntityRatingNote): string => `<t:${Math.round(ratingNote.date.getTime()/1000)}:D>, ${ratingNote.gameType}`).join("\n"),
             ratingNotes.map((ratingNote: EntityRatingNote): string => {
                 if(ratingNote.isSubOut)
                     return otherLines[3];
                 let result: string = "";
                 if(ratingNote.place === 1) {
+                    // Этот кусок кода необходим из-за найденного бага в
+                    // отправленных отчётах (в БД может стоять null даже на 1 месте)
+                    if((ratingNote.gameType === "FFA") && (ratingNote.victoryType === null))
+                        ratingNote.victoryType = "CC";
+                    else if((ratingNote.gameType === "Teamers") && (ratingNote.victoryType === null))
+                        ratingNote.victoryType = "GG";
+                    // Конец странного кода
                     switch(ratingNote.victoryType) {
                         case "Science":
                             result += "<:Science_Victory:1051205348574375946>"; break;
@@ -112,23 +121,18 @@ export class ProfileUI extends ModuleBaseUI {
                             result += "<:Victory_FFA_CC:1051205350692491356>"; break;
                     }
                     result += " ";
-                    if(ratingNote.gameType === "FFA")
-                        result += "— ";
                 }
-                result += " ";
-                if(ratingNote.gameType === "Teamers") {
-                    if(ratingNote.place === 1)
-                        result += otherLines[2];
-                    else 
-                        result += otherLines[1];
-                } else if(ratingNote.gameType === "FFA") {
-                    result += `\`${ratingNote.place}/${ratingNote.placeTotal}\``;
-                }
+                if(ratingNote.gameType === "FFA") 
+                    result += `${ratingNote.place}/${ratingNote.placeTotal}`;
+                else if(ratingNote.gameType === "Teamers") 
+                    result += (ratingNote.place === 1) ? otherLines[2] : otherLines[1];
+                if((ratingNote.place !== 1) && (ratingNote.gameType === "FFA"))
+                    result += "<:EmptySpace:1057693249776660552>";
                 return result;
             }).join("\n"),
             ratingNotes.map(
                 (ratingNote: EntityRatingNote): string => (ratingNote.civilizationID !== null) 
-                    ? civLines[ratingNote.civilizationID] 
+                    ? civLines[ratingNote.civilizationID]?.replaceAll(/\([\wА-Яа-я ]+\)/g, "")?.trim()
                     : "—"
             ).join("\n")
         ];
@@ -138,7 +142,9 @@ export class ProfileUI extends ModuleBaseUI {
             (ratingNotes.length === 0) ? otherLines[0] : "",
             fieldTitles.map((title: string, index: number) => { return {name: title, value: values[index]}; }),
             author.tag,
-            author.avatarURL()
+            author.avatarURL(),
+            "",
+            this.lineURL
         );
     }
 
@@ -191,23 +197,87 @@ export class ProfileUI extends ModuleBaseUI {
         );
     }
 
+    public lobbyRatingEmbed(
+        author: User,
+        userRatings: EntityUserRating[],
+        eloK: number,
+        title: string,
+        fieldTitles: string[],
+        fieldValues: string[]
+    ): EmbedBuilder[] {
+        const dMax: number = 4;                 // Середина
+        const minColorBright: number = 102;     // #66 HEX
+
+        let ratingPoints: number[] = userRatings.map(userRating => userRating.rating);
+        let averageRating: number = ratingPoints.reduce((a, b) => a+b, 0)/ratingPoints.length;
+        let avgSquareDeviation: number = Math.sqrt(      // Среднеквадратичное отклонение
+            ratingPoints.map(ratingPoint => Math.pow(ratingPoint-averageRating, 2)).reduce((a, b) => a+b, 0)/ratingPoints.length
+        );
+        let d: number = Math.min(2*dMax, avgSquareDeviation/eloK);
+        
+        let color: ColorResolvable;
+        if(d <= dMax) {
+            color = `#${
+                // Красный
+                "0".concat(Math.round(
+                    minColorBright*d/dMax
+                ).toString(16)).slice(-2)
+            }00${
+                // Синий
+                "0".concat(Math.round(
+                    255 - (255-minColorBright)*(d/dMax)
+                ).toString(16)).slice(-2)
+            }`;
+        } else {
+            d -= dMax;
+            color = `#${
+                // Красный
+                "0".concat(Math.round(
+                    minColorBright + (255-minColorBright)*d/dMax
+                ).toString(16)).slice(-2)
+            }00${
+                // Синий
+                "0".concat(Math.round(
+                    minColorBright*(1 - d/dMax)
+                ).toString(16)).slice(-2)
+            }`
+        }
+        let values: string[] = [
+            userRatings.map(userRating => `<@${userRating.userID}>\n\n\n`).join("\n").trim(),
+            userRatings.map(userRating => `${fieldValues[0]}: ${userRating.rating}\n— ${fieldValues[1]}: ${userRating.ffaRating}\n— ${fieldValues[2]}: ${userRating.teamersRating}\n`).join("\n")
+        ];
+        return UtilsGeneratorEmbed.getSingle(
+            title,
+            color,
+            "",
+            fieldTitles.map((fieldTitle: string, index: number) => {return {name: fieldTitle, value: values[index]}}),
+            author.tag,
+            author.avatarURL()
+        );
+    }
+
     public bestCivsEmbed(
         author: User,
+        gameType: string,
         bestCivsEntites: BestCivsEntity[],
         title: string,
         emptyDescription: string,
         fieldTitles: string[],
         civLines: string[]
     ): EmbedBuilder[] {
+        (gameType === "FFA") ? fieldTitles.splice(2, 1) : fieldTitles.splice(3, 1);
         let values: string[] = [
             bestCivsEntites.map((bestCivsEntity) => {
                 let civLine: string = civLines[bestCivsEntity.id];
-                return civLine.slice(civLine.indexOf("<"));
+                return civLine.slice(civLine.indexOf("<")).replaceAll(/\([\wА-Яа-я ]+\)/g, "")?.trim();     // Из-за удаления части перед эмодзи
             }).join("\n"),
-            bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.victories} / ${bestCivsEntity.defeats}`)
+            bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.victories} / ${bestCivsEntity.defeats}<:EmptySpace:1057693249776660552>`)
                 .join("\n"),
-            bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.winrate} %`)
-                .join("\n")
+            (gameType === "FFA")
+                ? bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.averagePlace.toLocaleString(
+                    undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                )}<:EmptySpace:1057693249776660552>`).join("\n")
+                : bestCivsEntites.map((bestCivsEntity) => `${bestCivsEntity.winrate} %<:EmptySpace:1057693249776660552>`).join("\n")
         ];
 
         return UtilsGeneratorEmbed.getSingle(
@@ -218,15 +288,19 @@ export class ProfileUI extends ModuleBaseUI {
                 ? fieldTitles.map((fieldTitle: string, index: number) => { return {name: fieldTitle, value: values[index]}; })
                 : [],
             author.tag,
-            author.avatarURL()
+            author.avatarURL(),
+            "",
+            this.lineURL
         );
     }
 
+    //player, server, global
     public bestCivsButtons(
-        label: string,       // delete, profile
+        labels: string[],
         authorID: string,
         userID: string,
-        type: string,
+        listType: string,
+        gameType: string,
         pageCurrent: number,
         pageTotal: number
     ): ActionRowBuilder<ButtonBuilder>[] {
@@ -239,34 +313,65 @@ export class ProfileUI extends ModuleBaseUI {
             indexes = [0, 1, 2, 3, 4];
         let filterFunction = (value: any, index: number): boolean => (indexes.indexOf(index) !== -1);
 
-        let labels: string[] = new Array(4).fill("").concat(label).filter(filterFunction);
-        let styles = [
+        let upperLabels: string[] = new Array(4).fill("").concat(labels[0]).filter(filterFunction);
+        let upperStyles: ButtonStyle[] = [
             ButtonStyle.Secondary, ButtonStyle.Secondary,
             ButtonStyle.Secondary, ButtonStyle.Secondary,
             ButtonStyle.Danger
         ].filter(filterFunction);
-        let emojis = ["⏮", "◀", "▶", "⏭", "✖️"].filter(filterFunction);
-        let customIDArray: string[] = [
-            `bestcivs-${type}-${authorID}-${userID}-99`,
-            `bestcivs-${type}-${authorID}-${userID}-${pageCurrent-1}`,
-            `bestcivs-${type}-${authorID}-${userID}-${pageCurrent+1}`,
-            `bestcivs-${type}-${authorID}-${userID}-100`,
+        let upperEmojis = ["⏮", "◀", "▶", "⏭", "✖️"].filter(filterFunction);
+        let upperCustomIDArray: string[] = [
+            `bestcivs-${listType}-${authorID}-${gameType}-${userID}-99`,
+            `bestcivs-${listType}-${authorID}-${gameType}-${userID}-${pageCurrent-1}`,
+            `bestcivs-${listType}-${authorID}-${gameType}-${userID}-${pageCurrent+1}`,
+            `bestcivs-${listType}-${authorID}-${gameType}-${userID}-100`,
             `bestcivs-delete-${authorID}`
         ].filter(filterFunction);
-        let isDisabledArray: boolean[] = [
+        let upperIsDisabledArray: boolean[] = [
             pageCurrent === 1,
             pageCurrent === 1,
             pageCurrent === pageTotal,
             pageCurrent === pageTotal,
             false
         ].filter(filterFunction);
-
-        return UtilsGeneratorButton.getList(
-            labels,
-            emojis,
-            styles,
-            customIDArray,
-            isDisabledArray
+        let upperButtons =  UtilsGeneratorButton.getList(
+            upperLabels,
+            upperEmojis,
+            upperStyles,
+            upperCustomIDArray,
+            upperIsDisabledArray
         );
+        
+        indexes = (listType === "Player") ? [2, 3, 4] : [0, 1, 2, 3, 4];
+        let lowerLabels: string[] = labels.slice(1).filter(filterFunction);
+        let lowerEmojis: string[] = ["🏆", "🌍", "🗿", "🐲", ""].filter(filterFunction);
+        let lowerStyles: ButtonStyle[] = [
+            ButtonStyle.Secondary, ButtonStyle.Secondary,
+            ButtonStyle.Primary, ButtonStyle.Success,
+            ButtonStyle.Secondary
+        ].filter(filterFunction);
+        let lowerIsDisabledArray: boolean[] = [
+            listType === "Server",
+            listType === "Global",
+            gameType === "FFA",
+            gameType === "Teamers",
+            gameType === "Total"
+        ].filter(filterFunction);
+        let lowerCustomIDArray: string[] = [
+            `bestcivs-Server-${authorID}-${gameType}-${userID}-1`,
+            `bestcivs-Global-${authorID}-${gameType}-${userID}-1`,
+            `bestcivs-${listType}-${authorID}-FFA-${userID}-1`,
+            `bestcivs-${listType}-${authorID}-Teamers-${userID}-1`,
+            `bestcivs-${listType}-${authorID}-Total-${userID}-1`
+        ].filter(filterFunction).map((str, index) => lowerIsDisabledArray[index] ? String(index) : str);
+        // Чтобы убрать дубликаты, нужно использовать map; на неактивные кнопки всё равно нельзя нажать.
+
+        return upperButtons.concat(UtilsGeneratorButton.getList(
+            lowerLabels,
+            lowerEmojis,
+            lowerStyles,
+            lowerCustomIDArray,
+            lowerIsDisabledArray
+        ));
     }
 }

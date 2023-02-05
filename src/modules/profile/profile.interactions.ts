@@ -53,8 +53,20 @@ export abstract class ProfileInteractions {
         interaction: ButtonInteraction
     ) { this.profileService.historyDeleteButton(interaction); }
 
-    @Slash({name: "best-civs", description: "Show best civilizations of player"})
-    public async bestCivs(
+    @Slash({name: "lobby-rating", description: "Show rating of lobby"})
+    public async lobbyRating(
+        interaction: CommandInteraction
+    ) { this.profileService.lobbyRating(interaction); }
+}
+
+@Discord()
+@SlashGroup({name: "best-civs", description: "Show best playable civilizations"})
+@SlashGroup("best-civs")
+export abstract class BestCivsInteractions {
+    private profileService: ProfileService = new ProfileService();
+
+    @Slash({name: "player", description: "Show best civilizations of player"})
+    public async bestCivsPlayer(
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashChoice({name: "Total", value: "Total"})
@@ -71,15 +83,43 @@ export abstract class ProfileInteractions {
             required: false,
         }) user: GuildMember | null = null,
         interaction: CommandInteraction
-    ) { this.profileService.bestCivs(interaction, user, gameType); }
-    
-    @ButtonComponent({id: /bestcivs-\w+-\d+-\d+-\d+/})  // bestcivs-typeID-authorID-playerID-page
-    public async bestCivsPageButton(
+    ) { this.profileService.bestCivs(interaction, gameType, "Player", user); }
+
+    @Slash({name: "server", description: "Show best civilizations of the server"})
+    public async bestCivsServer(
+        @SlashChoice({name: "FFA", value: "FFA"})
+        @SlashChoice({name: "Teamers", value: "Teamers"})
+        @SlashChoice({name: "Total", value: "Total"})
+        @SlashOption({
+            name: "type",
+            description: "type of games",
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }) gameType: string,
+        interaction: CommandInteraction
+    ) { this.profileService.bestCivs(interaction, gameType, "Server"); }
+
+    @Slash({name: "global", description: "Show global best civilizations"})
+    public async bestCivsGlobal(
+        @SlashChoice({name: "FFA", value: "FFA"})
+        @SlashChoice({name: "Teamers", value: "Teamers"})
+        @SlashChoice({name: "Total", value: "Total"})
+        @SlashOption({
+            name: "type",
+            description: "type of games",
+            type: ApplicationCommandOptionType.String,
+            required: true
+        }) gameType: string,
+        interaction: CommandInteraction
+    ) { this.profileService.bestCivs(interaction, gameType, "Global"); }
+
+    @ButtonComponent({id: /bestcivs-\w+-\d+-\w+-\d+-\d+/})  // bestcivs-listType-authorID-gameType-playerID-page
+    public async bestCivsPlayerPageButton(
         interaction: ButtonInteraction
     ) { this.profileService.bestCivsPageButton(interaction); }
 
     @ButtonComponent({id: /bestcivs-delete-\d+/})   // bestcivs-delete-authorID
-    public async bestCivsDeleteButton(
+    public async bestCivsPlayerDeleteButton(
         interaction: ButtonInteraction
     ) { this.profileService.bestCivsDeleteButton(interaction); }
 }

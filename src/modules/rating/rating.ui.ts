@@ -109,7 +109,10 @@ export class RatingUI extends ModuleBaseUI {
             else
                 statusEmojiLines.push("<:EmptySpace:1057693249776660552>");
             userLines.push(`<@${ratingNote.userID}>`);
-            userCivLines.push((ratingNote.isSubOut) ? "" : civLines[ratingNote.civilizationID ?? -1] || "");
+            userCivLines.push((ratingNote.isSubOut) 
+                ? "" 
+                : civLines[ratingNote.civilizationID ?? -1]?.replaceAll(/\([\wА-Яа-я ]+\)/g, "")?.trim() || ""
+            );
         });
         let placeLineMaxLength: number = Math.max(...placeLines.map(str => str.length));
         placeLines = placeLines.map(str => Array<string>(placeLineMaxLength-str.length).fill(" ").join("")+str);

@@ -1,14 +1,16 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, CommandInteraction, EmbedBuilder, Guild, GuildMember, InteractionType, User } from "discord.js";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
+import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { DatabaseServiceRatingNote } from "../../database/services/service.RatingNote";
 import { DatabaseServiceUserRating } from "../../database/services/service.UserRating";
 import { UtilsDataCivilizations } from "../../utils/data/utils.data.civilizations";
+import { UtilsServiceUsers } from "../../utils/services/utils.service.users";
 import { ModuleBaseService } from "../base/base.service";
 import { BestCivsEntity } from "./profile.models";
 import { ProfileUI } from "./profile.ui";
 
 export class ProfileService extends ModuleBaseService {
-    private historyLinesPerPage: number = 16;
+    private historyLinesPerPage: number = 10;
     private bestCivsPerPage: number = 16;
 
     private profileUI: ProfileUI = new ProfileUI();
@@ -20,7 +22,7 @@ export class ProfileService extends ModuleBaseService {
         return interaction.customId.split("-")[2] === interaction.user.id;
     }
 
-    private formBestCivs(ratingNotes: EntityRatingNote[]): BestCivsEntity[] {
+    private formBestCivs(ratingNotes: EntityRatingNote[], gameType: string): BestCivsEntity[] {
         let bestCivsEntities: BestCivsEntity[] = [];
         ratingNotes.forEach((ratingNote: EntityRatingNote): void => {
             let index: number = -1;
@@ -36,8 +38,16 @@ export class ProfileService extends ModuleBaseService {
             (ratingNote.typedRating >= 0)
                 ? bestCivsEntities[index].victories++
                 : bestCivsEntities[index].defeats++;
+            if(gameType === "FFA") {
+                bestCivsEntities[index].places.push(ratingNote.place);
+                bestCivsEntities[index].placesTotal.push(ratingNote.placeTotal);
+            }
         });
-        bestCivsEntities.sort((a, b): number => b.winrate-a.winrate || b.victories-a.victories || a.id-b.id);
+        if(gameType === "FFA") {
+            bestCivsEntities.forEach((bestCivsEntity: BestCivsEntity) => bestCivsEntity.setAveragePlace());
+            bestCivsEntities.sort((a, b): number => a.averagePlace-b.averagePlace || b.victories-a.victories || a.defeats-b.defeats || a.id-b.id);
+        } else 
+            bestCivsEntities.sort((a, b): number => b.winrate-a.winrate || b.victories-a.victories || a.defeats-b.defeats || a.id-b.id);
         return bestCivsEntities;
     }
 
@@ -180,17 +190,75 @@ export class ProfileService extends ModuleBaseService {
 
 
 
+    public async lobbyRating(interaction: CommandInteraction) {
+        let users: User[] = UtilsServiceUsers.getFromVoice(interaction);
+        if(users.length === 0) {
+            let textLines: string[] = await this.getManyText(interaction, [
+                "BASE_ERROR_TITLE", "LOBBY_RATING_ERROR_NO_VOICE"
+            ]);
+            return interaction.reply({embeds: this.profileUI.error(textLines[0], textLines[1]), ephemeral: true});
+        }
+        
+        let userRatings: EntityUserRating[] = (await this.databaseServiceUserRating.getMany(
+            interaction.guild?.id as string, 
+            users.map(user => user.id)
+        )).sort((a, b) => b.rating-a.rating);
+
+        let eloK: number = await this.getOneSettingNumber(interaction, "RATING_ELO_K");
+
+        let title: string = await this.getOneText(interaction, "LOBBY_RATING_TITLE");
+        let fieldTitles: string[] = await this.getManyText(interaction, [
+            "LOBBY_RATING_PLAYER_FIELD_TITLE", "LOBBY_RATING_RATING_FIELD_TITLE"
+        ]);
+        let fieldValues: string[] = await this.getManyText(interaction, [
+            "LOBBY_RATING_RATING_FIELD_LIST_TOTAL", "LOBBY_RATING_RATING_FIELD_LIST_FFA",
+            "LOBBY_RATING_RATING_FIELD_LIST_TEAMERS"
+        ]);
+
+        interaction.reply({embeds: this.profileUI.lobbyRatingEmbed(
+            interaction.user,
+            userRatings,
+            eloK,
+            title,
+            fieldTitles,
+            fieldValues
+        )});
+    }
+
+
+    
     public async bestCivs(
         interaction: CommandInteraction | ButtonInteraction, 
-        member: GuildMember | null, 
-        type: string, 
+        gameType: string, 
+        listType: string,
+        member: GuildMember|null = null,
         pageCurrent: number = 1
     ) {
         if(!member)
             member = interaction.member as GuildMember;
-        let bestCivsEntities: BestCivsEntity[] = this.formBestCivs(
-            await this.databaseServiceRatingNote.getAllByUserIDBestCivs(interaction.guild?.id as string, member.id, type)
-        );
+        let bestCivsEntities: BestCivsEntity[];
+        let title: string;
+        switch(listType) {
+            case "Global":
+                bestCivsEntities = this.formBestCivs(await this.databaseServiceRatingNote.getBestCivs(
+                    gameType
+                ), gameType);
+                break;
+            case "Server":
+                bestCivsEntities = this.formBestCivs(await this.databaseServiceRatingNote.getBestCivs(
+                    gameType,
+                    interaction.guild?.id as string
+                ), gameType);
+                break;
+            case "Player":
+            default:
+                bestCivsEntities = this.formBestCivs(await this.databaseServiceRatingNote.getBestCivs(
+                    gameType,
+                    interaction.guild?.id as string, 
+                    member.id, 
+                ), gameType);
+                break;
+        }
         let pageTotal: number = Math.ceil(bestCivsEntities.length/this.bestCivsPerPage);
         switch(pageCurrent) {
             case 99:                            // нельзя использовать одинаковые ID кнопок
@@ -198,23 +266,49 @@ export class ProfileService extends ModuleBaseService {
             case 100:
                 pageCurrent = pageTotal; break;
         }
-        let title: string = await this.getOneText(interaction, 
-            (type === "Total") ? "BEST_CIVS_TOTAL_TITLE"
-            : (type === "FFA") ? "BEST_CIVS_FFA_TITLE"
-            : "BEST_CIVS_TEAMERS_TITLE",
-            member.user.tag, pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
-        );
+        switch(listType) {
+            case "Global":
+                title = await this.getOneText(interaction, 
+                    (gameType === "Total") ? "BEST_CIVS_GLOBAL_TOTAL_TITLE"
+                    : (gameType === "FFA") ? "BEST_CIVS_GLOBAL_FFA_TITLE"
+                    : "BEST_CIVS_GLOBAL_TEAMERS_TITLE",
+                    pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
+                );
+                break;
+            case "Server":
+                title = await this.getOneText(interaction, 
+                    (gameType === "Total") ? "BEST_CIVS_SERVER_TOTAL_TITLE"
+                    : (gameType === "FFA") ? "BEST_CIVS_SERVER_FFA_TITLE"
+                    : "BEST_CIVS_SERVER_TEAMERS_TITLE",
+                    pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
+                );
+                break;
+            case "Player":
+            default:
+                title = await this.getOneText(interaction, 
+                    (gameType === "Total") ? "BEST_CIVS_USER_TOTAL_TITLE"
+                    : (gameType === "FFA") ? "BEST_CIVS_USER_FFA_TITLE"
+                    : "BEST_CIVS_USER_TEAMERS_TITLE",
+                    member.user.tag, pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
+                );
+                break;
+        }
         let emptyDescription: string = await this.getOneText(interaction, "BEST_CIVS_DESCRIPTION_EMPTY");
         let fieldTitles: string[] = await this.getManyText(interaction, [
             "BEST_CIVS_LEADER_FIELD_TITLE", "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE",
-            "BEST_CIVS_WINRATE_FIELD_TITLE"
+            "BEST_CIVS_WINRATE_FIELD_TITLE", "BEST_CIVS_AVERAGE_PLACE_FFA_FIELD_TITLE"
         ]);
-        let label: string = await this.getOneText(interaction, "BEST_CIVS_DELETE_BUTTON");
+        let labels: string[] = await this.getManyText(interaction, [
+            "BEST_CIVS_DELETE_BUTTON", "BEST_CIVS_SERVER_BUTTON",
+            "BEST_CIVS_GLOBAL_BUTTON", "BEST_CIVS_FFA_BUTTON",
+            "BEST_CIVS_TEAMERS_BUTTON", "BEST_CIVS_TOTAL_BUTTON"
+        ]);
         let civEmojis: string[] = await this.getManySettingString(interaction, ...UtilsDataCivilizations.civilizationsTags.map((str: string): string => str+"_EMOJI"));
         let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str]))).map(str => str.slice(str.indexOf("<")));
 
         let embed: EmbedBuilder[] = this.profileUI.bestCivsEmbed(
-            interaction.user, 
+            interaction.user,
+            gameType,
             bestCivsEntities.slice(
                 (pageCurrent-1)*this.bestCivsPerPage, 
                 (pageCurrent)*this.bestCivsPerPage), 
@@ -223,10 +317,11 @@ export class ProfileService extends ModuleBaseService {
             fieldTitles,
             civLines
         ), component: ActionRowBuilder<ButtonBuilder>[] = this.profileUI.bestCivsButtons(
-            label, 
+            labels, 
             interaction.user.id, 
-            member.id, 
-            type,
+            member.id,
+            listType,
+            gameType,
             pageCurrent, 
             pageTotal
         );
@@ -241,11 +336,12 @@ export class ProfileService extends ModuleBaseService {
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        let type: string = interaction.customId.split("-")[1];
-        let userID: string = interaction.customId.split("-")[3];
-        let member: GuildMember = await interaction.guild?.members.fetch(userID) as GuildMember;
-        let pageCurrent: number = Number(interaction.customId.split("-")[4]);
-        this.bestCivs(interaction, member, type, pageCurrent);
+        let listType: string = interaction.customId.split("-")[1];
+        let gameType: string = interaction.customId.split("-")[3];
+        let userID: string = interaction.customId.split("-")[4];
+        let member: GuildMember|null = (await interaction.guild?.members.fetch(userID)) || null;
+        let pageCurrent: number = Number(interaction.customId.split("-")[5]);
+        this.bestCivs(interaction, gameType, listType, member, pageCurrent);
     }
 
     public async bestCivsDeleteButton(interaction: ButtonInteraction) {

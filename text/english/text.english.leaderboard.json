@@ -8,6 +8,7 @@
 
     { "tag": "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "value": "Player" },
     { "tag": "LEADERBOARD_DESCRIPTION_RATING_HEADER", "value": "Rating" },
+    { "tag": "LEADERBOARD_DESCRIPTION_GAMES_HEADER", "value": "Games amount" },
 
     { "tag": "LEADERBOARD_DELETE", "value": "Delete" },
 

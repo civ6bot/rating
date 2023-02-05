@@ -48,16 +48,20 @@ export class LeaderboardService extends ModuleBaseService {
         let userRatings: EntityUserRating[] = (type === "FFA")
             ? await this.databaseServiceUserRating.getBestRatingFFA(guildID, leaderboardMaxLength)
             : await this.databaseServiceUserRating.getBestRatingTeamers(guildID, leaderboardMaxLength);
+        let isGamesRequired: boolean = !!(await this.getOneSettingNumber(guildID, "LEADERBOARD_STATIC_SHOW_GAMES"));
+
         let title: string = await this.getOneText(guildID, (type === "FFA") ? "LEADERBOARD_STATIC_FFA_TITLE" : "LEADERBOARD_STATIC_TEAMERS_TITLE");
         let emptyDescription: string = await this.getOneText(guildID, "LEADERBOARD_DESCRIPTION_EMPTY");
         let fieldHeaders: string[] = await this.getManyText(guildID, [
-            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER"
+            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER",
+            "LEADERBOARD_DESCRIPTION_GAMES_HEADER"
         ]);
         message.edit({
             embeds: this.leaderboardUI.leaderboardStaticEmbed(
                 userRatings,
                 type,
                 this.leaderboardPlayersPerPage,
+                isGamesRequired,
                 title,
                 emptyDescription,
                 fieldHeaders
@@ -77,13 +81,16 @@ export class LeaderboardService extends ModuleBaseService {
             case 100:
                 pageCurrent = pageTotal; break;
         }
+        let isGamesRequired: boolean = !!(await this.getOneSettingNumber(interaction, "LEADERBOARD_SHOW_GAMES"));
+
         let title = await this.getOneText(interaction, 
             (type === "FFA") ? "LEADERBOARD_FFA_TITLE" : "LEADERBOARD_TEAMERS_TITLE",
             pageCurrent, Math.max(pageTotal, 1)
         );
         let emptyDescription: string = await this.getOneText(interaction, "LEADERBOARD_DESCRIPTION_EMPTY");
         let fieldHeaders: string[] = await this.getManyText(interaction, [
-            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER"
+            "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "LEADERBOARD_DESCRIPTION_RATING_HEADER",
+            "LEADERBOARD_DESCRIPTION_GAMES_HEADER"
         ]);
         let label: string = await this.getOneText(interaction, "LEADERBOARD_DELETE");
 
@@ -94,6 +101,7 @@ export class LeaderboardService extends ModuleBaseService {
                 (pageCurrent-1)*this.leaderboardPlayersPerPage, 
                 (pageCurrent)*this.leaderboardPlayersPerPage, 
             ),
+            isGamesRequired,
             title,
             emptyDescription,
             fieldHeaders,
