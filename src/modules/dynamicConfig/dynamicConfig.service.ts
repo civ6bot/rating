@@ -297,8 +297,7 @@ export class DynamicConfigService extends ModuleBaseService {
             case "BooleanGameSetting":  // Не смотрит на входящий аргумент
                 if(Number(dynamicConfigEntity.value)) {     // Если хотят поменять "да" на "нет"
                     let adjacentDynamicConfigEntities: DynamicConfigEntity[] = await this.getAdjacentDynamicConfigEntities(interaction, dynamicConfigEntity.configTag);
-                    adjacentDynamicConfigEntities.shift();
-                    if(adjacentDynamicConfigEntities.filter(adjacentDynamicConfigEntity => (dynamicConfigEntity.configTag === adjacentDynamicConfigEntity.configTag)).length <= 2) {
+                    if(adjacentDynamicConfigEntities.slice(1).filter(adjacentDynamicConfigEntity => Number(adjacentDynamicConfigEntity.value)).length <= 2) {
                         dynamicConfigEntity.errorText = await this.getOneText(interaction, "DYNAMIC_CONFIG_ERROR_TYPE_BOOLEAN_GAME_SETTING");
                         break;
                     }

@@ -5,7 +5,7 @@ import { UtilsGeneratorEmbed } from "../../utils/generators/utils.generator.embe
 import { ModuleBaseUI } from "../base/base.ui";
 
 export class LeaderboardUI extends ModuleBaseUI {
-    private lineURL: string = "https://cdn.discordapp.com/attachments/795265098159357953/1060482761695187034/line.png";
+    private lineURL: string = "https://cdn.discordapp.com/attachments/795265098159357953/1070652459564945500/line.png";
 
     private getFieldArray(
         type: string,
@@ -36,9 +36,14 @@ export class LeaderboardUI extends ModuleBaseUI {
                 ((type === "FFA") ? String(userRating.ffaRating) : String(userRating.teamersRating)) + 
                 (((pageCurrent-1)*playersPerPage+index+1 === 3) ? "\n\n" : "\n")
             ).join("");
+        let gamesFieldValue: string = userRatings.map((userRating: EntityUserRating, index: number): string =>
+            ((type === "FFA") ? String(userRating.ffaTotal) : String(userRating.teamersTotal)) + 
+            (((pageCurrent-1)*playersPerPage+index+1 === 3) ? "\n\n" : "\n")
+        ).join("");
         return [
             {name: fieldHeaders[0], value: usersFieldValue},
-            {name: fieldHeaders[1], value: ratingFieldValue}
+            {name: fieldHeaders[1], value: ratingFieldValue},
+            {name: fieldHeaders[2], value: gamesFieldValue}
         ];
     }
 
@@ -46,6 +51,7 @@ export class LeaderboardUI extends ModuleBaseUI {
         author: User,
         type: string,
         userRatings: EntityUserRating[],
+        isGamesRequired: boolean,
         title: string,
         emptyDescription: string,
         fieldHeaders: string[],
@@ -58,7 +64,7 @@ export class LeaderboardUI extends ModuleBaseUI {
             title,
             (type === "FFA") ? "#389fff" : "#00ff40",
             description,
-            this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage),
+            this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage).slice(0, (isGamesRequired) ? 3 : 2),
             author.tag,
             author.avatarURL(),
             null,
@@ -133,6 +139,7 @@ export class LeaderboardUI extends ModuleBaseUI {
         userRatings: EntityUserRating[],
         type: string,
         playersPerPage: number,
+        isGamesRequired: boolean,
         title: string,
         emptyDescription: string,
         fieldHeaders: string[]
@@ -147,7 +154,7 @@ export class LeaderboardUI extends ModuleBaseUI {
             (embedsLength === 0) ? [emptyDescription] : [],
             userRatingGroups.map((userRatingGroup: EntityUserRating[], index: number): APIEmbedField[] => this.getFieldArray(
                 type, userRatingGroup, fieldHeaders, index+1, playersPerPage
-            )),
+            )).slice(0, (isGamesRequired) ? 3 : 2),
             null,
             null,
             [],

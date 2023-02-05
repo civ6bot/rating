@@ -237,9 +237,9 @@ export class RatingService extends ModuleBaseService {
                     pendingRatingNotes[pendingRatingNotes.length-2].civilizationID = bans[0];
             }
         });
-        if((gameType === "FFA") && (victoryType === "GG"))
+        if((gameType === "FFA") && ((victoryType === "GG") || (victoryType === null)))
             victoryType = "CC";
-        else if((gameType === "Teamers") && (victoryType === "CC"))
+        else if((gameType === "Teamers") && ((victoryType === "CC") || (victoryType === null)))
             victoryType = "GG";
     
         // ======================== ПЕРЕСЧЁТ МЕСТ ИГРОКОВ
@@ -735,6 +735,7 @@ export class RatingService extends ModuleBaseService {
             }
         let usersID: string[] = pendingRatingNotes.map(note => note.userID);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
+        this.applyPendingRating(usersRating, pendingRatingNotes);
         let title: string = await this.getOneText(interaction, "RATING_MODERATION_TITLE");
         let descriptionHeaders: string[] = await this.getManyText(interaction, [
             "RATING_DESCRIPTION_ID_HEADER", "RATING_DESCRIPTION_GAME_TYPE_HEADER",

@@ -42,17 +42,42 @@
     { "tag": "HISTORY_DELETE_BUTTON", "value": "Удалить" },
 
 
+
+    { "tag": "LOBBY_RATING_ERROR_NO_VOICE", "value": "Вы должны находиться в голосовом канале для использования этой команды." },
+
+    { "tag": "LOBBY_RATING_TITLE", "value": "👥 Рейтинг лобби" },
+    { "tag": "LOBBY_RATING_PLAYER_FIELD_TITLE", "value": "Игрок" },
+    { "tag": "LOBBY_RATING_RATING_FIELD_TITLE", "value": "Рейтинг" },
+    { "tag": "LOBBY_RATING_RATING_FIELD_LIST_TOTAL", "value": "Общий" },
+    { "tag": "LOBBY_RATING_RATING_FIELD_LIST_FFA", "value": "FFA" },
+    { "tag": "LOBBY_RATING_RATING_FIELD_LIST_TEAMERS", "value": "Teamers" },
+
+
     
-    { "tag": "BEST_CIVS_TOTAL_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME], страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
-    { "tag": "BEST_CIVS_FFA_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME] - FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
-    { "tag": "BEST_CIVS_TEAMERS_TITLE", "value": "🏆 Лучшие лидеры [USER_NAME] - Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_USER_TOTAL_TITLE", "value": "👑 Лучшие цивилизации [USER_NAME], страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_USER_FFA_TITLE", "value": "👑 Лучшие цивилизации [USER_NAME] - FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_USER_TEAMERS_TITLE", "value": "👑 Лучшие цивилизации [USER_NAME] - Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "BEST_CIVS_SERVER_TOTAL_TITLE", "value": "🏆 Лучшие цивилизации сервера, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_SERVER_FFA_TITLE", "value": "🏆 Лучшие цивилизации сервера - FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_SERVER_TEAMERS_TITLE", "value": "🏆 Лучшие цивилизации сервера - Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+
+    { "tag": "BEST_CIVS_GLOBAL_TOTAL_TITLE", "value": "🌍 Глобальные лучшие цивилизации, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_GLOBAL_FFA_TITLE", "value": "🌍 Глобальные лучшие цивилизации - FFA, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
+    { "tag": "BEST_CIVS_GLOBAL_TEAMERS_TITLE", "value": "🌍 Глобальные лучшие цивилизации - Teamers, страница [PAGE_CURRENT]/[PAGE_TOTAL]" },
 
     { "tag": "BEST_CIVS_DESCRIPTION_EMPTY", "value": "У этого игрока нет записей игр." },
 
     { "tag": "BEST_CIVS_LEADER_FIELD_TITLE", "value": "Лидер" },
-    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "Побед/поражений" },
+    { "tag": "BEST_CIVS_VICTORIES_DEFEATS_FIELD_TITLE", "value": "В/П" },
     { "tag": "BEST_CIVS_WINRATE_FIELD_TITLE", "value": "Доля побед" },
+    { "tag": "BEST_CIVS_AVERAGE_PLACE_FFA_FIELD_TITLE", "value": "Ср. место (из 10)" },
 
-    { "tag": "BEST_CIVS_DELETE_BUTTON", "value": "Удалить" }
+    { "tag": "BEST_CIVS_DELETE_BUTTON", "value": "Удалить" },
+    { "tag": "BEST_CIVS_SERVER_BUTTON", "value": "Сервер" },
+    { "tag": "BEST_CIVS_GLOBAL_BUTTON", "value": "Глобально" },
+    { "tag": "BEST_CIVS_FFA_BUTTON", "value": "FFA" },
+    { "tag": "BEST_CIVS_TEAMERS_BUTTON", "value": "Teamers" },
+    { "tag": "BEST_CIVS_TOTAL_BUTTON", "value": "Всего" }
   ]
 }

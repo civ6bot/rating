@@ -67,7 +67,13 @@ export class ModuleBaseService {
         ...args: (string|number)[]
     ): Promise<string> {
         let lang: string = await this.getOneSettingString(interaction_lang, "BASE_LANGUAGE");
-        return await this.databaseServiceText.getOne(lang, tag, args);
+        let textValue: string = await this.databaseServiceText.getOne(lang, tag, args);
+        if(textValue === tag) {
+            let defaultLang: string = await this.getOneSettingString("DEFAULT", "BASE_LANGUAGE");
+            if(lang !== defaultLang)
+                textValue = await this.databaseServiceText.getOne(defaultLang, tag, args);
+        }
+        return textValue;
     }
 
     protected async getManyText(
@@ -76,7 +82,17 @@ export class ModuleBaseService {
         args: (((string|number)[])|null)[] = []
     ): Promise<string[]> {
         let lang: string = await this.getOneSettingString(interaction, "BASE_LANGUAGE");
-        return this.databaseServiceText.getMany(lang, tags, args);
+        let textValues: string[] = await this.databaseServiceText.getMany(lang, tags, args);
+        let defaultLang: string = "";
+        for(let i in textValues) {
+            if(textValues[i] === tags[i]) {
+                if(defaultLang.length === 0)
+                    defaultLang = await this.getOneSettingString("DEFAULT", "BASE_LANGUAGE");
+                if(lang !== defaultLang)
+                    textValues[i] = await this.databaseServiceText.getOne(defaultLang, tags[i], (args[i] || []));
+            }
+        }
+        return textValues;
     }
 
     protected async isModerator(interaction: CommandInteraction | ButtonInteraction | ModalSubmitInteraction | StringSelectMenuInteraction | GuildMember): Promise<boolean> {

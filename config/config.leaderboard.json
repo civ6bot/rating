@@ -5,5 +5,8 @@
   { "setting": "LEADERBOARD_FFA_CHANNEL_ID", "value": "" },
   { "setting": "LEADERBOARD_FFA_MESSAGE_ID", "value": "" },
   { "setting": "LEADERBOARD_TEAMERS_CHANNEL_ID", "value": "" },
-  { "setting": "LEADERBOARD_TEAMERS_MESSAGE_ID", "value": "" }
+  { "setting": "LEADERBOARD_TEAMERS_MESSAGE_ID", "value": "" },
+
+  { "setting": "LEADERBOARD_SHOW_GAMES", "value": 0 },
+  { "setting": "LEADERBOARD_STATIC_SHOW_GAMES", "value": 0 }
 ]

@@ -138,5 +138,15 @@ export const configsMap = new Map<string, DynamicConfigEntity[]>([
             minValue: 3,
             maxValue: 500
         },
+        {
+            configTag: "LEADERBOARD_SHOW_GAMES",
+            textTag: "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES",
+            type: "Boolean",
+        },
+        {
+            configTag: "LEADERBOARD_STATIC_SHOW_GAMES",
+            textTag: "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES",
+            type: "Boolean",
+        },
     ]],
 ]);

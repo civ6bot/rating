@@ -13,7 +13,7 @@
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_NUMBER_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] целых чисел в диапазоне от от [MIN_VALUE] до [MAX_VALUE]." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_ROLE_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] ролей или ID ролей." },
     { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_CHANNEL_MANY", "value": "Введите от [MIN_AMOUNT] до [MAX_AMOUNT] каналов или ID каналов." },
-    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_EMOJI", "value": "Input full emoji name with ID. Write backslash (\"\\\\\") character before emoji to get it." },
+    { "tag": "DYNAMIC_CONFIG_ERROR_TYPE_EMOJI", "value": "Введите название эмодзи вместе с его ID. Чтобы получить данные, напишите символ бэкслеша (\"\\\\\") перед эмодзи." },
 
     { "tag": "DYNAMIC_CONFIG_BUTTON_BACK", "value": "Назад" },
     { "tag": "DYNAMIC_CONFIG_BUTTON_RESET", "value": "Сбросить настройки" },
@@ -30,7 +30,6 @@
     { "tag": "DYNAMIC_CONFIG_NOTIFY_RESET_SUCCESS", "value": "Настройки были успешно сброшены." },
 
     { "tag": "DYNAMIC_CONFIG_TITLE", "value": "Конфигурация сервера" },
-    { "tag": "DYNAMIC_CONFIG_TITLE_EMOJI", "value": "\uD83D\uDD27" },
     { "tag": "DYNAMIC_CONFIG_TITLE_PAGE", "value": "страница" },
     { "tag": "DYNAMIC_CONFIG_CHOOSE_GROUP_DESCRIPTION", "value": "Выберите категорию настроек из списка в меню." },
     { "tag": "DYNAMIC_CONFIG_CHOOSE_CONFIG_DESCRIPTION", "value": "Выберите настройку, которую вы хотите изменить, из списка в меню." },
@@ -41,68 +40,45 @@
 
 
     { "tag": "DYNAMIC_CONFIG_LANGUAGE", "value": "Выбор языка" },
-    { "tag": "DYNAMIC_CONFIG_LANGUAGE_EMOJI", "value": "\uD83C\uDF0D" },
 
 
     { "tag": "DYNAMIC_CONFIG_MODERATION", "value": "Модерация" },
-    { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
 
     { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Роли модераторов (ID)" },
-    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Рейтинговые очки и роли" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS", "value": "Очков по умолчанию" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS_EMOJI", "value": "🔰" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K", "value": "Эло, K" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Эло, D" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Доп. очки рейтинга за особую победу, %" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "ID ролей" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "Минимумы очков для получения ролей" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Отчеты и каналы" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST", "value": "Обязательно указывать хоста игры" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST_EMOJI", "value": "🖥️" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS", "value": "Обязательно указывать цивилизации" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT", "value": "История рейтинга (для бота)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT_EMOJI", "value": "📨" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR", "value": "Отчеты на проверке (для модераторов)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR_EMOJI", "value": "📨" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE", "value": "Ставить эмодзи на проверяющиеся отчеты" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE_EMOJI", "value": "📜" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER", "value": "Новые отчеты (для игроков)" },
-    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER_EMOJI", "value": "📨" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION", "value": "Оповещения" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_EMOJI", "value": "📲" },
     
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR", "value": "Отчет отклонен, для автора" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR_EMOJI", "value": "🚫" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL", "value": "Отчет на проверке, для всех игроков" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL_EMOJI", "value": "📜" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR", "value": "Отчет принят, для автора" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
     { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL", "value": "Отчет принят, для всех игроков" },
-    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" },
 
 
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD", "value": "Таблица лидеров" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_EMOJI", "value": "🏆" },
 
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Макс. длина списка лучших игроков" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "📰" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Макс. длина статической таблицы" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" }
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES", "value": "Показывать число игр в списке" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Показывать число игр в стат. таблице" }
   ]
 }

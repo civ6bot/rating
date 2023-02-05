@@ -8,6 +8,7 @@
 
     { "tag": "LEADERBOARD_DESCRIPTION_PLAYER_HEADER", "value": "Игрок" },
     { "tag": "LEADERBOARD_DESCRIPTION_RATING_HEADER", "value": "Рейтинг" },
+    { "tag": "LEADERBOARD_DESCRIPTION_GAMES_HEADER", "value": "Число игр" },
 
     { "tag": "LEADERBOARD_DELETE", "value": "Удалить" },
 

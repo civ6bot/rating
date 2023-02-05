@@ -1,0 +1,46 @@
+{
+  "lang": "English",
+  "text": [
+    { "tag": "DYNAMIC_CONFIG_TITLE_EMOJI", "value": "\uD83D\uDD27" },
+
+    { "tag": "DYNAMIC_CONFIG_LANGUAGE_EMOJI", "value": "\uD83C\uDF0D" },
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
+
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS_EMOJI", "value": "🔰" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST_EMOJI", "value": "🖥️" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS_EMOJI", "value": "👑" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT_EMOJI", "value": "📨" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_MODERATOR_EMOJI", "value": "📨" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJIS_VOTE_EMOJI", "value": "📜" },
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_USER_EMOJI", "value": "📨" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_EMOJI", "value": "📲" },
+    
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REJECT_AUTHOR_EMOJI", "value": "🚫" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_REPORT_ALL_EMOJI", "value": "📜" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_AUTHOR_EMOJI", "value": "📈" },
+    { "tag": "DYNAMIC_CONFIG_RATING_NOTIFICATION_ACCEPT_ALL_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_EMOJI", "value": "🏆" },
+
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "🪜" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES_EMOJI", "value": "🎮" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES_EMOJI", "value": "🎮" }
+  ]
+}
