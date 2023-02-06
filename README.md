@@ -10,7 +10,7 @@ Current version: `1.1.1` (Leader Pass pt.3, China leaders & major architecture u
 ## <a name="requirements"></a>Requirements
 * **npm** `16.x.x >= 16.14.2`
 * **node** `9.x.x >= 9.4.0`
-* **rating.env** file with private keys. See how to configure Dotenv file for Civ6Bot Rating [here](https://github.com/civ6bot/rating/tree/main/docs/env-rating.md).
+* [**rating.env**](https://github.com/civ6bot/rating/tree/main/docs/env-rating.md) file with private keys and authorization data. (Click on link to see how to configure Dotenv file for Civ6Bot Rating)
 
 ## <a name="installation"></a>Installation
 ```bash
