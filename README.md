@@ -4,13 +4,13 @@
 <br>
 Current version: `1.1.1` (Leader Pass pt.3, China leaders & major architecture update).
 <p align="center">
-    <img src="https://cdn.discordapp.com/attachments/1040700041309995108/1066093861639835678/rating.png"  width="250" height="250">
+    <img src="./images/rating.png"  width="250" height="250">
 </p>
 
 ## <a name="requirements"></a>Requirements
 * **npm** `16.x.x >= 16.14.2`
 * **node** `9.x.x >= 9.4.0`
-* [**rating.env**](https://github.com/civ6bot/rating/tree/main/docs/env-rating.md) file with private keys and authorization data. (Click on link to see how to configure Dotenv file for Civ6Bot Rating)
+* [**rating.env**](./docs/env-rating.md) file with private keys and authorization data. (Click on link to see how to configure Dotenv file for Civ6Bot Rating)
 
 ## <a name="installation"></a>Installation
 ```bash
