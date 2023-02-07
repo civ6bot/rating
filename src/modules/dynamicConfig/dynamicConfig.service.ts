@@ -616,7 +616,7 @@ export class DynamicConfigService extends ModuleBaseService {
                     label,
                     dynamicConfigEntity.stringifiedModalValue ?? "",
                     (dynamicConfigEntity.type === "TeamersForbiddenPairs"),     // Тут нужно много текста.
-                    (dynamicConfigEntity.type === "TeamersForbiddenPairs")      // Сделано так, Чтобы не делать отдельный случай в switch-case.
+                    true                                                        // Сделано так, Чтобы не делать отдельный случай в switch-case.
                 ));
                 break;
         }

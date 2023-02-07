@@ -103,6 +103,7 @@
 
     { "tag": "RATING_CONFIRM_BUTTON", "value": "Подтвердить" },
     { "tag": "RATING_SEND_BUTTON", "value": "Отправить" },
-    { "tag": "RATING_CANCEL_BUTTON", "value": "Отмена" }
+    { "tag": "RATING_CANCEL_BUTTON", "value": "Отмена" },
+    { "tag": "RATING_DELETE_BUTTON", "value": "Удалить сообщение" }
   ]
 }

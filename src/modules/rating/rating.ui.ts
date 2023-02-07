@@ -291,7 +291,8 @@ export class RatingUI extends ModuleBaseUI {
             labels,
             [],
             [ButtonStyle.Success, ButtonStyle.Danger],
-            [`rating-report-user-confirm-${pendingGameID}-${authorID}`, `rating-report-user-delete-${pendingGameID}-${authorID}`],
+            [`rating-report-user-confirm-${pendingGameID}-${authorID}`, 
+             `rating-report-user-delete-${pendingGameID}-${authorID}`],
             [isConfirmDisabled, false]
         );
     }
@@ -305,7 +306,8 @@ export class RatingUI extends ModuleBaseUI {
             labels,
             [],
             [ButtonStyle.Success, ButtonStyle.Danger],
-            [`rating-report-moderator-accept-${pendingGameID}`, `rating-report-moderator-reject-${pendingGameID}-${authorID}`]
+            [`rating-report-moderator-accept-${pendingGameID}-${authorID}`,
+             `rating-report-moderator-reject-${pendingGameID}-${authorID}`]
         );
     }
 
@@ -323,6 +325,18 @@ export class RatingUI extends ModuleBaseUI {
             [""],
             [TextInputStyle.Short],
             true
+        );
+    }
+
+    public deleteAcceptedRatingMessageButton(
+        authorID: string,
+        label: string
+    ): ActionRowBuilder<ButtonBuilder>[] {
+        return UtilsGeneratorButton.getSingle(
+            label,
+            "❌",
+            ButtonStyle.Secondary,
+            `rating-reset-user-cancel-${authorID}`
         );
     }
 

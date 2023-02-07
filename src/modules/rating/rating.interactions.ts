@@ -52,12 +52,12 @@ export abstract class RatingInteractions {
         interaction: ButtonInteraction
     ) { this.ratingService.reportModeratorRejectButton(interaction); }
 
-    @ModalComponent({id: /rating-report-moderator-reject-modal-\d+-\d+/}) // rating-report-moderator-reject-modal-newGameID-authorID     Ответ модератора
+    @ModalComponent({id: /rating-report-moderator-reject-modal-\d+-\d+/}) // rating-report-moderator-reject-modal-newGameID-authorID     Ответ модератора, authorID для обратной связи
     public async modalSetting(
         interaction: ModalSubmitInteraction
     ) { this.ratingService.reportModeratorRejectModal(interaction); }
 
-    @ButtonComponent({id: /rating-report-moderator-accept-\d+/})  // rating-report-moderator-accept-newGameID-authorID    Любой модератор может нажать, authorID для обратной связи
+    @ButtonComponent({id: /rating-report-moderator-accept-\d+-\d+/})  // rating-report-moderator-accept-newGameID-authorID    Любой модератор может нажать, authorID для обратной связи
     public async reportModeratorAcceptButton(
         interaction: ButtonInteraction
     ) { this.ratingService.reportModeratorAcceptButton(interaction); }
@@ -92,7 +92,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        @SlashChoice({name: "General", value: "General"})
+        @SlashChoice({name: "Total", value: "Total"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({
@@ -119,7 +119,7 @@ export abstract class RatingInteractions {
             type: ApplicationCommandOptionType.User,
             required: true,
         }) user: GuildMember,
-        @SlashChoice({name: "General", value: "General"})
+        @SlashChoice({name: "Total", value: "Total"})
         @SlashChoice({name: "FFA", value: "FFA"})
         @SlashChoice({name: "Teamers", value: "Teamers"})
         @SlashOption({

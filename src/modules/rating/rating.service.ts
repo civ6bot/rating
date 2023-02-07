@@ -717,6 +717,7 @@ export class RatingService extends ModuleBaseService {
             return interaction.deferUpdate();
         if(await this.isModerator(interaction)) 
             return this.reportModeratorAcceptButton(interaction);
+        await interaction.update({components: []});       // Чтобы пользователь не нажал дважды
         let moderatorReportChannelID: string = await this.getOneSettingString(interaction, "RATING_MODERATOR_REPORTS_CHANNEL_ID");
         let pendingGameID: number = Number(interaction.customId.split("-")[4]);
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
@@ -724,14 +725,14 @@ export class RatingService extends ModuleBaseService {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"
             ]);
-            return interaction.update({embeds: this.ratingUI.error(textLines[0], textLines[1])});
+            return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
         let channel: TextChannel|null = (await interaction.guild?.channels.fetch(moderatorReportChannelID)) as TextChannel|null;
             if(channel === null) {
                 let textLines: string[] = await this.getManyText(interaction, [
                     "BASE_ERROR_TITLE", "RATING_ERROR_NO_REPORT_CHANNEL"
                 ]);
-                return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
+                return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
             }
         let usersID: string[] = pendingRatingNotes.map(note => note.userID);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
@@ -772,14 +773,14 @@ export class RatingService extends ModuleBaseService {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_NO_REPORT_CHANNEL"
             ]);
-            return interaction.update({embeds: this.ratingUI.error(textLines[0], textLines[1])});
+            return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
         let textLines: string[] = await this.getManyText(interaction, [
             "BASE_NOTIFY_TITLE", "RATING_REPORT_SUCCESS_DESCRIPTION"
         ]);
         if(isReportReactEmojis) 
             UtilsServiceEmojis.reactOrder(reportMessage, ["<:Yes:808418109710794843>", "<:No:808418109319938099>"]);
-        interaction.update({embeds: this.ratingUI.notify(textLines[0], textLines[1]), components: []});
+        interaction.message.edit({embeds: this.ratingUI.notify(textLines[0], textLines[1])});
         if(isReportAllNotify) {
             let gameType: string = pendingRatingNotes[0].gameType as string;
             let textLines: string[] = await this.getManyText(interaction, [
@@ -825,7 +826,6 @@ export class RatingService extends ModuleBaseService {
         }
         let rejectDescription: string = Array.from(interaction.fields.fields.values())[0].value || "";
         let pendingGameID: number = Number(interaction.customId.split("-")[5]);
-        await interaction.deferUpdate();
         await interaction.message?.delete();
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
@@ -869,15 +869,13 @@ export class RatingService extends ModuleBaseService {
             ]);
             return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
+        await interaction.update({components: []});       // Чтобы пользователь не нажал дважды
         let pendingGameID: number = Number(interaction.customId.split("-")[4]);
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         if(pendingRatingNotes.length === 0) {
             let textLines: string[] = await this.getManyText(interaction, ["BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"]);
             interaction.message.reactions.removeAll();
-            return interaction.update({
-                embeds: this.ratingUI.error(textLines[0], textLines[1]),
-                components: []
-            });
+            return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
         this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
         let ratingNotes: EntityRatingNote[] = this.convertToRatingNotes(pendingRatingNotes, await this.databaseServiceRatingNote.getNextGameID(interaction.guild?.id as string));
@@ -932,17 +930,19 @@ export class RatingService extends ModuleBaseService {
             reportMessage = undefined;
         }
         if(reportMessage) {
-            await interaction.reply({embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription), ephemeral: true});
-            await interaction.message.delete();
+            let deleteButtonLabel: string = await this.getOneText(interaction, "RATING_DELETE_BUTTON");
+            interaction.message.edit({
+                embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription + "\n\n" + reportMessage.url),
+                components: this.ratingUI.deleteAcceptedRatingMessageButton(interaction.user.id, deleteButtonLabel)
+            });
         } else {
-            interaction.deferUpdate();
             reportMessage = interaction.message;
-            interaction.update({embeds: embed, components: []});
+            interaction.message.edit({embeds: embed});
         }
         let pmDescription: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_DESCRIPTION", interaction.user.tag, reportMessage.url);
         let pmEmbed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(ratingNotes[0].gameType, pmTitle, pmDescription, interaction.guild);
         let [isAuthorNotify, isAllNotify] = await this.getManySettingNumber(interaction, "RATING_ACCEPT_AUTHOR_PM_NOTIFY", "RATING_ACCEPT_ALL_PM_NOTIFY");
-        let authorID: string = interaction.customId.split("-").pop() as string;
+        let authorID: string = interaction.customId.split("-")[5];
         usersID.filter(userID => (userID !== interaction.user.id) && (isAllNotify || (isAuthorNotify && (userID === authorID))))
             .forEach(userID => UtilsServicePM.send(userID, pmEmbed));
         this.ratingAdapter.callLeaderboardStaticUpdate(interaction.guild?.id as string, ratingNotes[0].gameType);
@@ -986,7 +986,7 @@ export class RatingService extends ModuleBaseService {
             "RATING_DESCRIPTION_HOST_HEADER", "RATING_DESCRIPTION_VICTORY_TYPE_HEADER"
         ]);
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let descriptionHeadersFlags: boolean[] = [true, true, false, false];
         let embed: EmbedBuilder[] = this.ratingUI.reportDarkShortEmbed(
             interaction.user,
             usersRating, ratingNotes,
@@ -1083,7 +1083,7 @@ export class RatingService extends ModuleBaseService {
         if(
             ((type === "FFA") && (userRating.ffaRating === amount)) ||
             ((type === "Teamers") && (userRating.teamersRating === amount)) ||
-            ((type === "General") && (userRating.rating === amount)) 
+            ((type === "Total") && (userRating.rating === amount)) 
         ) {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_SAME_VALUE"
@@ -1118,7 +1118,7 @@ export class RatingService extends ModuleBaseService {
         if(
             ((type === "FFA") && (userRating.ffaRating+amount < 0)) ||
             ((type === "Teamers") && (userRating.teamersRating+amount < 0)) ||
-            ((type === "General") && (userRating.rating+amount < 0))
+            ((type === "Total") && (userRating.rating+amount < 0))
         ) {
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_NEGATIVE_RESULT"

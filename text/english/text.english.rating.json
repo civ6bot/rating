@@ -103,6 +103,7 @@
 
     { "tag": "RATING_CONFIRM_BUTTON", "value": "Confirm" },
     { "tag": "RATING_SEND_BUTTON", "value": "Send" },
-    { "tag": "RATING_CANCEL_BUTTON", "value": "Cancel" }
+    { "tag": "RATING_CANCEL_BUTTON", "value": "Cancel" },
+    { "tag": "RATING_DELETE_BUTTON", "value": "Delete message" }
   ]
 }

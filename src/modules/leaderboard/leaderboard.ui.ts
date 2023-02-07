@@ -14,8 +14,8 @@ export class LeaderboardUI extends ModuleBaseUI {
         pageCurrent: number,
         playersPerPage: number,
     ): APIEmbedField[] {
-        let usersFieldValue: string = userRatings.slice((pageCurrent-1)*playersPerPage, pageCurrent*playersPerPage)
-            .map((userRating: EntityUserRating, index: number): string => `${ function(index: number, pageCurrent: number, playersPerPage: number){
+        let usersFieldValue: string = userRatings.map((userRating: EntityUserRating, index: number): string => `${
+            function(index: number, pageCurrent: number, playersPerPage: number){
                 let place: number = (pageCurrent-1)*playersPerPage+index+1;
                 switch(place) {
                     case 1:
@@ -29,10 +29,9 @@ export class LeaderboardUI extends ModuleBaseUI {
                     default:
                         return `**${place}**.`;
                 }
-            }(index, pageCurrent, playersPerPage)} <@${userRating.userID}>`)
-            .join("\n");
-        let ratingFieldValue: string = userRatings.slice((pageCurrent-1)*playersPerPage, pageCurrent*playersPerPage)
-            .map((userRating: EntityUserRating, index: number): string => 
+            }(index, pageCurrent, playersPerPage)
+        } <@${userRating.userID}>`).join("\n");
+        let ratingFieldValue: string = userRatings.map((userRating: EntityUserRating, index: number): string => 
                 ((type === "FFA") ? String(userRating.ffaRating) : String(userRating.teamersRating)) + 
                 (((pageCurrent-1)*playersPerPage+index+1 === 3) ? "\n\n" : "\n")
             ).join("");
@@ -64,7 +63,8 @@ export class LeaderboardUI extends ModuleBaseUI {
             title,
             (type === "FFA") ? "#389fff" : "#00ff40",
             description,
-            this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage).slice(0, (isGamesRequired) ? 3 : 2),
+            this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage)
+                .slice(0, (isGamesRequired) ? 3 : 2),
             author.tag,
             author.avatarURL(),
             null,
@@ -152,9 +152,9 @@ export class LeaderboardUI extends ModuleBaseUI {
             [title],
             Array<ColorResolvable>(embedsLength).fill((type === "FFA") ? "#389fff" : "#00ff40"),
             (embedsLength === 0) ? [emptyDescription] : [],
-            userRatingGroups.map((userRatingGroup: EntityUserRating[], index: number): APIEmbedField[] => this.getFieldArray(
-                type, userRatingGroup, fieldHeaders, index+1, playersPerPage
-            )).slice(0, (isGamesRequired) ? 3 : 2),
+            userRatingGroups.map((userRatingGroup: EntityUserRating[], index: number): APIEmbedField[] => 
+                this.getFieldArray(type, userRatingGroup, fieldHeaders, index+1, playersPerPage)
+            ).slice(0, (isGamesRequired) ? 3 : 2),
             null,
             null,
             [],

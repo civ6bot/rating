@@ -6,7 +6,7 @@ import { ModuleBaseService } from "../base/base.service";
 import { LeaderboardUI } from "./leaderboard.ui";
 
 export class LeaderboardService extends ModuleBaseService {
-    private leaderboardPlayersPerPage: number = 25;
+    private leaderboardPlayersPerPage: number = 10;
 
     private leaderboardUI: LeaderboardUI = new LeaderboardUI();
 

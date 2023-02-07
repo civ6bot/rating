@@ -1,4 +1,4 @@
-import { ActivityType, ChannelType, CommandInteraction, Guild, Interaction, InteractionType, PermissionFlagsBits, TextChannel } from "discord.js";
+import { ActivityType, ChannelType, CommandInteraction, Guild, GuildMember, Interaction, InteractionType, PermissionFlagsBits, TextChannel } from "discord.js";
 import { Client } from "discordx";
 import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 import { ModuleBaseService } from "../base/base.service";
@@ -8,12 +8,16 @@ export class DiscordService extends ModuleBaseService {
     private discordUI: DiscordUI = new DiscordUI();
 
     public async onInteractionCreate(interaction: Interaction, client: Client) {
-        let hasPermission: boolean = interaction.guild?.members.cache.get(client.user?.id as string)?.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.SendMessages) ?? true;
-        let isGuild: boolean = !!interaction.guild?.id;
+        let bot: GuildMember = interaction.guild?.members.cache.get(client.user?.id as string) as GuildMember;
+        let hasPermissionSend: boolean = bot.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.SendMessages);
+        let hasPermissionView: boolean = bot.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.ViewChannel);
+        let hasPermission = hasPermissionSend && hasPermissionView;
+        let isGuild: boolean = !!interaction.guild;
         let isSlashCommand: boolean = interaction.type === InteractionType.ApplicationCommand;
         
         if(hasPermission && (isGuild || (!isGuild && !isSlashCommand)))
             return client.executeInteraction(interaction);
+
         if(!interaction.isRepliable())
             return;
         if(hasPermission && !isGuild && isSlashCommand) {
@@ -63,13 +67,17 @@ export class DiscordService extends ModuleBaseService {
 
     public async onGuildCreate(guild: Guild) {
         let textStrings: string[] = await this.getManyText(guild.id, [
-            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_ON_GUILD_CREATE_DESCRIPTION"
+            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR",
+            "DISCORD_ON_GUILD_CREATE_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL"
         ]);
         for(let channel of guild.channels.cache.values()) {
             try {
                 if(channel.type === ChannelType.GuildText) {
-                    (channel as TextChannel).send({
-                        embeds: this.discordUI.onGuildCreate(textStrings[0], textStrings[1])
+                    await (channel as TextChannel).send({
+                        embeds: this.discordUI.onGuildCreate(
+                            textStrings[0], textStrings[1],
+                            textStrings[2], textStrings[3]
+                        )
                     });
                     return;
                 }
@@ -78,9 +86,13 @@ export class DiscordService extends ModuleBaseService {
     }
 
     public async about(interaction: CommandInteraction) {
-        let textStrings: string[] = await this.getManyText(interaction.guild?.id as string, [
-            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_ON_GUILD_CREATE_DESCRIPTION"
+        let textStrings: string[] = await this.getManyText(interaction, [
+            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR",
+            "DISCORD_ON_GUILD_CREATE_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL"
         ]);
-        interaction.reply({embeds: this.discordUI.onGuildCreate(textStrings[0], textStrings[1])});
+        interaction.reply({embeds: this.discordUI.onGuildCreate(
+            textStrings[0], textStrings[1],
+            textStrings[2], textStrings[3]
+        )});
     }
 }
