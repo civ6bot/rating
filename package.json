@@ -1,6 +1,6 @@
 {
   "name": "civ6bot-rating",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Discord bot for Civilization VI game - Rating",
   "main": "build/index.js",
   "scripts": {
