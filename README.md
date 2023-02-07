@@ -3,6 +3,7 @@
 **Civ6Bot Rating** provides game history and tools for rating. You can use it standalone or with other [Civ6Bot project](https://github.com/civ6bot/) Discord bots.
 <br>
 Current version: `1.1.1` (Leader Pass pt.3, China leaders & major architecture update).
+You can [invite](https://discord.com/api/oauth2/authorize?client_id=795292082184650813&permissions=139855260737&scope=bot) bot to your Discord server.
 <p align="center">
     <img src="./images/rating.png"  width="250" height="250">
 </p>
@@ -19,17 +20,18 @@ Current version: `1.1.1` (Leader Pass pt.3, China leaders & major architecture u
 ```
 
 ## <a name="usage"></a>Usage
-* `npm run all` to run project;
+* `npm run all` to build & run project;
 * `npm run nodemon` to run with `nodemon` tool (auto-restart after any code changes).
 <br/><br/>
 
 ## <a name="tools"></a>Tools & Technologies
-* **JavaScript, TypeScript, npm, Node.js;**
+* **[Node.js](https://nodejs.org/en/), [npm](https://www.npmjs.com/), [TypeScript](https://www.typescriptlang.org/);**
 * **[nodemon](https://www.npmjs.com/package/nodemon);**
 * **[discord.js](https://discord.js.org/#/), [DiscordX](https://www.npmjs.com/package/discordx);**
-* **[MySQL](https://www.npmjs.com/package/mysql), [SQLite (sqlite3)](https://www.npmjs.com/package/sqlite3);**
-* **[TypeORM](https://typeorm.io/).**
+* **[Axios](https://www.npmjs.com/package/axios);**
+* **[MySQL](https://www.npmjs.com/package/mysql), [SQLite (sqlite3)](https://www.npmjs.com/package/sqlite3), [TypeORM](https://typeorm.io/).**
 <br/><br/>
+
 ## ❤️ Special thanks
 Thanks to the patrons and Civilization VI community for donations and supporting. If you want to participate too, you can:
 - donate for Website+VPS maintenance on [Patreon](https://www.patreon.com/civ6bot) or [Boosty](https://boosty.to/civ6bot);
