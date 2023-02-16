@@ -38,10 +38,10 @@ export class DynamicConfigUI extends ModuleBaseUI {
         pageCurrent: number,
         pageTotal: number,
         currentConfigTag: string,
-        parentConfigTag: string
+        hasParentTag: boolean
     ): ActionRowBuilder<ButtonBuilder>[] {
         let indexes: number[] = [];
-        if(parentConfigTag !== "")
+        if(hasParentTag)
             indexes.push(0);
         if(pageTotal === 2)
             indexes.push(2, 3);
@@ -60,13 +60,13 @@ export class DynamicConfigUI extends ModuleBaseUI {
         ].filter(filterFunction);
         let emojis = ["⬅", "⏮", "◀", "▶", "⏭", "🔄", "✖️"].filter(filterFunction);
         let customIDArray: string[] = [
-            `dynamicConfig-button-back-${authorID}-${parentConfigTag}`,
-            `dynamicConfig-button-page-${authorID}-99-${currentConfigTag}`,
-            `dynamicConfig-button-page-${authorID}-${pageCurrent-1}-${currentConfigTag}`,
-            `dynamicConfig-button-page-${authorID}-${pageCurrent+1}-${currentConfigTag}`,
-            `dynamicConfig-button-page-${authorID}-100-${currentConfigTag}`,
-            `dynamicConfig-button-reset-${authorID}-${pageCurrent}-${currentConfigTag}`,
-            `dynamicConfig-button-delete-${authorID}`,
+            `dc-button-back-${authorID}-${currentConfigTag}`,
+            `dc-button-page-${authorID}-99-${currentConfigTag}`,
+            `dc-button-page-${authorID}-${pageCurrent-1}-${currentConfigTag}`,
+            `dc-button-page-${authorID}-${pageCurrent+1}-${currentConfigTag}`,
+            `dc-button-page-${authorID}-100-${currentConfigTag}`,
+            `dc-button-reset-${authorID}-${pageCurrent}-${currentConfigTag}`,
+            `dc-button-delete-${authorID}`,
         ].filter(filterFunction);
         let isDisabledArray: boolean[] = [
             false,
@@ -95,7 +95,7 @@ export class DynamicConfigUI extends ModuleBaseUI {
         configTags: string[]
     ): ActionRowBuilder<StringSelectMenuBuilder>[] {
         return UtilsGeneratorMenu.build(
-            `dynamicConfig-menu-${userID}`,
+            `dc-menu-${userID}`,
             placeholder,
             labels,
             emojis,
@@ -112,7 +112,7 @@ export class DynamicConfigUI extends ModuleBaseUI {
         zeroCharactersInput: boolean = false
     ): ModalBuilder {
         return UtilsGeneratorModal.build(
-            "dynamicConfig-modal",
+            "dc-modal",
             title,
             [configTag],
             [label],
@@ -146,8 +146,8 @@ export class DynamicConfigUI extends ModuleBaseUI {
         let styles: ButtonStyle[] = [ButtonStyle.Success, ButtonStyle.Danger];
         let emojis: string[] = ["🔄", "✖️"];
         let customIDs: string[] = [
-            `dynamicConfig-button-reset-confirm-${userID}-${configTag}`, 
-            `dynamicConfig-button-reset-deny-${userID}-${pageCurrent}-${configTag}`
+            `dc-button-reset-confirm-${userID}-${configTag}`, 
+            `dc-button-reset-deny-${userID}-${pageCurrent}-${configTag}`
         ];
         return UtilsGeneratorButton.getList(labels, emojis, styles, customIDs);
     }

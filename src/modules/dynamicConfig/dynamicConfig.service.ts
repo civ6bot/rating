@@ -20,7 +20,9 @@ export class DynamicConfigService extends ModuleBaseService {
     // Получить название категории-родителя
     // по тегу конфигурации
     private getParentDynamicConfigTag(dynamicConfigTag: string): string {
-        if(dynamicConfigTag === "BASE_LANGUAGE")    // Его нет в словаре, особый случай
+        if(dynamicConfigTag === "DYNAMIC_CONFIG_TITLE")     // Корень дерева тегов, особый случай
+            return "";
+        if(dynamicConfigTag === "BASE_LANGUAGE")            // Его нет в словаре, особый случай
             return "DYNAMIC_CONFIG_LANGUAGE";
 
         let dynamicConfigDictionaries: DynamicConfigEntity[][] = Array.from(configsMap.values());
@@ -540,7 +542,7 @@ export class DynamicConfigService extends ModuleBaseService {
                 buttonStrings,
                 pageCurrent, pageTotal,
                 dynamicConfigHeaderTag,
-                this.getParentDynamicConfigTag(dynamicConfigHeaderTag)
+                (this.getParentDynamicConfigTag(dynamicConfigHeaderTag) !== "")
             ),
             ...this.dynamicConfigUI.configMenu(
                 interaction.user.id,
@@ -655,7 +657,11 @@ export class DynamicConfigService extends ModuleBaseService {
         if(!this.isOwner(interaction))
             return interaction.deferUpdate();
         let dynamicConfigTag: string = interaction.customId.split("-")[4];
-        this.sendDynamicConfigMessage(interaction, dynamicConfigTag, 1);
+        let parentDynamicConfigTag: string = this.getParentDynamicConfigTag(dynamicConfigTag);
+        let parentPageCurrent: number = 1+Math.floor(
+            (tagsMap.get(parentDynamicConfigTag) || []).indexOf(dynamicConfigTag)/this.entitiesPerPage
+        );
+        this.sendDynamicConfigMessage(interaction, parentDynamicConfigTag, parentPageCurrent);
     }
 
     public async pageButton(interaction: ButtonInteraction) {
@@ -714,7 +720,7 @@ export class DynamicConfigService extends ModuleBaseService {
             "BASE_NOTIFY_TITLE", "DYNAMIC_CONFIG_NOTIFY_RESET_SUCCESS"
         ]);
         interaction.reply({embeds: this.dynamicConfigUI.notify(textStrings[0], textStrings[1]), ephemeral: true});
-        await this.sendDynamicConfigMessage(interaction, configTag, 1);
+        await this.sendDynamicConfigMessage(interaction, configTag);
     }
 
     public async resetDenyButton(interaction: ButtonInteraction) {

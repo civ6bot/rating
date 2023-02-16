@@ -66,5 +66,8 @@
     { "setting": "DRAFT_OTTOMAN_SULEIMAN_MAGNIFICENT_EMOJI", "value": "<:Suleiman_Magnificent:1053016021344206918>" },
     { "setting": "DRAFT_CHINA_QIN_SHI_HUANG_UNIFIER_EMOJI", "value": "<:China_Qin_Shi_Huang_Unifier:1065759163315146814>" },
     { "setting": "DRAFT_CHINA_WU_ZETIAN_EMOJI", "value": "<:China_Wu_Zetian:1065759167106785330>" },
-    { "setting": "DRAFT_CHINA_YONGLE_EMOJI", "value": "<:China_Yongle:1065759170390929428>" }
+    { "setting": "DRAFT_CHINA_YONGLE_EMOJI", "value": "<:China_Yongle:1065759170390929428>" },
+    { "setting": "DRAFT_EGYPT_CLEOPATRA_PTOLEMAIC_EMOJI", "value": "<:Egypt_Cleopatra_Ptolemaic:1075846974441521172>" },
+    { "setting": "DRAFT_EGYPT_RAMSES_EMOJI", "value": "<:Egypt_Ramses:1075846977868271727>" },
+    { "setting": "DRAFT_MALI_SUNDIATA_KEITA_EMOJI", "value": "<:Mali_Sundiata_Keita:1075846980737179718>" }
 ]

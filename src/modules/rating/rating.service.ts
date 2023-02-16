@@ -16,6 +16,7 @@ import { RatingChatMessageData } from "./rating.models";
 import { RatingUI } from "./rating.ui";
 import { UtilsServiceSyntax } from "../../utils/services/utils.service.syntax";
 import { RatingAdapter } from "./rating.adapter";
+const trueskill = require("trueskill");
 
 export class RatingService extends ModuleBaseService {
     public static processingSlashMessages: (Message|undefined)[] = [];
@@ -129,6 +130,9 @@ export class RatingService extends ModuleBaseService {
             .concat("\n")
             .slice(0, newLinesIndex)            // Все данные за 3 переносами строки игнорируются
             .replaceAll(/[.,;\-\n]/g, " ")
+            .replaceAll("<", " <")
+            .replaceAll(">", "> ")
+            .replaceAll(": ", " ")
             .toLowerCase()
             .split(" ")
             .filter(str => str.length > 0);
@@ -870,13 +874,28 @@ export class RatingService extends ModuleBaseService {
             return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
         await interaction.update({components: []});       // Чтобы пользователь не нажал дважды
+        interaction.message.reactions.removeAll();
         let pendingGameID: number = Number(interaction.customId.split("-")[4]);
         let pendingRatingNotes: EntityPendingRatingNote[] = await this.databaseServicePendingRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
+        // ================ temporary DEBUG (on live version)
+        console.log(`================================`);
+        console.log(`[DEBUG] Author: ${interaction.user.tag}`);
+        console.log(`[DEBUG] Server: ${interaction.guild?.name}`);
+        console.log(`[DEBUG] Time (GMT+0): ${new Date()}`);
+        console.log(`[DEBUG] Button ID: ${interaction.customId}`);
+        console.log(`[DEBUG] Pending game ID (from button): ${pendingGameID}`);
+        // ================ temporary DEBUG (on live version)
         if(pendingRatingNotes.length === 0) {
+            // ================ temporary DEBUG (on live version)
+            console.log(`[DEBUG] RESULT: NOT found!`);
+            // ================ temporary DEBUG (on live version)
             let textLines: string[] = await this.getManyText(interaction, ["BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"]);
-            interaction.message.reactions.removeAll();
             return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
+        // ================ temporary DEBUG (on live version)
+        console.log(`[DEBUG] RESULT: found successfully!`);
+        console.log(`[DEBUG] Rating notes amount: ${pendingRatingNotes.length}`);
+        // ================ temporary DEBUG (on live version)
         this.databaseServicePendingRatingNote.deleteAllByGameID(pendingGameID);
         let ratingNotes: EntityRatingNote[] = this.convertToRatingNotes(pendingRatingNotes, await this.databaseServiceRatingNote.getNextGameID(interaction.guild?.id as string));
         let usersID: string[] = ratingNotes.map(note => note.userID);
@@ -906,7 +925,7 @@ export class RatingService extends ModuleBaseService {
         let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let descriptionHeadersFlags: boolean[] = [true, true, ratingNotes.some(ratingNote => ratingNote.isHost), true];
         let embed: EmbedBuilder[] = this.ratingUI.reportBrightEmbed(
             interaction.user, true,
             usersRating, ratingNotes,
@@ -1050,7 +1069,7 @@ export class RatingService extends ModuleBaseService {
         let civLines: string[] = (await this.getManyText(interaction, UtilsDataCivilizations.civilizationsTags, civEmojis.map(str => [str])))
             .map(str => str.slice(str.indexOf("<")));
         let moderatorPrefix: string = await this.getOneText(interaction, "RATING_MODERATOR_PREFIX_BOTTOM");
-        let descriptionHeadersFlags: boolean[] = [true, true, true, true];
+        let descriptionHeadersFlags: boolean[] = [true, true, ratingNotes.some(ratingNote => ratingNote.isHost), true];
         let embed: EmbedBuilder[] = this.ratingUI.reportBrightEmbed(
             interaction.user, true,
             usersRating, ratingNotes,

@@ -68,6 +68,9 @@
     { "tag": "DRAFT_OTTOMAN_SULEIMAN_MAGNIFICENT", "value": "Оттоманы [EMOJI] Сулейман (Великолепный)" },
     { "tag": "DRAFT_CHINA_QIN_SHI_HUANG_UNIFIER", "value": "Китай [EMOJI] Цинь Шихуанди (Освободитель)" },
     { "tag": "DRAFT_CHINA_WU_ZETIAN", "value": "Китай [EMOJI] У Цзэтянь" },
-    { "tag": "DRAFT_CHINA_YONGLE", "value": "Китай [EMOJI] Юнлэ" }
+    { "tag": "DRAFT_CHINA_YONGLE", "value": "Китай [EMOJI] Юнлэ" },
+    { "tag": "DRAFT_EGYPT_CLEOPATRA_PTOLEMAIC", "value": "Египет [EMOJI] Клеопатра (Династия Птолемеев)" },
+    { "tag": "DRAFT_EGYPT_RAMSES", "value": "Египет [EMOJI] Рамсес II" },
+    { "tag": "DRAFT_MALI_SUNDIATA_KEITA", "value": "Мали [EMOJI] Сундиата Кейта" }
   ]
 }
