@@ -11,7 +11,7 @@ import { ProfileUI } from "./profile.ui";
 
 export class ProfileService extends ModuleBaseService {
     private historyLinesPerPage: number = 10;
-    private bestCivsPerPage: number = 16;
+    private bestCivsPerPage: number = 10;
 
     private profileUI: ProfileUI = new ProfileUI();
 

@@ -9,7 +9,7 @@
     { "tag": "RATING_ERROR_WRONG_GAME_ID", "value": "Game not found." },
     { "tag": "RATING_ERROR_ALREADY_CANCELLED", "value": "This game has already been cancelled.\nUse `/rating revert` command to revert the game." },
     { "tag": "RATING_ERROR_ALREADY_REVERTED", "value": "This game has already been reverted.\nUse `/rating cancel` command to cancel the game." },
-    { "tag": "RATING_ERROR_NO_REPORT_CHANNEL", "value": "Bot can't send game report. Check Bot's permissions or use `/config` command to set text channel for reports." },
+    { "tag": "RATING_ERROR_NO_REPORT_CHANNEL", "value": "Bot can't send game report. Check Bot's permissions for specified text channel or use `/config` command to set another text channel for reports." },
     { "tag": "RATING_ERROR_REPORT_NOT_FOUND", "value": "Game report not found. Please write report again." },
 
 
