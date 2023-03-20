@@ -71,6 +71,9 @@
     { "tag": "DRAFT_CHINA_YONGLE", "value": "Китай [EMOJI] Юнлэ" },
     { "tag": "DRAFT_EGYPT_CLEOPATRA_PTOLEMAIC", "value": "Египет [EMOJI] Клеопатра (Династия Птолемеев)" },
     { "tag": "DRAFT_EGYPT_RAMSES", "value": "Египет [EMOJI] Рамсес II" },
-    { "tag": "DRAFT_MALI_SUNDIATA_KEITA", "value": "Мали [EMOJI] Сундиата Кейта" }
+    { "tag": "DRAFT_MALI_SUNDIATA_KEITA", "value": "Мали [EMOJI] Сундиата Кейта" },
+    { "tag": "DRAFT_GERMANY_LUDWIG", "value": "Германия [EMOJI] Людвиг II" },
+    { "tag": "DRAFT_KOREA_SEJONG", "value": "Корея [EMOJI] Седжон" },
+    { "tag": "DRAFT_BYZANTIUM_THEODORA", "value": "Византия [EMOJI] Феодора" }
   ]
 }
