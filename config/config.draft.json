@@ -72,5 +72,8 @@
     { "setting": "DRAFT_MALI_SUNDIATA_KEITA_EMOJI", "value": "<:Mali_Sundiata_Keita:1075846980737179718>" },
     { "setting": "DRAFT_GERMANY_LUDWIG_EMOJI", "value": "<:Germany_Ludwig:1087151253177520170>" },
     { "setting": "DRAFT_KOREA_SEJONG_EMOJI", "value": "<:Korea_Sejong:1087151255937368075>" },
-    { "setting": "DRAFT_BYZANTIUM_THEODORA_EMOJI", "value": "<:Byzantium_Theodora:1087151250577051780>" }
+    { "setting": "DRAFT_BYZANTIUM_THEODORA_EMOJI", "value": "<:Byzantium_Theodora:1087151250577051780>" },
+    { "setting": "DRAFT_ENGLAND_ELIZABETH_EMOJI", "value": "<:England_Elizabeth:1091028344788762625>" },
+    { "setting": "DRAFT_NORWAY_HARALD_VARANGIAN_EMOJI", "value": "<:Norway_Harald_Varangian:1091028352485306458>" },
+    { "setting": "DRAFT_ENGLAND_VICTORIA_STEAM_EMOJI", "value": "<:England_Victoria_Steam:1091028348941123605>" }
 ]

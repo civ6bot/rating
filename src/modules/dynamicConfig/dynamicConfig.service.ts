@@ -208,6 +208,9 @@ export class DynamicConfigService extends ModuleBaseService {
                         case "Spanish":
                             dynamicConfigEntity.stringifiedTextEmoji = "🇪🇸";
                             break;
+                        case "Ukrainian":
+                            dynamicConfigEntity.stringifiedTextEmoji = "🇺🇦";
+                            break;
                         default:
                             dynamicConfigEntity.stringifiedTextEmoji = "";
                             break;

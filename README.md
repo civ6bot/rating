@@ -2,7 +2,7 @@
 
 **Civ6Bot Rating** provides game history and tools for rating. You can use it standalone or with other [Civ6Bot project](https://github.com/civ6bot/) Discord bots.
 <br>
-Current version: `1.1.4` (Leader Pass pt. 5, Great Builders pack).
+Current version: `1.1.5` (Leader Pass).
 You can [invite](https://discord.com/api/oauth2/authorize?client_id=795292082184650813&permissions=139855260737&scope=bot) bot to your Discord server.
 <p align="center">
     <img src="./images/rating.png"  width="250" height="250">
