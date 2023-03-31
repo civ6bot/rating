@@ -3,7 +3,7 @@
   "text": [
     { "tag": "DRAFT_AUSTRALIA", "value": "Австралия [EMOJI] Джон Кэртин" },
     { "tag": "DRAFT_AMERICA", "value": "Америка [EMOJI] Теодор Рузвельт (Прогрессивист)" },
-    { "tag": "DRAFT_ENGLAND", "value": "Англия [EMOJI] Виктория" },
+    { "tag": "DRAFT_ENGLAND", "value": "Англия [EMOJI] Виктория (Эпоха империи)" },
     { "tag": "DRAFT_ENGLAND_ELEANOR", "value": "Англия [EMOJI] Алиенора Аквитанская" },
     { "tag": "DRAFT_ARABIA", "value": "Аравия [EMOJI] Саладин (Визирь)" },
     { "tag": "DRAFT_AZTECS", "value": "Ацтеки [EMOJI] Монтесума" },
@@ -32,7 +32,7 @@
     { "tag": "DRAFT_MONGOLIA", "value": "Монголия [EMOJI] Чингисхан" },
     { "tag": "DRAFT_MAPUCHE", "value": "Мапуче [EMOJI] Лаутаро" },
     { "tag": "DRAFT_NETHERLANDS", "value": "Нидерланды [EMOJI] Вильгельмина" },
-    { "tag": "DRAFT_NORWAY", "value": "Норвегия [EMOJI] Харальд Суровый" },
+    { "tag": "DRAFT_NORWAY", "value": "Норвегия [EMOJI] Харальд Суровый (Конунг)" },
     { "tag": "DRAFT_NUBIA", "value": "Нубия [EMOJI] Аманиторе" },
     { "tag": "DRAFT_OTTOMAN", "value": "Оттоманы [EMOJI] Сулейман (Законодатель)" },
     { "tag": "DRAFT_PERSIA", "value": "Персия [EMOJI] Кир" },
@@ -74,6 +74,9 @@
     { "tag": "DRAFT_MALI_SUNDIATA_KEITA", "value": "Мали [EMOJI] Сундиата Кейта" },
     { "tag": "DRAFT_GERMANY_LUDWIG", "value": "Германия [EMOJI] Людвиг II" },
     { "tag": "DRAFT_KOREA_SEJONG", "value": "Корея [EMOJI] Седжон" },
-    { "tag": "DRAFT_BYZANTIUM_THEODORA", "value": "Византия [EMOJI] Феодора" }
+    { "tag": "DRAFT_BYZANTIUM_THEODORA", "value": "Византия [EMOJI] Феодора" },
+    { "tag": "DRAFT_ENGLAND_ELIZABETH", "value": "Англия [EMOJI] Елизавета I" },
+    { "tag": "DRAFT_NORWAY_HARALD_VARANGIAN", "value": "Норвегия [EMOJI] Харальд Суровый (Варяг)" },
+    { "tag": "DRAFT_ENGLAND_VICTORIA_STEAM", "value": "Англия [EMOJI] Виктория (Эпоха паровых машин)" }
   ]
 }
