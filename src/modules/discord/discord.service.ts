@@ -8,28 +8,28 @@ export class DiscordService extends ModuleBaseService {
     private discordUI: DiscordUI = new DiscordUI();
 
     public async onInteractionCreate(interaction: Interaction, client: Client) {
-        let bot: GuildMember = interaction.guild?.members.cache.get(client.user?.id as string) as GuildMember;
-        let hasPermissionSend: boolean = bot.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.SendMessages);
-        let hasPermissionView: boolean = bot.permissionsIn(interaction.channel?.id as string).has(PermissionFlagsBits.ViewChannel);
-        let hasPermission = hasPermissionSend && hasPermissionView;
-        let isGuild: boolean = !!interaction.guild;
-        let isSlashCommand: boolean = interaction.type === InteractionType.ApplicationCommand;
-        
-        if(hasPermission && (isGuild || (!isGuild && !isSlashCommand)))
-            return client.executeInteraction(interaction);
-
         if(!interaction.isRepliable())
             return;
-        if(hasPermission && !isGuild && isSlashCommand) {
+        let bot: GuildMember = interaction.guild?.members.cache.get(client.user?.id as string) as GuildMember;
+
+        let isSlashCommand: boolean = (interaction.type === InteractionType.ApplicationCommand);
+        let hasPermission = (bot?.permissionsIn(interaction.channel?.id as string)?.has(PermissionFlagsBits.SendMessages) || false) 
+            && (bot?.permissionsIn(interaction.channel?.id as string)?.has(PermissionFlagsBits.ViewChannel) || false);
+        let isGuild: boolean = interaction.inGuild();
+        
+        if(!isGuild && isSlashCommand){
             let textStrings: string[] = await this.getManyText("DEFAULT", [
                 "BASE_ERROR_TITLE", "DISCORD_ERROR_INTERACTION_NO_GUILD"
             ]);
             return interaction.reply({embeds: this.discordUI.error(textStrings[0], textStrings[1]), ephemeral: true});
         }
-        let textStrings: string[] = await this.getManyText(interaction.guild?.id as string, [
-            "BASE_ERROR_TITLE", "DISCORD_ERROR_INTERACTION_NO_PERMISSION"
-        ]);
-        return interaction.reply({embeds: this.discordUI.error(textStrings[0], textStrings[1]), ephemeral: true});
+        if(isGuild && !hasPermission) {
+            let textStrings: string[] = await this.getManyText(interaction?.guild?.id as string, [
+                "BASE_ERROR_TITLE", "DISCORD_ERROR_INTERACTION_NO_PERMISSION"
+            ]);
+            return interaction.reply({embeds: this.discordUI.error(textStrings[0], textStrings[1]), ephemeral: true});
+        }
+        return client.executeInteraction(interaction);
     }
 
     public async onceReady(client: Client) {
