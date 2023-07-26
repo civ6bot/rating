@@ -1,9 +1,10 @@
-import { EntityManager, IsNull, Like, Not } from "typeorm";
-import { outerDataSource } from "../database.datasources";
+import { EntityManager, IsNull, LessThan, Like, Not } from "typeorm";
+import { dataSource } from "../database.datasource";
 import { EntityRatingNote } from "../entities/entity.RatingNote";
+import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 
 export class DatabaseServiceRatingNote {
-    protected database: EntityManager = outerDataSource.manager;
+    protected database: EntityManager = dataSource.manager;
 
     public async getNextGameID(guildID: string): Promise<number> {
         return ((await this.database.findOne(EntityRatingNote, {
@@ -12,14 +13,13 @@ export class DatabaseServiceRatingNote {
         }))?.gameID || 0) + 1;
     }
 
-    public async insertAll(notes: EntityRatingNote[]): Promise<EntityRatingNote[]> {
+    public async insertOrUpdateAll(notes: EntityRatingNote[]): Promise<EntityRatingNote[]> {
         return await this.database.save(notes);
     }
 
-    public async updateAll(notes: EntityRatingNote[]): Promise<EntityRatingNote[]> {
-        return await this.database.save(notes);
-    }
-
+    // isPending не учитываем, потому что нет таких игр,
+    // где isActive = isPending = true.
+    // Если isActive = true, то всегда isPending = false.
     public async getAllByUserID(guildID: string, userID: string): Promise<EntityRatingNote[]> {
         return await this.database.find(EntityRatingNote, {
             where: {
@@ -31,6 +31,8 @@ export class DatabaseServiceRatingNote {
         });
     }
 
+    // У всех игр (как и ожидающих, и подтверждённых) разный ID,
+    // поэтому проверка isPending не нужна.
     public async getAllByGameID(guildID: string, gameID: number): Promise<EntityRatingNote[]> {
         return await this.database.find(EntityRatingNote, {
             where: {
@@ -38,12 +40,13 @@ export class DatabaseServiceRatingNote {
                 gameID: gameID
             },
             order: {
-                isSubOut: "ASC",    // сначала обычные игроки, потом заменённые
-                place: "ASC"        // в порядке мест
+                isSubOut: "ASC",    // Сначала обычные игроки, потом заменённые;
+                place: "ASC"        // в порядке мест.
             }
         });
     }
 
+    // isPending не учитываем, потому что нет таких игр, см. выше.
     public async getBestCivs(gameType: string, guildID: string|null = null, userID: string|null = null): Promise<EntityRatingNote[]> {
         return await this.database.find(EntityRatingNote, {
             where: {
@@ -57,6 +60,20 @@ export class DatabaseServiceRatingNote {
                 civilizationID: "ASC",
                 typedRating: "DESC"
             }
+        });
+    }
+
+    public async deleteAllByGameID(guildID: string, gameID: number): Promise<boolean> {
+        return Number((await this.database.delete(EntityRatingNote, {
+            guildID: guildID,
+            gameID: gameID
+        })).affected) > 0;
+    }
+
+    public async deleteOldPendingNotes(): Promise<void> {
+        await this.database.delete(EntityRatingNote, {
+            isPending: true,
+            date: LessThan(new Date(Date.now()-UtilsServiceTime.getMs(1, "d")))
         });
     }
 }

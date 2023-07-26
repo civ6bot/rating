@@ -1,5 +1,4 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ColorResolvable, EmbedBuilder, Guild, ModalBuilder, TextInputStyle, User } from "discord.js";
-import { EntityPendingRatingNote } from "../../database/entities/entity.PendingRatingNote";
 import { EntityRatingNote } from "../../database/entities/entity.RatingNote";
 import { EntityUserRating } from "../../database/entities/entity.UserRating";
 import { UtilsGeneratorButton } from "../../utils/generators/utils.generator.button";
@@ -54,7 +53,7 @@ export class RatingUI extends ModuleBaseUI {
     }
 
     private getUserDescriptionFromNotes(
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        ratingNotes: EntityRatingNote[],
         usersRating: EntityUserRating[],
         civLines: string[]
     ): string {
@@ -93,7 +92,7 @@ export class RatingUI extends ModuleBaseUI {
         for(let i: number = playersTotal; i < ratingNotes.length; i++)
             placeLines.push(" -- ");
         
-        ratingNotes.forEach((ratingNote: EntityRatingNote|EntityPendingRatingNote, index: number) => {
+        ratingNotes.forEach((ratingNote: EntityRatingNote, index: number) => {
             ratingChangeLines.push(spacesString.concat(`${ratingNote.typedRating >= 0 ? "+" : ""}${ratingNote.typedRating}`).slice(-4));
             if(ratingNote.isSubIn || ratingNote.isSubOut)
                 ratingEmojiLines.push("🔄");
@@ -130,12 +129,12 @@ export class RatingUI extends ModuleBaseUI {
     // Более простой вариант
     // Без мест, цивилизаций и эмодзи
     private getUserCancelDescriptionFromNotes(
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        ratingNotes: EntityRatingNote[],
         usersRating: EntityUserRating[]
     ): string {
         let description: string = "";
         let spacesString: string = "    ";
-        ratingNotes.forEach((ratingNote: EntityRatingNote|EntityPendingRatingNote, index: number) => {
+        ratingNotes.forEach((ratingNote: EntityRatingNote, index: number) => {
             if((index !== 0) && (ratingNote.isSubOut) && (!ratingNotes[index-1].isSubOut))
                 description += "\n";
             description += `\`${spacesString.concat(`${ratingNote.typedRating*-1 >= 0 ? "+" : ""}${ratingNote.typedRating*-1}`).slice(-4)}\`  \`${spacesString.concat(`(${ratingNote.gameType === "FFA" ? usersRating[index].ffaRating : usersRating[index].teamersRating})`).slice(-6)}\`  <@${ratingNote.userID}>\n`;
@@ -150,7 +149,7 @@ export class RatingUI extends ModuleBaseUI {
         isModerator: boolean,
 
         usersRating: EntityUserRating[],
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        ratingNotes: EntityRatingNote[],
 
         title: string,
         description: string,                // pre-description
@@ -180,7 +179,7 @@ export class RatingUI extends ModuleBaseUI {
             color,
             description,
             [],
-            `${isModerator ? moderatorPrefix + " " : ""}${author.tag}`,
+            `${isModerator ? moderatorPrefix + " " : ""}${author.username}`,
             author.avatarURL()
         );
     }
@@ -189,7 +188,7 @@ export class RatingUI extends ModuleBaseUI {
         author: User,
 
         usersRating: EntityUserRating[],
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        ratingNotes: EntityRatingNote[],
 
         title: string,
         description: string,                // pre-description
@@ -217,7 +216,7 @@ export class RatingUI extends ModuleBaseUI {
             color,
             description,
             [],
-            `${moderatorPrefix} ${author.tag}`,
+            `${moderatorPrefix} ${author.username}`,
             author.avatarURL()
         );
     }
@@ -227,7 +226,7 @@ export class RatingUI extends ModuleBaseUI {
         isModerator: boolean,
 
         usersRating: EntityUserRating[],
-        ratingNotes: (EntityRatingNote|EntityPendingRatingNote)[],
+        ratingNotes: EntityRatingNote[],
 
         title: string,
         description: string,                // pre-description
@@ -256,7 +255,7 @@ export class RatingUI extends ModuleBaseUI {
             "#DD2E44",
             description,
             [],
-            (author.constructor.name === "Guild") ? (author as Guild).name : `${(isModerator) ? moderatorPrefix + " " : ""}${(author as User).tag}`,
+            (author.constructor.name === "Guild") ? (author as Guild).name : `${(isModerator) ? moderatorPrefix + " " : ""}${(author as User).username}`,
             (author.constructor.name === "Guild") ? (author as Guild).iconURL() : (author as User).avatarURL()
         );
     }
@@ -363,7 +362,7 @@ export class RatingUI extends ModuleBaseUI {
                     (type === "Teamers") ? userRating.teamersRating : userRating.rating
                 })`}
             ],
-            `${moderatorPrefix} ${author.tag}`,
+            `${moderatorPrefix} ${author.username}`,
             author.avatarURL()
         );
     }

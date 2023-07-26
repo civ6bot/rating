@@ -57,7 +57,7 @@
     { "tag": "RATING_REPORT_ERROR_TOO_MUCH_USERS", "value": "<:No:808418109319938099> Too much players." },
     { "tag": "RATING_REPORT_ERROR_SAME_USERS", "value": "<:No:808418109319938099> Duplicate players." },
     { "tag": "RATING_REPORT_ERROR_TEAMERS_DIVIDE", "value": "<:No:808418109319938099> Players cannot be split into teams." },
-    { "tag": "RATING_REPORT_ERROR_HOST", "value": "<:No:808418109319938099> Host of the game is not specidied." },
+    { "tag": "RATING_REPORT_ERROR_HOST", "value": "<:No:808418109319938099> Host of the game is not specified." },
     { "tag": "RATING_REPORT_ERROR_CIVILIZATIONS", "value": "<:No:808418109319938099> Civilizations are not specified." },
     { "tag": "RATING_REPORT_WARNINGS_TITLE", "value": "Report options:" },
     { "tag": "RATING_REPORT_WARNING_HOST", "value": "⚠️ Write host." },

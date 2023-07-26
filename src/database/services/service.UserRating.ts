@@ -1,10 +1,10 @@
 import { EntityManager, IsNull, MoreThan, Not } from "typeorm";
-import { outerDataSource } from "../database.datasources";
+import { dataSource } from "../database.datasource";
 import { EntityUserRating } from "../entities/entity.UserRating";
 import { DatabaseServiceConfig } from "./service.Config";
 
 export class DatabaseServiceUserRating {
-    protected database: EntityManager = outerDataSource.manager;
+    protected database: EntityManager = dataSource.manager;
     private databaseServiceConfig: DatabaseServiceConfig = new DatabaseServiceConfig();
 
     private async getDefaultRatingPoints(guildID: string): Promise<number> {

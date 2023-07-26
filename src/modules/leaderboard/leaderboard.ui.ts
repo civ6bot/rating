@@ -65,7 +65,7 @@ export class LeaderboardUI extends ModuleBaseUI {
             description,
             this.getFieldArray(type, userRatings, fieldHeaders, pageCurrent, playersPerPage)
                 .slice(0, (isGamesRequired) ? 3 : 2),
-            author.tag,
+            author.username,
             author.avatarURL(),
             null,
             this.lineURL

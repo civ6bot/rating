@@ -37,7 +37,7 @@ export class LeaderboardService extends ModuleBaseService {
             return null;
         let guild: Guild = await discordClient.guilds.fetch(guildID);
         let channel: (GuildTextBasedChannel|null) = (await guild.channels.fetch(channelID) || null) as (GuildTextBasedChannel|null);
-        return (await channel?.messages.fetch(messageID) || null) as (Message|null);
+        return (await channel?.messages?.fetch(messageID) || null) as (Message|null);
     }
 
     public async updateLeaderboardStaticContent(guildID: string, type: string): Promise<void> {
@@ -178,8 +178,8 @@ export class LeaderboardService extends ModuleBaseService {
             let message: Message = await (interaction.channel as GuildTextBasedChannel).send({content: "Please, wait..."});
             this.updateLeaderboardConfig(message.guild?.id as string, type, message.channel.id, message.id);
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_SUCCESS_NOTIFY"]);
-            interaction.reply({embeds: this.leaderboardUI.notify(textLines[0], textLines[1]), ephemeral: true});
-            this.updateLeaderboardStaticContent(interaction.guild?.id as string, type);
+            await interaction.reply({embeds: this.leaderboardUI.notify(textLines[0], textLines[1]), ephemeral: true});
+            await this.updateLeaderboardStaticContent(interaction.guild?.id as string, type);
         } catch {
             let textLines: string[] = await this.getManyText(interaction, ["BASE_NOTIFY_TITLE", "LEADERBOARD_ERROR_SEND"]);
             interaction.reply({embeds: this.leaderboardUI.error(textLines[0], textLines[1]), ephemeral: true});

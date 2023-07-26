@@ -7,7 +7,7 @@
 
     { "tag": "DYNAMIC_CONFIG_MODERATION_EMOJI", "value": "\uD83D\uDD28" },
 
-    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙" },
+    { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID_EMOJI", "value": "⚙️" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
 

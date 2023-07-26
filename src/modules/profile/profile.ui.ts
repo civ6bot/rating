@@ -63,9 +63,9 @@ export class ProfileUI extends ModuleBaseUI {
             "#004080",
             generalDescription,
             fields,
-            author.tag,
+            author.username,
             author.avatarURL(),
-            user.avatarURL()
+            user.avatarURL({size: 512})
         );
     }
 
@@ -141,7 +141,7 @@ export class ProfileUI extends ModuleBaseUI {
             "#999999",
             (ratingNotes.length === 0) ? otherLines[0] : "",
             fieldTitles.map((title: string, index: number) => { return {name: title, value: values[index]}; }),
-            author.tag,
+            author.username,
             author.avatarURL(),
             "",
             this.lineURL
@@ -251,7 +251,7 @@ export class ProfileUI extends ModuleBaseUI {
             color,
             "",
             fieldTitles.map((fieldTitle: string, index: number) => {return {name: fieldTitle, value: values[index]}}),
-            author.tag,
+            author.username,
             author.avatarURL()
         );
     }
@@ -287,7 +287,7 @@ export class ProfileUI extends ModuleBaseUI {
             (bestCivsEntites.length !== 0)
                 ? fieldTitles.map((fieldTitle: string, index: number) => { return {name: fieldTitle, value: values[index]}; })
                 : [],
-            author.tag,
+            author.username,
             author.avatarURL(),
             "",
             this.lineURL
