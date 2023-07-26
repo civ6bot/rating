@@ -11,8 +11,11 @@ export class EntityRatingNote {
 
     @Column({type: "timestamp"})
     date!: Date;
-    @Column({default: true})
+    @Column()
     isActive!: boolean;
+    @Column({default: false})   // Для переноса из старой БД в новую.
+    isPending!: boolean;        // В старой БД не было этого столбца.
+
 
     @Column()
     gameType!: string;  // FFA, Teamers
@@ -22,7 +25,7 @@ export class EntityRatingNote {
     place!: number;     // при ничье указывать высшее место
     @Column()
     placeTotal!: number;     // сколько всего игроков или команд в игре
-    @Column({type: "tinytext", nullable: true, default: null})    // указывать только для победителя
+    @Column({type: "text", nullable: true, default: null})    // указывать только для победителя
     victoryType!: string | null;   // null, CC, GG, Science, Culture, Domination, Religious, Diplomatic
     @Column()
     rating!: number;

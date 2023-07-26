@@ -27,7 +27,7 @@ export class DynamicConfigUI extends ModuleBaseUI {
             "#F4900C",
             description,
             [],
-            author.tag,
+            author.username,
             author.avatarURL()
         );
     }
@@ -132,7 +132,7 @@ export class DynamicConfigUI extends ModuleBaseUI {
             "#F4900C",
             description,
             [],
-            author.tag,
+            author.username,
             author.avatarURL()
         );
     }

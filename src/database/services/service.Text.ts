@@ -1,12 +1,11 @@
 import {EntityText} from "../entities/entity.Text";
 import {EntityManager} from "typeorm";
-import {localDataSource} from "../database.datasources";
+import {dataSource} from "../database.datasource";
 
 export class DatabaseServiceText {
-    protected database: EntityManager = localDataSource.manager;
+    protected database: EntityManager = dataSource.manager;
 
     public async getOne(lang: string, tag: string, args: (string|number)[] = []): Promise<string> {
-
         let entityText: EntityText | null = await this.database.findOneBy(EntityText, {
             tag: tag,
             lang: lang
@@ -36,15 +35,9 @@ export class DatabaseServiceText {
         return await this.database.save(EntityText, entitiesText, { chunk: 750 });
     }
 
-    public async clearAll(): Promise<void> {
-        await this.database.clear(EntityText);
-    }
-
     public static async getLanguages(): Promise<string[]> {
-        let database: EntityManager = localDataSource.manager;
+        let database: EntityManager = dataSource.manager;
         let entitiesText: EntityText[] = await database.find(EntityText);
-        return Array.from(new Set<string>(entitiesText
-            .map((entity: EntityText): string => entity.lang) || [])
-        );
+        return Array.from(new Set<string>(entitiesText.map((entity: EntityText): string => entity.lang) || []));
     }
 }

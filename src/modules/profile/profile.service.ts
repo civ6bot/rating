@@ -54,7 +54,7 @@ export class ProfileService extends ModuleBaseService {
     public async profile(interaction: CommandInteraction | ButtonInteraction, member: GuildMember | null) {
         if(!member)
             member = interaction.member as GuildMember;
-        let title: string = await this.getOneText(interaction, "PROFILE_TITLE", member.user.tag);
+        let title: string = await this.getOneText(interaction, "PROFILE_TITLE", member.user.username);
         let fieldHeaders: string[] = await this.getManyText(interaction, [
             "PROFILE_FFA_FIELD_TITLE", "PROFILE_FFA_VICTORIES_FIELD_TITLE",
             "PROFILE_TEAMERS_FIELD_TITLE", "PROFILE_TEAMERS_VICTORIES_FIELD_TITLE",
@@ -124,7 +124,7 @@ export class ProfileService extends ModuleBaseService {
         }
     
         let title: string = await this.getOneText(interaction, "HISTORY_TITLE", 
-            member.user.tag, pageCurrent, Math.max(pageTotal, 1)
+            member.user.username, pageCurrent, Math.max(pageTotal, 1)
         );
         let otherLines: string[] = await this.getManyText(interaction, [
             "HISTORY_DESCRIPTION_EMPTY", "HISTORY_RESULT_TEAMERS_DEFEAT",
@@ -289,7 +289,7 @@ export class ProfileService extends ModuleBaseService {
                     (gameType === "Total") ? "BEST_CIVS_USER_TOTAL_TITLE"
                     : (gameType === "FFA") ? "BEST_CIVS_USER_FFA_TITLE"
                     : "BEST_CIVS_USER_TEAMERS_TITLE",
-                    member.user.tag, pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
+                    member.user.username, pageCurrent, Math.max(Math.ceil(bestCivsEntities.length/this.bestCivsPerPage), 1)
                 );
                 break;
         }

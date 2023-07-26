@@ -8,6 +8,6 @@ export class EntityConfig {
     @PrimaryColumn()
     setting!: string;
 
-    @Column({type: "text", charset: "utf8mb4"})
+    @Column({type: "text"})
     value!: string;
 }

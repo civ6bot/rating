@@ -1,36 +1,37 @@
 import {importx} from "@discordx/importer";
 import {discordClient} from "./client/client";
-import {localDataSource, outerDataSource} from "./database/database.datasources";
 import {DatabaseServiceText} from "./database/services/service.Text";
 import {loadTextEntities} from "./utils/loaders/utils.loader.text";
 import {DatabaseServiceConfig} from "./database/services/service.Config";
 import {loadDefaultConfigs} from "./utils/loaders/utils.loader.config";
+import {dataSource} from "./database/database.datasource";
+import {DatabaseServiceRatingNote} from "./database/services/service.RatingNote";
 import * as dotenv from "dotenv";
 dotenv.config({path: 'rating.env'});
 
 importx(
     __dirname + "/modules/*/*.interactions.{js,ts}",
-).then(() => {
-    discordClient.login(((process.env.TEST_MODE === '1') ? process.env.TEST_BOT_TOKEN : process.env.BOT_TOKEN) as string).then(() => {
-        console.log((process.env.TEST_MODE === '1') ? "Civilization VI – Test started" : "Civilization VI – Rating started");
-    });
+).then(async () => {
+    await discordClient.login(((process.env.TEST_MODE === '1') 
+        ? process.env.TEST_BOT_TOKEN 
+        : process.env.BOT_TOKEN
+    ) as string);
+    console.log((process.env.TEST_MODE === '1') 
+        ? "Civ6Bot Test started" 
+        : "Civ6Bot Rating started"
+    );
 });
 
-localDataSource.initialize().then(async () => {
+dataSource.initialize().then(async () => {
     let databaseServiceText: DatabaseServiceText = new DatabaseServiceText();
     let databaseServiceConfig: DatabaseServiceConfig = new DatabaseServiceConfig();
-
-    await databaseServiceText.clearAll();
-    await databaseServiceConfig.clearAll();
+    let databaseServiceRatingNote: DatabaseServiceRatingNote = new DatabaseServiceRatingNote();
 
     await databaseServiceText.insertAll(loadTextEntities());
     await databaseServiceConfig.insertAll(loadDefaultConfigs());
+    await databaseServiceRatingNote.deleteOldPendingNotes();
 
-    console.log(`Local database started`);
-});
-
-outerDataSource.initialize().then(async () => {
-    console.log(`Outer database connected`);
+    console.log(`Database connected`);
 });
 
 process.on('uncaughtException', error => {
