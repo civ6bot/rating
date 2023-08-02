@@ -22,4 +22,4 @@ DATABASE_NAME=
 6. `DATABASE_USER`: username for connection to outer database.
 7. `DATABASE_PASSWORD` password for connection to outer database.
 8. `DATABASE_NAME`: outer database name.
-- Outer database is running on [MySQL](https://www.mysql.com/).
+- Outer database is running on [PostgreSQL](https://www.postgresql.org/).

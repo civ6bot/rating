@@ -35,9 +35,13 @@ export class LeaderboardService extends ModuleBaseService {
         );
         if((channelID === "") || (messageID === ""))
             return null;
-        let guild: Guild = await discordClient.guilds.fetch(guildID);
-        let channel: (GuildTextBasedChannel|null) = (await guild.channels.fetch(channelID) || null) as (GuildTextBasedChannel|null);
-        return (await channel?.messages?.fetch(messageID) || null) as (Message|null);
+        try {
+            let guild: Guild = await discordClient.guilds.fetch(guildID);
+            let channel: (GuildTextBasedChannel|null) = (await guild.channels.fetch(channelID) || null) as (GuildTextBasedChannel|null);
+            return (await channel?.messages?.fetch(messageID) || null) as (Message|null);
+        } catch {
+            return null;
+        }
     }
 
     public async updateLeaderboardStaticContent(guildID: string, type: string): Promise<void> {
