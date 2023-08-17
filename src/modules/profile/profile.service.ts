@@ -106,7 +106,7 @@ export class ProfileService extends ModuleBaseService {
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
 
@@ -185,7 +185,7 @@ export class ProfileService extends ModuleBaseService {
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
 
@@ -348,6 +348,6 @@ export class ProfileService extends ModuleBaseService {
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 }

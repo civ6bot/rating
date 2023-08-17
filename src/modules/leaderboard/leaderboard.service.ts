@@ -138,7 +138,7 @@ export class LeaderboardService extends ModuleBaseService {
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async leaderboardStaticInfo(interaction: CommandInteraction){
@@ -176,7 +176,7 @@ export class LeaderboardService extends ModuleBaseService {
         let previousMessage: Message|null = await this.getLeaderboardMessage(interaction.guild?.id as string, type);
         if(previousMessage !== null) {
             this.updateLeaderboardConfig(interaction.guild?.id as string, type);
-            previousMessage.delete();
+            previousMessage.delete().catch();
         }
         try {
             let message: Message = await (interaction.channel as GuildTextBasedChannel).send({content: "Please, wait..."});

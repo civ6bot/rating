@@ -845,7 +845,7 @@ export class RatingService extends ModuleBaseService {                          
 
         let rejectDescription: string = Array.from(interaction.fields.fields.values())[0].value || "";
         let pendingGameID: number = Number(interaction.customId.split("-")[5]);
-        await interaction.message?.delete().catch();
+        await interaction.message?.delete();
         let ratingNotes: EntityRatingNote[] = await this.databaseServiceRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         this.databaseServiceRatingNote.deleteAllByGameID(interaction.guild?.id as string, pendingGameID);
 
@@ -1212,7 +1212,7 @@ export class RatingService extends ModuleBaseService {                          
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async resetUserConfirmButton(interaction: ButtonInteraction) {
@@ -1272,7 +1272,7 @@ export class RatingService extends ModuleBaseService {                          
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async resetAllConfirmButton(interaction: ButtonInteraction) {
@@ -1324,7 +1324,7 @@ export class RatingService extends ModuleBaseService {                          
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async wipeUserConfirmButton(interaction: ButtonInteraction) {
@@ -1383,7 +1383,7 @@ export class RatingService extends ModuleBaseService {                          
         interaction.deferUpdate();
         if(!this.isOwner(interaction))
             return;
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async wipeAllConfirmButton(interaction: ButtonInteraction) {

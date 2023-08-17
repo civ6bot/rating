@@ -695,7 +695,7 @@ export class DynamicConfigService extends ModuleBaseService {
     public async deleteButton(interaction: ButtonInteraction) {
         if(!this.isOwner(interaction))
             return interaction.deferUpdate();
-        interaction.message.delete();
+        interaction.message.delete().catch();
     }
 
     public async resetConfirmButton(interaction: ButtonInteraction) {
