@@ -1,7 +1,7 @@
 {
   "lang": "English",
   "text": [
-    { "tag": "DISCORD_THUMBNAIL_IMAGE_URL", "value": "https://raw.githubusercontent.com/civ6bot/rating/main/images/rating.png" },
-    { "tag": "DISCORD_MESSAGE_HEX_COLOR", "value": "#0074A8" }
+    { "tag": "DISCORD_THUMBNAIL_IMAGE_URL_RATING", "value": "https://raw.githubusercontent.com/civ6bot/rating/main/images/rating.png" },
+    { "tag": "DISCORD_MESSAGE_HEX_COLOR_RATING", "value": "#0074A8" }
   ]
 }

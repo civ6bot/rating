@@ -67,8 +67,8 @@ export class DiscordService extends ModuleBaseService {
 
     public async onGuildCreate(guild: Guild) {
         let textStrings: string[] = await this.getManyText(guild.id, [
-            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR",
-            "DISCORD_ON_GUILD_CREATE_RATING_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL"
+            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR_RATING",
+            "DISCORD_ON_GUILD_CREATE_RATING_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL_RATING"
         ]);
         for(let channel of guild.channels.cache.values()) {
             try {
@@ -87,8 +87,8 @@ export class DiscordService extends ModuleBaseService {
 
     public async about(interaction: CommandInteraction) {
         let textStrings: string[] = await this.getManyText(interaction, [
-            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR",
-            "DISCORD_ON_GUILD_CREATE_RATING_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL"
+            "DISCORD_ON_GUILD_CREATE_TITLE", "DISCORD_MESSAGE_HEX_COLOR_RATING",
+            "DISCORD_ON_GUILD_CREATE_RATING_DESCRIPTION", "DISCORD_THUMBNAIL_IMAGE_URL_RATING"
         ]);
         interaction.reply({embeds: this.discordUI.onGuildCreate(
             textStrings[0], textStrings[1],
