@@ -76,4 +76,17 @@ export class DatabaseServiceRatingNote {
             date: LessThan(new Date(Date.now()-UtilsServiceTime.getMs(1, "d")))
         });
     }
+
+    public async deleteAllByUserID(guildID: string, userID: string) {
+        await this.database.delete(EntityRatingNote, {
+            guildID: guildID,
+            userID: userID
+        });
+    }
+
+    public async deleteAllByGuildID(guildID: string): Promise<void> {
+        await this.database.delete(EntityRatingNote, {
+            guildID: guildID
+        });
+    }
 }

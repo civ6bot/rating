@@ -1,4 +1,5 @@
 [
+  { "setting": "LEADERBOARD_GAMES_MINIMUM", "value": 1 },
   { "setting": "LEADERBOARD_MAX_LENGTH", "value": 50 },
   { "setting": "LEADERBOARD_STATIC_MAX_LENGTH", "value": 50 },
 

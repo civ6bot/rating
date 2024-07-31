@@ -59,6 +59,7 @@
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Отчеты и каналы" },
 
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_TIME_MS", "value": "Время на создание отчёта, секунд" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST", "value": "Обязательно указывать хоста игры" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS", "value": "Обязательно указывать цивилизации" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT", "value": "История рейтинга (для бота)" },
@@ -79,6 +80,7 @@
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Макс. длина списка лучших игроков" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Макс. длина статической таблицы" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES", "value": "Показывать число игр в списке" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Показывать число игр в стат. таблице" }
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Показывать число игр в стат. таблице" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_GAMES_MINIMUM", "value": "Минимум игр для попадания в список" }
   ]
 }

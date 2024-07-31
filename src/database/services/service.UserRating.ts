@@ -1,4 +1,4 @@
-import { EntityManager, IsNull, MoreThan, Not } from "typeorm";
+import { EntityManager, IsNull, MoreThan, MoreThanOrEqual, Not } from "typeorm";
 import { dataSource } from "../database.datasource";
 import { EntityUserRating } from "../entities/entity.UserRating";
 import { DatabaseServiceConfig } from "./service.Config";
@@ -96,6 +96,7 @@ export class DatabaseServiceUserRating {
         return deletedEntities;
     }
 
+    /*
     public async getBestRatingGeneral(guildID: string, amount: number): Promise<EntityUserRating[]> {
         return (await this.database.find(EntityUserRating, {
             where: {
@@ -103,26 +104,30 @@ export class DatabaseServiceUserRating {
                 lastGame: Not(IsNull())
             },
             order: {rating: "DESC"},
-        })).slice(0, amount);
+            take: amount
+        }));
     }
+    */
 
-    public async getBestRatingFFA(guildID: string, amount: number): Promise<EntityUserRating[]> {
+    public async getBestRatingFFA(guildID: string, amount: number, games: number): Promise<EntityUserRating[]> {
         return (await this.database.find(EntityUserRating, {
             where: {
                 guildID: guildID,
-                ffaTotal: MoreThan(0)
+                ffaTotal: MoreThanOrEqual(games)
             },
             order: {ffaRating: "DESC"},
-        })).slice(0, amount);
+            take: amount
+        }));
     }
 
-    public async getBestRatingTeamers(guildID: string, amount: number): Promise<EntityUserRating[]> {
+    public async getBestRatingTeamers(guildID: string, amount: number, games: number): Promise<EntityUserRating[]> {
         return (await this.database.find(EntityUserRating, {
             where: {
                 guildID: guildID,
-                teamersTotal: MoreThan(0)
+                teamersTotal: MoreThanOrEqual(games)
             },
             order: {teamersRating: "DESC"},
-        })).slice(0, amount);
+            take: amount
+        }));
     }
 }

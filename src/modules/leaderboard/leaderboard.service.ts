@@ -49,9 +49,10 @@ export class LeaderboardService extends ModuleBaseService {
         if(message === null)
             return;
         let leaderboardMaxLength: number = await this.getOneSettingNumber(guildID, "LEADERBOARD_STATIC_MAX_LENGTH");
+        let leaderboardGamesMinimum: number = await this.getOneSettingNumber(guildID, "LEADERBOARD_GAMES_MINIMUM");
         let userRatings: EntityUserRating[] = (type === "FFA")
-            ? await this.databaseServiceUserRating.getBestRatingFFA(guildID, leaderboardMaxLength)
-            : await this.databaseServiceUserRating.getBestRatingTeamers(guildID, leaderboardMaxLength);
+            ? await this.databaseServiceUserRating.getBestRatingFFA(guildID, leaderboardMaxLength, leaderboardGamesMinimum)
+            : await this.databaseServiceUserRating.getBestRatingTeamers(guildID, leaderboardMaxLength, leaderboardGamesMinimum);
         let isGamesRequired: boolean = !!(await this.getOneSettingNumber(guildID, "LEADERBOARD_STATIC_SHOW_GAMES"));
 
         let title: string = await this.getOneText(guildID, (type === "FFA") ? "LEADERBOARD_STATIC_FFA_TITLE" : "LEADERBOARD_STATIC_TEAMERS_TITLE");
@@ -75,9 +76,10 @@ export class LeaderboardService extends ModuleBaseService {
 
     public async leaderboard(interaction: CommandInteraction | ButtonInteraction, type: string, pageCurrent: number = 1){
         let leaderboardMaxLength: number = await this.getOneSettingNumber(interaction, "LEADERBOARD_MAX_LENGTH");
+        let leaderboardGamesMinimum: number = await this.getOneSettingNumber(interaction, "LEADERBOARD_GAMES_MINIMUM");
         let userRatings: EntityUserRating[] = (type === "FFA")
-            ? await this.databaseServiceUserRating.getBestRatingFFA(interaction.guild?.id as string, leaderboardMaxLength)
-            : await this.databaseServiceUserRating.getBestRatingTeamers(interaction.guild?.id as string, leaderboardMaxLength);
+            ? await this.databaseServiceUserRating.getBestRatingFFA(interaction.guild?.id as string, leaderboardMaxLength, leaderboardGamesMinimum)
+            : await this.databaseServiceUserRating.getBestRatingTeamers(interaction.guild?.id as string, leaderboardMaxLength, leaderboardGamesMinimum);
         let pageTotal: number = Math.ceil(userRatings.length/this.leaderboardPlayersPerPage);
         switch(pageCurrent) {
             case 99:                            // нельзя использовать одинаковые ID кнопок
@@ -99,30 +101,25 @@ export class LeaderboardService extends ModuleBaseService {
         let label: string = await this.getOneText(interaction, "LEADERBOARD_DELETE");
 
         let embed: EmbedBuilder[] = this.leaderboardUI.leaderboardEmbed(
-            interaction.user,
-            type,
+            interaction.user, type,
             userRatings.slice(
                 (pageCurrent-1)*this.leaderboardPlayersPerPage, 
                 (pageCurrent)*this.leaderboardPlayersPerPage, 
             ),
-            isGamesRequired,
-            title,
-            emptyDescription,
-            fieldHeaders,
-            pageCurrent,
-            this.leaderboardPlayersPerPage
-        ), component: ActionRowBuilder<ButtonBuilder>[] = await this.leaderboardUI.leaderboardButtons(
-            type,
-            interaction.user.id,
-            label,
-            pageCurrent,
+            isGamesRequired, title,
+            emptyDescription, fieldHeaders,
+            pageCurrent, this.leaderboardPlayersPerPage
+        ), component: ActionRowBuilder<ButtonBuilder>[] = this.leaderboardUI.leaderboardButtons(
+            type, interaction.user.id,
+            label, pageCurrent,
             pageTotal
         );
 
-        if(interaction.type === InteractionType.MessageComponent)
+        if(interaction.type === InteractionType.MessageComponent) {
             interaction.message.edit({embeds: embed, components: component});
-        else 
+        } else {
             interaction.reply({embeds: embed, components: component});
+        }
     }
 
     public async leaderboardPageButton(interaction: ButtonInteraction) {

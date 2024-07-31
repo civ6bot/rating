@@ -65,6 +65,13 @@ export const configsMap = new Map<string, DynamicConfigEntity[]>([
     ]],
     ["DYNAMIC_CONFIG_RATING_REPORTS", [
         {
+            configTag: "RATING_REPORTS_TIME_MS",
+            textTag: "DYNAMIC_CONFIG_RATING_REPORTS_TIME_MS",
+            type: "NumberTimeSeconds",
+            minValue: 15,
+            maxValue: 600
+        },
+        {
             configTag: "RATING_REPORTS_HOST",
             textTag: "DYNAMIC_CONFIG_RATING_REPORTS_HOST",
             type: "Boolean"
@@ -147,6 +154,13 @@ export const configsMap = new Map<string, DynamicConfigEntity[]>([
             configTag: "LEADERBOARD_STATIC_SHOW_GAMES",
             textTag: "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES",
             type: "Boolean",
+        },
+        {
+            configTag: "LEADERBOARD_GAMES_MINIMUM",
+            textTag: "DYNAMIC_CONFIG_LEADERBOARD_GAMES_MINIMUM",
+            type: "Number",
+            minValue: 1,
+            maxValue: 100
         },
     ]],
 ]);

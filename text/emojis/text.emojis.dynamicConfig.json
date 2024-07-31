@@ -21,6 +21,7 @@
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },
 
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_TIME_MS_EMOJI", "value": "⏰" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST_EMOJI", "value": "🖥️" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS_EMOJI", "value": "👑" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT_EMOJI", "value": "📨" },
@@ -41,6 +42,7 @@
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH_EMOJI", "value": "🪜" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH_EMOJI", "value": "🪜" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES_EMOJI", "value": "🎮" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES_EMOJI", "value": "🎮" }
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES_EMOJI", "value": "🎮" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_GAMES_MINIMUM_EMOJI", "value": "🏆" }
   ]
 }

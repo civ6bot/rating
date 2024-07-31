@@ -327,18 +327,6 @@ export class RatingUI extends ModuleBaseUI {
         );
     }
 
-    public deleteAcceptedRatingMessageButton(
-        authorID: string,
-        label: string
-    ): ActionRowBuilder<ButtonBuilder>[] {
-        return UtilsGeneratorButton.getSingle(
-            label,
-            "❌",
-            ButtonStyle.Secondary,
-            `rating-reset-user-cancel-${authorID}`
-        );
-    }
-
 
 
     public addUser(
@@ -382,12 +370,11 @@ export class RatingUI extends ModuleBaseUI {
 
     public resetAllButtons(
         authorID: string,
-        labels: string[],
-        emojis: string[]
+        labels: string[]
     ): ActionRowBuilder<ButtonBuilder>[] {
         return UtilsGeneratorButton.getList(
             labels,
-            emojis,
+            [],
             [ButtonStyle.Success, ButtonStyle.Danger],
             [`rating-reset-all-confirm-${authorID}`, `rating-reset-all-cancel-${authorID}`]
         );

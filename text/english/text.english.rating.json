@@ -87,23 +87,22 @@
 
     { "tag": "RATING_RESET_USER_TITLE", "value": "🔄 Reset rating" },
     { "tag": "RATING_RESET_USER_DESCRIPTION", "value": "Your are about to reset <@[USER_ID]> rating points.\n❗ **This action cannot be undone!**" },
-    { "tag": "RATING_RESET_USER_NOTIFICATION_DESCRIPTION", "value": "Rating of <@[USER_ID]> was reset successfully.." },
+    { "tag": "RATING_RESET_USER_NOTIFICATION_DESCRIPTION", "value": "Rating of <@[USER_ID]> was reset successfully." },
 
     { "tag": "RATING_RESET_ALL_TITLE", "value": "🔄 Reset all ratings" },
     { "tag": "RATING_RESET_ALL_DESCRIPTION", "value": "Your are about to reset rating points of [USERS_AMOUNT] players.\n❗ **This action cannot be undone!**" },
     { "tag": "RATING_RESET_ALL_NOTIFICATION_DESCRIPTION", "value": "Rating of [USERS_AMOUNT] players was reset successfully." },
 
     { "tag": "RATING_WIPE_USER_TITLE", "value": "🗑️ Remove data of player profile" },
-    { "tag": "RATING_WIPE_USER_DESCRIPTION", "value": "Your are about to remove profile data of <@[USER_ID]>.\n❗ **This action cannot be undone!**" },
+    { "tag": "RATING_WIPE_USER_DESCRIPTION", "value": "Your are about to remove profile data of <@[USER_ID]>. It includes game results.\n❗ **This action cannot be undone!**" },
     { "tag": "RATING_WIPE_USER_NOTIFICATION_DESCRIPTION", "value": "Profile data of <@[USER_ID]> removed successfully." },
 
     { "tag": "RATING_WIPE_ALL_TITLE", "value": "🗑️ Remove data of all profiles" },
-    { "tag": "RATING_WIPE_ALL_DESCRIPTION", "value": "You are about to remove profile data of [USERS_AMOUNT] players.\n❗ **This action cannot be undone!**" },
+    { "tag": "RATING_WIPE_ALL_DESCRIPTION", "value": "You are about to remove profile data of [USERS_AMOUNT] players. It includes game results.\n❗ **This action cannot be undone!**" },
     { "tag": "RATING_WIPE_ALL_NOTIFICATION_DESCRIPTION", "value": "Profile data of [USERS_AMOUNT] players removed successfully." },
 
     { "tag": "RATING_CONFIRM_BUTTON", "value": "Confirm" },
     { "tag": "RATING_SEND_BUTTON", "value": "Send" },
-    { "tag": "RATING_CANCEL_BUTTON", "value": "Cancel" },
-    { "tag": "RATING_DELETE_BUTTON", "value": "Delete message" }
+    { "tag": "RATING_CANCEL_BUTTON", "value": "Cancel" }
   ]
 }

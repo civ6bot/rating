@@ -11,7 +11,7 @@ import { DynamicConfigUI } from "./dynamicConfig.ui";
 export class DynamicConfigService extends ModuleBaseService {
     private dynamicConfigUI: DynamicConfigUI = new DynamicConfigUI();
 
-    private entitiesPerPage: number = 6;
+    private entitiesPerPage: number = 10;
 
     private isOwner(interaction: ButtonInteraction | StringSelectMenuInteraction): boolean {
         return interaction.customId.split("-").filter(str => str === interaction.user.id).length > 0;

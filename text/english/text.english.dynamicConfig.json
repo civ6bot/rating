@@ -58,6 +58,7 @@
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Reports and channels" },
 
+    { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_TIME_MS", "value": "Time to create a report, seconds" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_HOST", "value": "Host required" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_CIVS", "value": "Civilizations required" },
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_BOT", "value": "Rating history channel (for bot)" },
@@ -78,6 +79,7 @@
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_LENGTH", "value": "Max length of leaderboard message" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_LENGTH", "value": "Max length of static leaderboard" },
     { "tag": "DYNAMIC_CONFIG_LEADERBOARD_SHOW_GAMES", "value": "Show games in leaderboard" },
-    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Show games static leaderboard" }
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_STATIC_SHOW_GAMES", "value": "Show games static leaderboard" },
+    { "tag": "DYNAMIC_CONFIG_LEADERBOARD_GAMES_MINIMUM", "value": "Minimum games to get on leaderboard" }
   ]
 }

@@ -17,7 +17,6 @@ import { RatingAdapter } from "./rating.adapter";
 
 export class RatingService extends ModuleBaseService {                                      // messageID, ratingModelData, ID в зависимости от типа команды:
     public static processingMessagesData: Map<string, RatingChatMessageData> = new Map();   // slashCommand=botMessageID | userMessage=userMessageID
-    public ratingProcessingTimeoutMs: number = UtilsServiceTime.getMs(45, "s");
     
     private ratingUI: RatingUI = new RatingUI();
     private ratingAdapter: RatingAdapter = new RatingAdapter();
@@ -581,9 +580,10 @@ export class RatingService extends ModuleBaseService {                          
             "RATING_CANCEL_BUTTON" 
         ]);
 
+        let ratingProcessingTimeoutMs = await this.getOneSettingNumber(guildID, "RATING_REPORTS_TIME_MS");
         let embeds: EmbedBuilder[], buttons: ActionRowBuilder<ButtonBuilder>[];
         if(errors.length > 0) {
-            let errorsDescription: string = await this.getOneText(guildID, "RATING_REPORT_ERRORS_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
+            let errorsDescription: string = await this.getOneText(guildID, "RATING_REPORT_ERRORS_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(ratingProcessingTimeoutMs));
             let errorDescriptionLines: string[] = await this.getManyText(guildID, errors);
             let descriptionHeadersFlags: boolean[] = [false, true, true, true];
             let description: string = [errorsDescription].concat(errorDescriptionLines, (warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
@@ -597,7 +597,7 @@ export class RatingService extends ModuleBaseService {                          
             );
             buttons = this.ratingUI.reportProcessingButtons(message.author.id, gameID, labels, true)
         } else {
-            let readyDescription: string = await this.getOneText(guildID, "RATING_REPORT_OK_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
+            let readyDescription: string = await this.getOneText(guildID, "RATING_REPORT_OK_PROCESSING_TITLE", UtilsGeneratorTimestamp.getRelativeTime(ratingProcessingTimeoutMs));
             let description: string = [readyDescription].concat((warningDescriptionLines.length) ? [warningsDescription] : [], warningDescriptionLines).join("\n");
             let descriptionHeadersFlags: boolean[] = [false, true, true, true];
             embeds = this.ratingUI.reportBrightEmbed(
@@ -617,8 +617,8 @@ export class RatingService extends ModuleBaseService {                          
         RatingService.processingMessagesData.set(botMessage.id, {
             botMessage: botMessage,
             userMessage: message,
-            timeOfDelete: Date.now()+this.ratingProcessingTimeoutMs,
-            timeout: setTimeout(RatingService.cleanProcessingData, this.ratingProcessingTimeoutMs),
+            timeOfDelete: Date.now()+ratingProcessingTimeoutMs,
+            timeout: setTimeout(RatingService.cleanProcessingData, ratingProcessingTimeoutMs),
             pendingGameID: ((isCreated || (previousGameID === 0)) && (errors.length !== 0)) ? 0 : gameID
             // Если ID=0, то такого отчёта в БД нет, потому что он был записан в ошибками.
             // Если ошибочный отчёт снова исправят на ошибочный, то мы сможем это понять по
@@ -683,7 +683,8 @@ export class RatingService extends ModuleBaseService {                          
             });
         }
         
-        let readyDescription: string = await this.getOneText(interaction, "RATING_REPORT_OK_TITLE", UtilsGeneratorTimestamp.getRelativeTime(this.ratingProcessingTimeoutMs));
+        let ratingProcessingTimeoutMs = await this.getOneSettingNumber(interaction, "RATING_REPORTS_TIME_MS");
+        let readyDescription: string = await this.getOneText(interaction, "RATING_REPORT_OK_TITLE", UtilsGeneratorTimestamp.getRelativeTime(ratingProcessingTimeoutMs));
         let title: string = await this.getOneText(interaction, "RATING_REPORT_TITLE");
         let labels: string[] = await this.getManyText(interaction, [
             (isModerator) 
@@ -708,8 +709,8 @@ export class RatingService extends ModuleBaseService {                          
         RatingService.processingMessagesData.set(message.id, {
             botMessage: message,
             userMessage: undefined,
-            timeOfDelete: Date.now()+this.ratingProcessingTimeoutMs,
-            timeout: setTimeout(RatingService.cleanProcessingData, this.ratingProcessingTimeoutMs),
+            timeOfDelete: Date.now()+ratingProcessingTimeoutMs,
+            timeout: setTimeout(RatingService.cleanProcessingData, ratingProcessingTimeoutMs),
             pendingGameID: gameID
         });
     }
@@ -843,11 +844,12 @@ export class RatingService extends ModuleBaseService {                          
             return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
 
+        await interaction.deferUpdate();
         let rejectDescription: string = Array.from(interaction.fields.fields.values())[0].value || "";
         let pendingGameID: number = Number(interaction.customId.split("-")[5]);
-        await interaction.message?.delete();
         let ratingNotes: EntityRatingNote[] = await this.databaseServiceRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         this.databaseServiceRatingNote.deleteAllByGameID(interaction.guild?.id as string, pendingGameID);
+        await interaction.message?.delete();
 
         if(ratingNotes.length > 0) {
             let authorID: string = interaction.customId.split("-").pop() as string;
@@ -889,9 +891,11 @@ export class RatingService extends ModuleBaseService {                          
             ]);
             return interaction.reply({embeds: this.ratingUI.error(textLines[0], textLines[1]), ephemeral: true});
         }
-        await interaction.update({components: []});       // Чтобы пользователь не нажал дважды
 
-        interaction.message.reactions.removeAll().catch();
+        await interaction.deferReply({ephemeral: true});
+        await interaction.message.edit({components: []});       // Чтобы пользователь не нажал дважды
+        await interaction.message.reactions.removeAll().catch();
+
         let pendingGameID: number = Number(interaction.customId.split("-")[4]);
         let ratingNotes: EntityRatingNote[] = await this.databaseServiceRatingNote.getAllByGameID(interaction.guild?.id as string, pendingGameID);
         if(
@@ -902,7 +906,7 @@ export class RatingService extends ModuleBaseService {                          
             let textLines: string[] = await this.getManyText(interaction, [
                 "BASE_ERROR_TITLE", "RATING_ERROR_REPORT_NOT_FOUND"
             ]);
-            return interaction.message.edit({embeds: this.ratingUI.error(textLines[0], textLines[1])});
+            return interaction.editReply({embeds: this.ratingUI.error(textLines[0], textLines[1])});
         }
 
         let usersID: string[] = ratingNotes.map(note => note.userID);
@@ -960,16 +964,12 @@ export class RatingService extends ModuleBaseService {                          
         } catch {
             reportMessage = undefined;
         }
-        if(reportMessage) {
-            let deleteButtonLabel: string = await this.getOneText(interaction, "RATING_DELETE_BUTTON");
-            interaction.message.edit({
-                embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription + "\n\n" + reportMessage.url),
-                components: this.ratingUI.deleteAcceptedRatingMessageButton(interaction.user.id, deleteButtonLabel)
-            });
-        } else {
+        if(!reportMessage) {
             reportMessage = interaction.message;
             interaction.message.edit({embeds: embed}).catch();
         }
+        await interaction.editReply({embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription + "\n\n" + reportMessage.url)});
+
         let pmDescription: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_DESCRIPTION", interaction.user.username, reportMessage.url);
         let pmEmbed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(ratingNotes[0].gameType, pmTitle, pmDescription, interaction.guild);
         let [isAuthorNotify, isAllNotify] = await this.getManySettingNumber(interaction, "RATING_ACCEPT_AUTHOR_PM_NOTIFY", "RATING_ACCEPT_ALL_PM_NOTIFY");
@@ -1264,7 +1264,7 @@ export class RatingService extends ModuleBaseService {                          
         ]);
         interaction.reply({
             embeds: this.ratingUI.notify(textLines[0], textLines[1]),
-            components: this.ratingUI.wipeAllButtons(interaction.user.id, labels)
+            components: this.ratingUI.resetAllButtons(interaction.user.id, labels)
         });
     }
 
@@ -1340,6 +1340,7 @@ export class RatingService extends ModuleBaseService {                          
         
         let userID: string = interaction.customId.split("-")[4];
         this.databaseServiceUserRating.deleteOne(interaction.guild?.id as string, userID);
+        this.databaseServiceRatingNote.deleteAllByUserID(interaction.guild?.id as string, userID);
         this.setRatingRole(interaction.guild?.id as string, userID, -1);
 
         let textLines: string[] = await this.getManyText(interaction, [
@@ -1397,6 +1398,7 @@ export class RatingService extends ModuleBaseService {                          
             return await interaction.message.delete();
         }
 
+        this.databaseServiceRatingNote.deleteAllByGuildID(interaction.guild?.id as string);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.deleteAll(interaction.guild?.id as string);
         this.setRatingRole(interaction.guild?.id as string, usersRating.map(userRating => userRating.userID), new Array<number>(usersRating.length).fill(-1));    // Убрать роли
 
