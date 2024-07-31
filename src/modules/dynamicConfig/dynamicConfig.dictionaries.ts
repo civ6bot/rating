@@ -6,6 +6,10 @@ export const tagsMap: Map<string, string[]> = new Map<string, string[]>([
         "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "DYNAMIC_CONFIG_RATING_REPORTS", 
         "DYNAMIC_CONFIG_RATING_NOTIFICATION", "DYNAMIC_CONFIG_LEADERBOARD"
     ]],
+    ["DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", [
+        "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_COMMON", "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO",
+        "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR"
+    ]]
 ]);
 
 export const configsMap = new Map<string, DynamicConfigEntity[]>([
@@ -19,13 +23,34 @@ export const configsMap = new Map<string, DynamicConfigEntity[]>([
             maxAmount: 10
         }
     ]],
-    ["DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", [
+    ["DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_COMMON", [
         {
             configTag: "RATING_DEFAULT_POINTS",
             textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS",
             type: "Number",
             minValue: 1,
             maxValue: 10000
+        },
+        {
+            configTag: "RATING_ROLES_ID",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS",
+            type: "RoleMany",
+            minAmount: 0,
+            maxAmount: 32
+        },
+        {
+            configTag: "RATING_POINTS_TO_ROLE",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS",
+            type: "NumberMany",
+            minAmount: 0,
+            maxAmount: 32
+        }
+    ]],
+    ["DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO", [
+        {
+            configTag: "RATING_ELO_ENABLED",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_ENABLED",
+            type: "Boolean"
         },
         {
             configTag: "RATING_ELO_K",
@@ -43,25 +68,46 @@ export const configsMap = new Map<string, DynamicConfigEntity[]>([
         },
         {
             configTag: "RATING_VICTORY_MULTIPLIER_PERCENT",
-            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_VICTORY_MULTIPLIER_PERCENT",
             type: "Number",
             minValue: 0,
             maxValue: 100
         },
+    ]],
+    ["DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", [
         {
-            configTag: "RATING_ROLES_ID",
-            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS",
-            type: "RoleMany",
-            minAmount: 0,
-            maxAmount: 32
+            configTag: "RATING_LINEAR_ENABLED",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED",
+            type: "Boolean"
         },
         {
-            configTag: "RATING_POINTS_TO_ROLE",
-            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS",
-            type: "NumberMany",
-            minAmount: 0,
-            maxAmount: 32
-        }
+            configTag: "RATING_LINEAR_B",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B",
+            type: "Number",
+            minValue: 0,
+            maxValue: 1000
+        },
+        {
+            configTag: "RATING_LINEAR_K",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_K",
+            type: "Number",
+            minValue: 1,
+            maxValue: 10000
+        },
+        {
+            configTag: "RATING_LINEAR_MAX",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MAX",
+            type: "Number",
+            minValue: 1,
+            maxValue: 10000
+        },
+        {
+            configTag: "RATING_LINEAR_MIN",
+            textTag: "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MIN",
+            type: "Number",
+            minValue: 0,
+            maxValue: 10000
+        },
     ]],
     ["DYNAMIC_CONFIG_RATING_REPORTS", [
         {

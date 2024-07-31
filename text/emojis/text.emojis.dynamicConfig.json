@@ -11,12 +11,29 @@
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_EMOJI", "value": "📈" },
 
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_COMMON_EMOJI", "value": "📈" },
+
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS_EMOJI", "value": "🔰" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_EMOJI", "value": "♨️" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_ENABLED_EMOJI", "value": "❔" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K_EMOJI", "value": "*️⃣" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D_EMOJI", "value": "➿" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT_EMOJI", "value": "🏆" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS_EMOJI", "value": "👑" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS_EMOJI", "value": "📈" },
+
+    
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_EMOJI", "value": "📶" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED_EMOJI", "value": "❔" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B_EMOJI", "value": "➕" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_K_EMOJI", "value": "➗" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MAX_EMOJI", "value": "⬆️" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MIN_EMOJI", "value": "⬇️" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS_EMOJI", "value": "📨" },

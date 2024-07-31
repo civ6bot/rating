@@ -46,14 +46,31 @@
     { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Moderator roles (ID)" },
 
 
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Rating points and roles calculation" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Rating systems and roles" },
+
+    
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_COMMON", "value": "Common settings" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS", "value": "Default points" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "Roles IDs" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "List of min points to get role" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO", "value": "Elo rating system" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_ENABLED", "value": "Enabled" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K", "value": "Elo K" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Elo D" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Special victory additional points, %" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "Roles IDs" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "List of min points to get role" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Linear rating system" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED", "value": "Enabled" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B", "value": "Linear B" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_K", "value": "Linear K" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MAX", "value": "Max points for victory" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MIN", "value": "Min points for victory" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Reports and channels" },

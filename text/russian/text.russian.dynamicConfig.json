@@ -47,14 +47,31 @@
     { "tag": "DYNAMIC_CONFIG_MODERATION_ROLE_MODERATORS_ID", "value": "Роли модераторов (ID)" },
 
 
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Рейтинговые очки и роли" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES", "value": "Рейтинговые системы и роли" },
+
+    
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_COMMON", "value": "Общие настройки" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_DEFAULT_POINTS", "value": "Очков по умолчанию" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "ID ролей" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "Минимумы очков для получения ролей" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO", "value": "Рейтинговая система Эло" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_ENABLED", "value": "Включено" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_K", "value": "Эло, K" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_ELO_D", "value": "Эло, D" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Доп. очки рейтинга за особую победу, %" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_IDS", "value": "ID ролей" },
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_MIN_POINTS", "value": "Минимумы очков для получения ролей" },
+
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Линейная рейтинговая система" },
+
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED", "value": "Включено" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B", "value": "Линейная, B" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_K", "value": "Линейная, K" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MAX", "value": "Макс. очков за победу" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_MIN", "value": "Мин. очков за победу" },
 
 
     { "tag": "DYNAMIC_CONFIG_RATING_REPORTS", "value": "Отчеты и каналы" },
