@@ -65,7 +65,7 @@
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Доп. очки рейтинга за особую победу, %" },
 
 
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Линейная рейтинговая система" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Линейная рейтинговая система (Teamers)" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED", "value": "Включено" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B", "value": "Линейная, B" },

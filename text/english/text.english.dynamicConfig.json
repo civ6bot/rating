@@ -64,7 +64,7 @@
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_VICTORY_MULTIPLIER_PERCENT", "value": "Special victory additional points, %" },
 
 
-    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Linear rating system" },
+    { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR", "value": "Linear rating system (Teamers)" },
 
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_ENABLED", "value": "Enabled" },
     { "tag": "DYNAMIC_CONFIG_RATING_POINTS_AND_ROLES_LINEAR_B", "value": "Linear B" },

@@ -8,7 +8,6 @@ import { UtilsGeneratorTimestamp } from "../../utils/generators/utils.generator.
 import { UtilsDataCivilizations } from "../../utils/data/utils.data.civilizations";
 import { UtilsServiceEmojis } from "../../utils/services/utils.service.emojis";
 import { UtilsServicePM } from "../../utils/services/utils.service.PM";
-import { UtilsServiceTime } from "../../utils/services/utils.service.time";
 import { ModuleBaseService } from "../base/base.service";
 import { RatingChatMessageData } from "./rating.models";
 import { RatingUI } from "./rating.ui";
@@ -300,9 +299,54 @@ export class RatingService extends ModuleBaseService {                          
         return ratingNotes;
     }
 
+    private getLinearRatingChange(
+        ratingsWin: number[], ratingsLose: number[],
+        linearB: number, linearK: number, linearMaxPoints: number, linearMinPoints: number
+    ): number {
+        return Math.round(Math.max(Math.min(
+            linearB + 10/linearK*(ratingsLose.reduce((a, b) => a+b, 0) - ratingsWin.reduce((a, b) => a+b, 0)), 
+        linearMaxPoints), linearMinPoints));
+    }
+
+    public calculateRatingNotesLinear(
+        ratingNotes: EntityRatingNote[],
+        usersRating: EntityUserRating[],
+        linearB: number, linearK: number, linearMaxPoints: number, linearMinPoints: number
+    ): void {
+        let gameType: string|null = ratingNotes[0]?.gameType || null;
+        let playersTotal: number = ratingNotes.filter(ratingNote => !ratingNote.isSubOut).length;
+
+        ratingNotes.forEach(ratingNote => {
+            ratingNote.rating = 0;
+            ratingNote.typedRating = 0;
+        });
+        let teamsTotal: number = 2, playersPerTeam: number = playersTotal/teamsTotal;
+        if((gameType === null) || (playersPerTeam % 1)) {     // Если дробное, т.е. не делится
+            return; 
+        }
+
+        let linearDelta: number = this.getLinearRatingChange(
+            usersRating.slice(0, playersPerTeam).map(userRating => userRating.rating),
+            usersRating.slice(playersPerTeam, teamsTotal*playersPerTeam).map(userRating => userRating.rating),
+            linearB, linearK, linearMaxPoints, linearMinPoints
+        );
+        let linearDeltaTyped: number = this.getLinearRatingChange(
+            usersRating.slice(0, playersPerTeam).map(userRating => userRating.teamersRating),
+            usersRating.slice(playersPerTeam, teamsTotal*playersPerTeam).map(userRating => userRating.teamersRating),
+            linearB, linearK, linearMaxPoints, linearMinPoints
+        );
+
+        for(let i: number = 0; i < playersPerTeam; i++) {
+            ratingNotes[i].rating += linearDelta;
+            ratingNotes[i].typedRating += linearDeltaTyped;
+            ratingNotes[i+playersPerTeam].rating -= linearDelta;
+            ratingNotes[i+playersPerTeam].typedRating -= linearDeltaTyped;
+        }
+    }
+
     // Принимает на вход RatingNote[], сооответствующие UserRating[] и параметры.
-    // Подсчитывает рейтинг для данных заметок.
-    public calculateRatingNotes(
+    // Подсчитывает рейтинг для данных заметок по Эло.
+    public calculateRatingNotesElo(
         ratingNotes: EntityRatingNote[],
         usersRating: EntityUserRating[],
         eloK: number, eloD: number, victoryMultiplierPercent: number
@@ -379,11 +423,12 @@ export class RatingService extends ModuleBaseService {                          
             }
             subOutIndex++;
         });
-        if(!!victoryType && (victoryType !== "CC") && (victoryType !== "GG")) 
+        if(!!victoryType && (victoryType !== "CC") && (victoryType !== "GG")) {
             ratingNotes.forEach(ratingNote => {
                 ratingNote.rating = Math.round(ratingNote.rating*(1+victoryMultiplierPercent/100));
                 ratingNote.typedRating = Math.round(ratingNote.typedRating*(1+victoryMultiplierPercent/100));
             });
+        } 
     }
 
     // Принимает на вход заполненные RatingNote[].
@@ -536,15 +581,23 @@ export class RatingService extends ModuleBaseService {                          
                 return;
             // Если всё ОК, то можно не удалять data из processingMessagesData,
             // потому что в конце алгоритма оно обновится.
-            if(previousGameID !== 0)                                                              // Если ID был равен 0,
-                ratingNotes.forEach(ratingNote => ratingNote.gameID = previousGameID as number);  // то отчёт был с ошибками, и его нет в БД.                                                        // Ему как раз требуется новый ID, который получен в generateRatingNotes.
-        }
+            if(previousGameID !== 0)                                                                // Если ID был равен 0,
+                ratingNotes.forEach(ratingNote => ratingNote.gameID = previousGameID as number);    // то отчёт был с ошибками, и его нет в БД.
+        }                                                                                           // Ему как раз требуется новый ID, который получен в generateRatingNotes.
 
         let gameID: number = ratingNotes[0].gameID;
         let isModerator: boolean = await this.isModerator(message.member as GuildMember);
+
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(guildID, ratingNotes.map(note => note.userID));
-        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
-        this.calculateRatingNotes(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        let [isEloSystem, isLinearSystem] = await this.getManySettingNumber(guildID, "RATING_ELO_ENABLED", "RATING_LINEAR_ENABLED");
+        if(isLinearSystem && (ratingNotes[0].gameType === "Teamers")) {
+            let [linearB, linearK, linearMaxPoints, linearMinPoints] = await this.getManySettingNumber(guildID, "RATING_LINEAR_B", "RATING_LINEAR_K", "RATING_LINEAR_MAX", "RATING_LINEAR_MIN");
+            this.calculateRatingNotesLinear(ratingNotes, usersRating, linearB, linearK, linearMaxPoints, linearMinPoints);
+        } else {
+            let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(guildID, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+            this.calculateRatingNotesElo(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        }
+        
         let {errors, warnings} = await this.checkRatingNotes(ratingNotes, guildID);
         this.applyRating(usersRating, ratingNotes);
         if(errors.length === 0) {
@@ -639,8 +692,15 @@ export class RatingService extends ModuleBaseService {                          
 
         let ratingNotes: EntityRatingNote[] = await this.generateRatingNotes(interaction, msg, type);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, ratingNotes.map(note => note.userID));
-        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
-        this.calculateRatingNotes(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        let [isEloSystem, isLinearSystem] = await this.getManySettingNumber(interaction, "RATING_ELO_ENABLED", "RATING_LINEAR_ENABLED");
+        if(isLinearSystem && (ratingNotes[0].gameType === "Teamers")) {
+            let [linearB, linearK, linearMaxPoints, linearMinPoints] = await this.getManySettingNumber(interaction, "RATING_LINEAR_B", "RATING_LINEAR_K", "RATING_LINEAR_MAX", "RATING_LINEAR_MIN");
+            this.calculateRatingNotesLinear(ratingNotes, usersRating, linearB, linearK, linearMaxPoints, linearMinPoints);
+        } else {
+            let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+            this.calculateRatingNotesElo(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        }
+
         let {errors, warnings} = await this.checkRatingNotes(ratingNotes, interaction);
         this.applyRating(usersRating, ratingNotes);
         if(errors.length === 0)
@@ -911,8 +971,15 @@ export class RatingService extends ModuleBaseService {                          
 
         let usersID: string[] = ratingNotes.map(note => note.userID);
         let usersRating: EntityUserRating[] = await this.databaseServiceUserRating.getMany(interaction.guild?.id as string, usersID);
-        let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
-        this.calculateRatingNotes(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        let [isEloSystem, isLinearSystem] = await this.getManySettingNumber(interaction, "RATING_ELO_ENABLED", "RATING_LINEAR_ENABLED");
+        if(isLinearSystem && (ratingNotes[0].gameType === "Teamers")) {
+            let [linearB, linearK, linearMaxPoints, linearMinPoints] = await this.getManySettingNumber(interaction, "RATING_LINEAR_B", "RATING_LINEAR_K", "RATING_LINEAR_MAX", "RATING_LINEAR_MIN");
+            this.calculateRatingNotesLinear(ratingNotes, usersRating, linearB, linearK, linearMaxPoints, linearMinPoints);
+        } else {
+            let [eloK, eloD, victoryMultiplierPercent] = await this.getManySettingNumber(interaction, "RATING_ELO_K", "RATING_ELO_D", "RATING_VICTORY_MULTIPLIER_PERCENT");
+            this.calculateRatingNotesElo(ratingNotes, usersRating, eloK, eloD, victoryMultiplierPercent);
+        }
+
         this.applyRating(usersRating, ratingNotes);
         ratingNotes.forEach(ratingNote => {
             ratingNote.isActive = true;             // Изменение статуста раннее
