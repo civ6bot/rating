@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@discordx/importer": "^1.1.10",
+    "@types/express": "^4.17.21",
     "@types/glob": "^8.0.0",
     "discord.js": "^14.8.0",
     "discordx": "^11.5.1",
     "dotenv": "^16.0.3",
+    "express": "^4.19.2",
     "glob": "^8.0.3",
     "pg": "^8.11.1",
     "sqlite3": "^5.1.2",

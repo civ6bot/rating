@@ -7,6 +7,7 @@ import {loadDefaultConfigs} from "./utils/loaders/utils.loader.config";
 import {dataSource} from "./database/database.datasource";
 import {DatabaseServiceRatingNote} from "./database/services/service.RatingNote";
 import * as dotenv from "dotenv";
+import { httpServer } from "./server/server.app";
 dotenv.config({path: 'rating.env'});
 
 importx(
@@ -32,6 +33,10 @@ dataSource.initialize().then(async () => {
     await databaseServiceRatingNote.deleteOldPendingNotes();
 
     console.log(`Database connected`);
+});
+
+httpServer.listen(process.env.SERVER_HTTP_PORT, () => {
+    console.log(`HTTP Rating server listening`);
 });
 
 process.on('uncaughtException', error => {
