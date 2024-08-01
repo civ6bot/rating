@@ -304,7 +304,7 @@ export class RatingService extends ModuleBaseService {                          
         linearB: number, linearK: number, linearMaxPoints: number, linearMinPoints: number
     ): number {
         return Math.round(Math.max(Math.min(
-            linearB + 10/linearK*(ratingsLose.reduce((a, b) => a+b, 0) - ratingsWin.reduce((a, b) => a+b, 0)/ratingsLose.length), 
+            linearB + (10/linearK/ratingsLose.length)*(ratingsLose.reduce((a, b) => a+b, 0) - ratingsWin.reduce((a, b) => a+b, 0)), 
         linearMaxPoints), linearMinPoints));
     }
 
