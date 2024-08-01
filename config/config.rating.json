@@ -13,8 +13,8 @@
   { "setting": "RATING_LINEAR_ENABLED", "value": 0 },
   { "setting": "RATING_LINEAR_B", "value": 25 },
   { "setting": "RATING_LINEAR_K", "value": 50 },
-  { "setting": "RATING_LINEAR_MAX", "value": 5 },
-  { "setting": "RATING_LINEAR_MIN", "value": 45 },
+  { "setting": "RATING_LINEAR_MAX", "value": 45 },
+  { "setting": "RATING_LINEAR_MIN", "value": 5 },
 
 
 
