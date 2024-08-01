@@ -1036,6 +1036,11 @@ export class RatingService extends ModuleBaseService {                          
             interaction.message.edit({embeds: embed}).catch();
         }
         await interaction.editReply({embeds: this.ratingUI.notify(pmTitle, pmModeratorDescription + "\n\n" + reportMessage.url)});
+        if(reportMessage !== interaction.message) {
+            try {
+                await interaction.message.delete();
+            } catch {}
+        }
 
         let pmDescription: string = await this.getOneText(interaction, "RATING_REPORT_ACCEPT_DESCRIPTION", interaction.user.username, reportMessage.url);
         let pmEmbed: EmbedBuilder[] = this.ratingUI.reportPMEmbed(ratingNotes[0].gameType, pmTitle, pmDescription, interaction.guild);
