@@ -342,6 +342,25 @@ export class RatingService extends ModuleBaseService {                          
             ratingNotes[i+playersPerTeam].rating -= linearDelta;
             ratingNotes[i+playersPerTeam].typedRating -= linearDeltaTyped;
         }
+
+        let subOutIndex: number = 0;
+        ratingNotes.forEach((ratingNote: EntityRatingNote, index: number) => {
+            if(!ratingNote.isSubIn)
+                return;
+            while((subOutIndex < ratingNotes.length) && !ratingNotes[subOutIndex].isSubOut)
+                subOutIndex++;
+            if((subOutIndex >= ratingNotes.length) || !ratingNote.isSubIn || !ratingNotes[subOutIndex].isSubOut)
+                return;
+            if(ratingNotes[subOutIndex].isLeave && ratingNote.rating < 0){
+                ratingNotes[subOutIndex].rating += ratingNote.rating;
+                ratingNote.rating = 0;
+            }
+            if(ratingNotes[subOutIndex].isLeave && ratingNote.typedRating < 0){
+                ratingNotes[subOutIndex].typedRating += ratingNote.typedRating;
+                ratingNote.typedRating = 0;
+            }
+            subOutIndex++;
+        });
     }
 
     // Принимает на вход RatingNote[], сооответствующие UserRating[] и параметры.
