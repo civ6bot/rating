@@ -77,6 +77,14 @@
     { "tag": "RATING_DRAFT_BYZANTIUM_THEODORA", "value": "Византия [EMOJI] Феодора" },
     { "tag": "RATING_DRAFT_ENGLAND_ELIZABETH", "value": "Англия [EMOJI] Елизавета I" },
     { "tag": "RATING_DRAFT_NORWAY_HARALD_VARANGIAN", "value": "Норвегия [EMOJI] Харальд Суровый (Варяг)" },
-    { "tag": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM", "value": "Англия [EMOJI] Виктория (Эпоха паровых машин)" }
+    { "tag": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM", "value": "Англия [EMOJI] Виктория (Эпоха паровых машин)" },
+    { "tag": "RATING_DRAFT_PHOENICIA_AHIRAM", "value": "Финикия [EMOJI] Ахирам" },
+    { "tag": "RATING_DRAFT_MACEDONIA_OLYMPIAS", "value": "Македония [EMOJI] Олимпия" },
+    { "tag": "RATING_DRAFT_SWAHILI", "value": "Суахили [EMOJI] Аль-Хассан ибн Сулейман" },
+    { "tag": "RATING_DRAFT_MAYA_TE_K_INICH_II", "value": "Майя [EMOJI] Яхав-Те-К'Инич II" },
+    { "tag": "RATING_DRAFT_TEOTIHUACAN", "value": "Теотиуакан [EMOJI] Филин-копьеметатель" },
+    { "tag": "RATING_DRAFT_THULE", "value": "Туле [EMOJI] Кивиук" },
+    { "tag": "RATING_DRAFT_TIBET", "value": "Тибет [EMOJI] Трисонг Децэн" },
+    { "tag": "RATING_DRAFT_GAUL_VERCINGETORIX", "value": "Галлия [EMOJI] Верцингеториг" }
   ]
 }

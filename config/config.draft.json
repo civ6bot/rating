@@ -75,5 +75,13 @@
     { "setting": "RATING_DRAFT_BYZANTIUM_THEODORA_EMOJI", "value": "<:Theodora:1351700413992402964>" },
     { "setting": "RATING_DRAFT_ENGLAND_ELIZABETH_EMOJI", "value": "<:Elizabeth_I:1351699983753019432>" },
     { "setting": "RATING_DRAFT_NORWAY_HARALD_VARANGIAN_EMOJI", "value": "<:Harald_Hardraga_Varangian:1351700030964371589>" },
-    { "setting": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM_EMOJI", "value": "<:Victoria_Age_of_Steam:1351700437170126879>" }
+    { "setting": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM_EMOJI", "value": "<:Victoria_Age_of_Steam:1351700437170126879>" },
+    { "setting": "RATING_DRAFT_PHOENICIA_AHIRAM_EMOJI", "value": "<:Ahiram:1405573802548789258>" },
+    { "setting": "RATING_DRAFT_MACEDONIA_OLYMPIAS_EMOJI", "value": "<:Olympias:1405573810119376906>" },
+    { "setting": "RATING_DRAFT_SWAHILI_EMOJI", "value": "<:Swahili:1405573817413402694>" },
+    { "setting": "RATING_DRAFT_MAYA_TE_K_INICH_II_EMOJI", "value": "<:Te_K_Inich_II:1405573825562804234>" },
+    { "setting": "RATING_DRAFT_TEOTIHUACAN_EMOJI", "value": "<:Teotihuacan:1405573839529967818>" },
+    { "setting": "RATING_DRAFT_THULE_EMOJI", "value": "<:Thule:1405573848304451695>" },
+    { "setting": "RATING_DRAFT_TIBET_EMOJI", "value": "<:Tibet:1405573856676155534>" },
+    { "setting": "RATING_DRAFT_GAUL_VERCINGETORIX_EMOJI", "value": "<:Vercingetorix:1405573863915655239>" }
 ]

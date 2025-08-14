@@ -77,6 +77,14 @@
     { "tag": "RATING_DRAFT_BYZANTIUM_THEODORA", "value": "Byzantium [EMOJI] Theodora" },
     { "tag": "RATING_DRAFT_ENGLAND_ELIZABETH", "value": "England [EMOJI] Elizabeth I" },
     { "tag": "RATING_DRAFT_NORWAY_HARALD_VARANGIAN", "value": "Norway [EMOJI] Harald Hardrada (Varangian)" },
-    { "tag": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM", "value": "England [EMOJI] Victoria (Age of Steam)" }
+    { "tag": "RATING_DRAFT_ENGLAND_VICTORIA_STEAM", "value": "England [EMOJI] Victoria (Age of Steam)" },
+    { "tag": "RATING_DRAFT_PHOENICIA_AHIRAM", "value": "Phoenicia [EMOJI] Ahiram" },
+    { "tag": "RATING_DRAFT_MACEDONIA_OLYMPIAS", "value": "Macedon [EMOJI] Olympias" },
+    { "tag": "RATING_DRAFT_SWAHILI", "value": "Swahili [EMOJI] Al-Hasan Ibn Sulaiman" },
+    { "tag": "RATING_DRAFT_MAYA_TE_K_INICH_II", "value": "Maya [EMOJI] Te' K'inich II" },
+    { "tag": "RATING_DRAFT_TEOTIHUACAN", "value": "Teotihuacan [EMOJI] Spearthrower Owl" },
+    { "tag": "RATING_DRAFT_THULE", "value": "Thule [EMOJI] Kiviuq" },
+    { "tag": "RATING_DRAFT_TIBET", "value": "Tibet [EMOJI] Trisong Detsen" },
+    { "tag": "RATING_DRAFT_GAUL_VERCINGETORIX", "value": "Gaul [EMOJI] Vercingetorix" }
   ]
 }
